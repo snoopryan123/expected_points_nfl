@@ -1,0 +1,16 @@
+model_name: xgb_C_nflFastR_1
+CATALYTIC: no
+WP: no
+booster: gbtree
+objective: multi:softprob
+eval_metric: mlogloss
+num_class: 7.0
+eta: 0.0784013
+gamma: 2.1529686
+subsample: 0.46
+colsample_bytree: 0.7777778
+max_depth: 5
+min_child_weight: 37
+nrounds: 114.0
+test_loss: 3.8687782
+

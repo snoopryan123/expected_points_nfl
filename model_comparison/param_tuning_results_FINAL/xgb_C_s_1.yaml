@@ -1,0 +1,16 @@
+model_name: xgb_C_s_1
+CATALYTIC: no
+WP: no
+booster: gbtree
+objective: multi:softprob
+eval_metric: mlogloss
+num_class: 7.0
+eta: 0.0339784
+gamma: 8.1297904e-08
+subsample: 0.22
+colsample_bytree: 0.4615385
+max_depth: 3
+min_child_weight: 21
+nrounds: 718.0
+test_loss: 3.7316764
+
