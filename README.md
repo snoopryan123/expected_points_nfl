@@ -10,7 +10,7 @@
 
 # Model comparison
 * enter `model_comparison` folder
-* run 
+* run `FIXME`
 
 # Plotting
 * enter `plotting` folder
@@ -18,36 +18,9 @@
 * run `A_plot_selection_bias.R` to visualize selection bias induced by not adjusting for team quality
 * run `A_plot_summary_stats.R` to visualize some data summary statistics
 * run `A_plot_EP.R` to visualize EP models
+    * Before visualizing XGB models, need to train and save full XGBoost models via `model_comparison/train_full_models.R`; some of these models should already be saved in the Github
 
-
-
-
-
-
-
-# OLD:
-
-## Model and data visualization
-* Visualize the EP models in `comparison_v110/2_plotting/A_plot_EP.R`
-  * Before doing so, need to train and save full XGBoost models via `comparison_v110/3_model_selection/xgb_110/train_full_models.R`, but some of these models should already be saved
-* selection bias plots, team quality plots, and other plots of the data in `comparison_v110/2_plotting/A_plot_TQ.R`
-
-## Model bake-off (out-of-sample predictive performance comparison)
-* for `EP Paper`:
-  * test OLS models: run `comparison_v110/3_model_selection/ols_110/test_ep_allDowns.R`
-  * test MLR models: run `comparison_v110/3_model_selection/mlr_110/test_ep_allDowns.R`
-  * test XGB models: run `comparison_v110/3_model_selection/xgb_110/test_ep_allDowns.R`
-* __XGBoost model tuning:__
-  * XGBoost:
-    * tune XGB models: run `comparison_v110/3_model_selection/xgb_110/param_tuning.R` via `run_param_tuning_xgb_EP_AJ.sh` and `run_param_tuning_xgb_WP_AJ.sh`
-    * final tuning parameters to be used in XGBoost model fitting found in `param_tuning_results_FINAL`
-    * these tuned params are already included in the github repo
-  * Catalytic XGBoost:
-    * tune Catalytic XGB models: run `comparison_v110/3_model_selection/xgb_110/param_tuning_catalytic.R` via `run_param_tuning_catalytic_EP_AJ.sh` and `run_param_tuning_catalytic_WP_AJ.sh`
-    * final tuning parameters to be used in Catalytic XGBoost model fitting found in `param_tuning_results_FINAL`
-    * these tuned params are already included in the github repo
-
-## Team quality knockoffs in `EP Paper`
-* run `comparison_v110/6_knockoffs_TQ/knockoffs_EPA0tq.R`
+m quality knockoffs
+* run `FIXME`
 
 
