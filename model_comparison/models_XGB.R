@@ -244,64 +244,6 @@ xgb_C_s_1_catalytic = load_params(xgb_C_s_1_model_name)[[3]]
 # xgb_C_oq2xdq2x_1_nrounds = load_params(xgb_C_oq2xdq2x_1_model_name)[[2]]
 # xgb_C_oq2xdq2x_1_catalytic = load_params(xgb_C_oq2xdq2x_1_model_name)[[3]]
 
-# ##############################
-# xgb_C_nflFastR_oq2xdq2x_1_model_name = "xgb_C_nflFastR_oq2xdq2x_1"
-# xgb_C_nflFastR_oq2xdq2x_1_features = c(
-#   "yardline_100", "down1", "down2", "down4", "down4", "ydstogo", "half_seconds_remaining",
-#   "qbq_ot_0_sum", "oq_rot_0_total_sum", 
-#   "qbq_dt_0_sum", "oq_rdt_0_sum", 
-#   "dq_dt_0_againstPass_sum", "dq_ot_0_againstPass_sum",
-#   "dq_dt_0_againstRun_sum", "dq_ot_0_againstRun_sum",
-#   "era0", "era1", "era2", "era3", "era4", 
-#   "season", "home", "posteam_timeouts_remaining", "defteam_timeouts_remaining", "retractable", "dome"
-# )
-# xgb_C_nflFastR_oq2xdq2x_1_params = load_params(xgb_C_nflFastR_oq2xdq2x_1_model_name)[[1]]
-# xgb_C_nflFastR_oq2xdq2x_1_nrounds = load_params(xgb_C_nflFastR_oq2xdq2x_1_model_name)[[2]]
-# xgb_C_nflFastR_oq2xdq2x_1_catalytic = load_params(xgb_C_nflFastR_oq2xdq2x_1_model_name)[[3]]
-
-# ##############################
-# xgb_C_nflFastR_s_1_model_name = "xgb_C_nflFastR_s_1"
-# xgb_C_nflFastR_s_1_features = c(
-#   "yardline_100", "down1", "down2", "down4", "down4", "ydstogo", "half_seconds_remaining",
-#   "posteam_spread",
-#   "era0", "era1", "era2", "era3", "era4", 
-#   "season", "home", "posteam_timeouts_remaining", "defteam_timeouts_remaining", "retractable", "dome"
-# )
-# xgb_C_nflFastR_s_1_params = load_params(xgb_C_nflFastR_s_1_model_name)[[1]]
-# xgb_C_nflFastR_s_1_nrounds = load_params(xgb_C_nflFastR_s_1_model_name)[[2]]
-# xgb_C_nflFastR_s_1_catalytic = load_params(xgb_C_nflFastR_s_1_model_name)[[3]]
-
-# ##############################
-# xgb_C_nflFastR_oq2xdq2x_2_model_name = "xgb_C_nflFastR_oq2xdq2x_2"
-# xgb_C_nflFastR_oq2xdq2x_2_features = c(
-#   "yardline_100", "half_seconds_remaining",
-#   "posteam_timeouts_remaining", "defteam_timeouts_remaining",  "half", "score_differential",
-#   "down", "ydstogo",
-#   "qbq_ot_0_sum", "oq_rot_0_total_sum", 
-#   "qbq_dt_0_sum", "oq_rdt_0_sum", 
-#   "dq_dt_0_againstPass_sum", "dq_ot_0_againstPass_sum",
-#   "dq_dt_0_againstRun_sum", "dq_ot_0_againstRun_sum",
-#   "era0", "era1", "era2", "era3", "era4", 
-#   "season", "home", "posteam_timeouts_remaining", "defteam_timeouts_remaining", "retractable", "dome"
-# )
-# xgb_C_nflFastR_oq2xdq2x_2_params = load_params(xgb_C_nflFastR_oq2xdq2x_2_model_name)[[1]]
-# xgb_C_nflFastR_oq2xdq2x_2_nrounds = load_params(xgb_C_nflFastR_oq2xdq2x_2_model_name)[[2]]
-# xgb_C_nflFastR_oq2xdq2x_2_catalytic = load_params(xgb_C_nflFastR_oq2xdq2x_2_model_name)[[3]]
-
-# ##############################
-# xgb_C_nflFastR_s_2_model_name = "xgb_C_nflFastR_s_2"
-# xgb_C_nflFastR_s_2_features = c(
-#   "yardline_100", "half_seconds_remaining",
-#   "posteam_timeouts_remaining", "defteam_timeouts_remaining",  "half", "score_differential",
-#   "down", "ydstogo",
-#   "posteam_spread",
-#   "era0", "era1", "era2", "era3", "era4", 
-#   "season", "home", "posteam_timeouts_remaining", "defteam_timeouts_remaining", "retractable", "dome"
-# )
-# xgb_C_nflFastR_s_2_params = load_params(xgb_C_nflFastR_s_2_model_name)[[1]]
-# xgb_C_nflFastR_s_2_nrounds = load_params(xgb_C_nflFastR_s_2_model_name)[[2]]
-# xgb_C_nflFastR_s_2_catalytic = load_params(xgb_C_nflFastR_s_2_model_name)[[3]]
-
 #################################################
 ### XGBoost Models that are weighted by epoch ###
 #################################################
@@ -317,26 +259,6 @@ xgb_C_s_1_wbe_catalytic = load_params(xgb_C_s_1_wbe_model_name)[[3]]
 # ### Catalytic XGBoost Models ###
 # ################################
 #
-# ##############################
-# xgb_BR_110_s_1_catalytic_model_name = "xgb_BR_110_s_1_catalytic" ###
-# xgb_BR_110_s_1_catalytic_prior_name = "mlr_110_s2dE" ###
-# xgb_BR_110_s_1_catalytic_paramFile = paste0(xgb_BR_110_s_1_catalytic_model_name, "_prior_", xgb_BR_110_s_1_catalytic_prior_name) ###
-# xgb_BR_110_s_1_catalytic_features = get(paste0(str_remove(xgb_BR_110_s_1_catalytic_model_name, "_catalytic"), "_features"))
-# # determined by testing on a validation set
-# xgb_BR_110_s_1_catalytic_params = load_params(xgb_BR_110_s_1_catalytic_paramFile)[[1]]
-# xgb_BR_110_s_1_catalytic_nrounds = load_params(xgb_BR_110_s_1_catalytic_paramFile)[[2]]
-# xgb_BR_110_s_1_catalytic_catalytic = load_params(xgb_BR_110_s_1_catalytic_paramFile)[[3]]
-# 
-# ##############################
-# xgb_C_110_s_1_catalytic_model_name = "xgb_C_110_s_1_catalytic" ###
-# xgb_C_110_s_1_catalytic_prior_name = "mlr_110_s2dE" ###
-# xgb_C_110_s_1_catalytic_paramFile = paste0(xgb_C_110_s_1_catalytic_model_name, "_prior_", xgb_C_110_s_1_catalytic_prior_name) ###
-# xgb_C_110_s_1_catalytic_features = get(paste0(str_remove(xgb_C_110_s_1_catalytic_model_name, "_catalytic"), "_features"))
-# # determined by testing on a validation set
-# xgb_C_110_s_1_catalytic_params = load_params(xgb_C_110_s_1_catalytic_paramFile)[[1]]
-# xgb_C_110_s_1_catalytic_nrounds = load_params(xgb_C_110_s_1_catalytic_paramFile)[[2]]
-# xgb_C_110_s_1_catalytic_catalytic = load_params(xgb_C_110_s_1_catalytic_paramFile)[[3]]
-# 
 # ##############################
 # xgb_C_s_1_catalytic_model_name = "xgb_C_s_1_catalytic" ###
 # xgb_C_s_1_catalytic_prior_name = "mlr_yurko_s2dE" ###
