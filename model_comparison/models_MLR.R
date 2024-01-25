@@ -368,7 +368,6 @@ fit_mlr_yurko_s2d <- function(dataset, weight_me=FALSE) {
                    yardline_100 +
                    factor(down) + down:yardline_100 +
                    log(ydstogo) +
-                   # bs(half_seconds_remaining, knots=c(30)) +
                    bs(half_seconds_remaining, degree=1, df=1) +
                    utm:as.numeric(posteam_timeouts_remaining==0) +
                    I((score_differential <= -11)) + ### need a TD
@@ -383,6 +382,54 @@ fit_mlr_yurko_s2d <- function(dataset, weight_me=FALSE) {
                  weights = w, data = dataset)
   clean_lm(fit)
 }
+
+fit_mlr_yurko_s1d1 <- function(dataset, weight_me=FALSE) {
+  if (!weight_me) { dataset$w = 1 }
+  fit = multinom(label ~ 
+                   yardline_100 +
+                   factor(down) +
+                   (
+                     yardline_100 +
+                     log(ydstogo) +
+                     bs(half_seconds_remaining, degree=1, df=1) +
+                     utm:as.numeric(posteam_timeouts_remaining==0) +
+                     I((score_differential <= -11)) + ### need a TD
+                     I((score_differential >= 11)) + ### comfortable, field goal is fine
+                     ### note:: fourth_quarter == game_seconds_remaining <= 900
+                     I((score_differential <= -4)*(game_seconds_remaining <= 900)) + ### need a TD   
+                     I((-3 <= score_differential & score_differential <= 0)*(game_seconds_remaining <= 900)) + ### ok with a field goal
+                     I((1 <= score_differential & score_differential <= 3)*(game_seconds_remaining <= 900)) + ### prefer a TD but ok with a field goal
+                     I((4 <= score_differential & score_differential <= 10)*(game_seconds_remaining <= 900)) + ### ok with a field goal but game is still close
+                     factor(era_A) +
+                     posteam_spread
+                   ):factor(down),
+                   weights = w, data = dataset)
+  clean_lm(fit)
+}
+
+# fit_mlr_yurko_s1d2 <- function(dataset, weight_me=FALSE) {
+#   if (!weight_me) { dataset$w = 1 }
+#   fit = multinom(label ~ 
+#                    yardline_100 +
+#                    factor(down) +
+#                    (
+#                      yardline_100 +
+#                        log(ydstogo) +
+#                        bs(half_seconds_remaining, knots=c(30)) +
+#                        utm:as.numeric(posteam_timeouts_remaining==0) +
+#                        I((score_differential <= -11)) + ### need a TD
+#                        I((score_differential >= 11)) + ### comfortable, field goal is fine
+#                        ### note:: fourth_quarter == game_seconds_remaining <= 900
+#                        I((score_differential <= -4)*(game_seconds_remaining <= 900)) + ### need a TD   
+#                        I((-3 <= score_differential & score_differential <= 0)*(game_seconds_remaining <= 900)) + ### ok with a field goal
+#                        I((1 <= score_differential & score_differential <= 3)*(game_seconds_remaining <= 900)) + ### prefer a TD but ok with a field goal
+#                        I((4 <= score_differential & score_differential <= 10)*(game_seconds_remaining <= 900)) + ### ok with a field goal but game is still close
+#                        factor(era_A) +
+#                        posteam_spread
+#                    ):factor(down),
+#                  weights = w, data = dataset)
+#   clean_lm(fit)
+# }
 
 ########################################################################################
 #### NOW, given best TQ metrics, fine tune the Time Remaining and Yardline splines. ####

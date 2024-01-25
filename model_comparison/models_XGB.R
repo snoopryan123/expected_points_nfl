@@ -73,17 +73,17 @@ get_xgb_train_DMatrix <- function(xgb_features, train_set, params, w=FALSE, cata
 train_xgb <- function(xgb_features, train_set, params, nrounds, watchSet=FALSE, 
                       w=FALSE, catalytic=FALSE, Regression=FALSE, BoundedRegression=FALSE, wp=FALSE, catalytic_model_name="", 
                       param_tuning=FALSE, print_every_n=50, weight_by_epoch=FALSE, weight_by_game=FALSE) {
-  # browser()
+  
   if (weight_by_epoch) {
-    train_set = train_set %>% group_by(epoch) %>% mutate(w = 1/n()) %>% ungroup()
+    #####train_set = train_set %>% group_by(epoch) %>% mutate(w = 1/n()) %>% ungroup()
     w = TRUE
   } else if (weight_by_game) {
-    train_set = train_set %>% group_by(game_id) %>% mutate(w = 1/n()) %>% ungroup()
+    #####train_set = train_set %>% group_by(game_id) %>% mutate(w = 1/n()) %>% ungroup()
     w = TRUE
   } else {
-    train_set = train_set %>% mutate(w = 1) 
+    train_set$w = 1
   }
-  
+
   train_set_xgbDM =  get_xgb_train_DMatrix(
     xgb_features, train_set, params, w=w, catalytic=catalytic, 
     Regression=Regression, BoundedRegression=BoundedRegression, wp=wp, catalytic_model_name=catalytic_model_name

@@ -18,7 +18,8 @@ data_full_0 <-
   mutate(
     epoch_length = n(),
     w = 1/epoch_length
-  )
+  ) %>%
+  ungroup()
 
 ### standardize some covariates 
 # std <- function(x, mu, sigma) { (x-mu) / (2*sigma) }

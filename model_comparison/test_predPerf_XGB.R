@@ -27,7 +27,7 @@ pred_ep_xgb_C_s_1_wbe = predict_ep_xgb(xgb_C_s_1_wbe, test_set, xgb_C_s_1_wbe_fe
 ##########################################
 
 preds_C = bind_rows(
-  # pred_ep_xgb_C_nflFastR,
+  pred_ep_xgb_C_nflFastR,
   ##### pred_ep_xgb_C_nflFastR_1, 
   ##### pred_ep_xgb_C_oq2xdq2x_1, 
   pred_ep_xgb_C_s_1,

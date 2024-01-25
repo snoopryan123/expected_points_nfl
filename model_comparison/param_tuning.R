@@ -238,25 +238,19 @@ grid_to_ParamList <- function(grid) {
   ### put into format suitable for my code
   parameters_list = list()
   for (iter in 1:nrow(grid)){
-    if (!WP) { ### expected points models
-      if (xgb_is_BoundedRegression) {
-        param <- list(booster = "gbtree",  
-                      objective = "reg:logistic",
-                      eval_metric = c("mae"))
-      } else if (xgb_is_Regression) {
-        param <- list(booster = "gbtree",  
-                      objective = "reg:squarederror",
-                      eval_metric = c("mae"))
-      } else {
-        param <- list(booster = "gbtree",  
-                      objective = "multi:softprob",
-                      eval_metric = c("mlogloss"),
-                      num_class = 7)
-      }
-    } else { ### win probability models
+    if (xgb_is_BoundedRegression) {
       param <- list(booster = "gbtree",  
-                    objective = "binary:logistic",
-                    eval_metric = c("logloss"))
+                    objective = "reg:logistic",
+                    eval_metric = c("mae"))
+    } else if (xgb_is_Regression) {
+      param <- list(booster = "gbtree",  
+                    objective = "reg:squarederror",
+                    eval_metric = c("mae"))
+    } else {
+      param <- list(booster = "gbtree",  
+                    objective = "multi:softprob",
+                    eval_metric = c("mlogloss"),
+                    num_class = 7)
     }
     param <- c(param,
                list(
@@ -267,7 +261,7 @@ grid_to_ParamList <- function(grid) {
                  max_depth = grid$max_depth[iter],
                  min_child_weight = grid$min_child_weight[iter]
                ))
-    if (xgb_is_BoundedRegression | xgb_is_Regression | WP) {
+    if (xgb_is_BoundedRegression | xgb_is_Regression) {
       param$monotone_constraints = xgb_monotonicities
     }
     if (CATALYTIC) {
@@ -302,14 +296,8 @@ plot_xgb_tune_results <- function(losses, grid_) {
 
 evaluate_param_combo <- function(params) {
   
-  if (!WP) { ### expected points model tuning
-    VAL_SET_FORTUNING = TRAIN_SET %>% filter(val_play) 
-    TRAIN_SET_FORTUNING = TRAIN_SET %>% filter(!val_play) 
-  } else { ### win probability model tuning
-    #FIXME
-    # VAL_SET_FORTUNING = TRAIN_SET %>% filter(val_play) 
-    # TRAIN_SET_FORTUNING = TRAIN_SET %>% filter(!val_play) 
-  }
+  VAL_SET_FORTUNING = TRAIN_SET %>% filter(val_play) 
+  TRAIN_SET_FORTUNING = TRAIN_SET %>% filter(!val_play) 
   
   ### catalytic training data is made in here too!
   xgb <- train_xgb(xgb_features, TRAIN_SET_FORTUNING, params,
@@ -317,7 +305,7 @@ evaluate_param_combo <- function(params) {
                    watchSet=VAL_SET_FORTUNING,
                    w=FALSE, ## dummy, the value of catalytic will determine whether w is T or F
                    catalytic=CATALYTIC, 
-                   Regression=xgb_is_Regression, BoundedRegression=xgb_is_BoundedRegression, wp=WP,
+                   Regression=xgb_is_Regression, BoundedRegression=xgb_is_BoundedRegression, wp=FALSE,
                    catalytic_model_name=catalytic_model_name, param_tuning=TRUE, print_every_n=print_every_n,
                    weight_by_epoch=xgb_is_weightedByEpoch, weight_by_game=xgb_is_weightedByGame
   )
@@ -328,7 +316,7 @@ evaluate_param_combo <- function(params) {
   output$test_loss <- xgb$best_score
   
   ### tune the xgboost fit using MAE, not logloss
-  if (!WP & (xgb_is_BoundedRegression | !xgb_is_Regression)) { 
+  if (xgb_is_BoundedRegression | !xgb_is_Regression) { 
     output$test_loss <- MAE(
       VAL_SET_FORTUNING$pts_next_score, 
       predict_ep_xgb(xgb, VAL_SET_FORTUNING, xgb_features, model_name, 
@@ -419,8 +407,7 @@ print(best_params)
 ###
 tuning_results = c(list(
     model_name = model_name,
-    CATALYTIC = CATALYTIC,
-    WP = WP
+    CATALYTIC = CATALYTIC
   ),best_params
 )
 list.save(tuning_results, paste0("param_tuning_results/", paste0(model_name, if (CATALYTIC) "_catalytic" else ""  ), ".yaml"))
