@@ -21,7 +21,7 @@ print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 if (!CATALYTIC) {
   print_every_n = 50 
   nrounds = 15000
-  nrow_grid_full = 250 #100
+  nrow_grid_full = 100 #250
 } else { ### Catalytic
   print_every_n = 25 
   nrounds = 15000 
@@ -315,13 +315,19 @@ evaluate_param_combo <- function(params) {
   output$nrounds <- xgb$best_iteration
   output$test_loss <- xgb$best_score
   
-  ### tune the xgboost fit using MAE, not logloss
+  ### tune the xgboost fit using w_RMSE, not logloss
   if (xgb_is_BoundedRegression | !xgb_is_Regression) { 
-    output$test_loss <- MAE(
+    output$test_loss <- RMSE(
       VAL_SET_FORTUNING$pts_next_score, 
       predict_ep_xgb(xgb, VAL_SET_FORTUNING, xgb_features, model_name, 
-                     Regression=xgb_is_Regression, BoundedRegression=xgb_is_BoundedRegression)$pred
+                     Regression=xgb_is_Regression, BoundedRegression=xgb_is_BoundedRegression)$pred,
+      VAL_SET_FORTUNING$w
     )
+    # output$test_loss <- MAE(
+    #   VAL_SET_FORTUNING$pts_next_score, 
+    #   predict_ep_xgb(xgb, VAL_SET_FORTUNING, xgb_features, model_name, 
+    #                  Regression=xgb_is_Regression, BoundedRegression=xgb_is_BoundedRegression)$pred
+    # )
   } 
   
   print(paste("Loss for this param combo is", output$test_loss))
