@@ -34,9 +34,9 @@ generate_mlr_outcomes <- function(probs) {
   generated_outcomes
 }
 
-##################################################################################################
-### Multinomial Logistic Regression Models fit on All Downs that don't adjust for team quality ###
-##################################################################################################
+###############################################################
+### Multinomial Logistic Regression Models fit on All Downs ###
+###############################################################
 
 fit_mlr_yurko_paper <- function(dataset, weight_me=FALSE) {
   if (!weight_me) { dataset$w = 1 }
@@ -52,115 +52,14 @@ fit_mlr_yurko_paper <- function(dataset, weight_me=FALSE) {
   clean_lm(fit)
 }
 
-fit_mlr_yurko_0a <- function(dataset, weight_me=FALSE) {
-  if (!weight_me) { dataset$w = 1 }
-  fit = multinom(label ~ 
-                   bs(yardline_100, df=3) +
-                   factor(down) +
-                   log(ydstogo) +
-                   half_seconds_remaining +
-                   gtg + 
-                   utm, 
-                 weights = w,
-                 data = dataset)
-  clean_lm(fit)
-}
-
-fit_mlr_yurko_0b <- function(dataset, weight_me=FALSE) {
-  if (!weight_me) { dataset$w = 1 }
-  fit = multinom(label ~ 
-                   yardline_100 +
-                   factor(down) + down:yardline_100 +
-                   log(ydstogo) +
-                   half_seconds_remaining +
-                   gtg + 
-                   utm, 
-                 weights = w,
-                 data = dataset)
-  clean_lm(fit)
-}
-
-fit_mlr_yurko_0c <- function(dataset, weight_me=FALSE) {
-  if (!weight_me) { dataset$w = 1 }
-  fit = multinom(label ~ 
-                   yardline_100 +
-                   factor(down) + 
-                   bs(log(ydstogo), df=3) +
-                   half_seconds_remaining +
-                   gtg + 
-                   utm, 
-                 weights = w,
-                 data = dataset)
-  clean_lm(fit)
-}
-
-fit_mlr_yurko_0d <- function(dataset, weight_me=FALSE) {
-  if (!weight_me) { dataset$w = 1 }
-  fit = multinom(label ~ 
-                   yardline_100 +
-                   factor(down) + 
-                   log(ydstogo) +
-                   bs(half_seconds_remaining, knots=c(30)) +
-                   gtg + 
-                   utm, 
-                 weights = w,
-                 data = dataset)
-  clean_lm(fit)
-}
-
-fit_mlr_yurko_0e <- function(dataset, weight_me=FALSE) {
-  if (!weight_me) { dataset$w = 1 }
-  fit = multinom(label ~ 
-                   yardline_100 +
-                   factor(down) + 
-                   log(ydstogo) +
-                   bs(half_seconds_remaining, knots=c(120)) +
-                   gtg + 
-                   utm, 
-                 weights = w,
-                 data = dataset)
-  clean_lm(fit)
-}
-
-fit_mlr_yurko_0f <- function(dataset, weight_me=FALSE) {
-  if (!weight_me) { dataset$w = 1 }
-  fit = multinom(label ~ 
-                   yardline_100 +
-                   factor(down) + 
-                   log(ydstogo) +
-                   half_seconds_remaining +
-                   gtg + 
-                   utm:as.numeric(posteam_timeouts_remaining==0),
-                 weights = w,
-                 data = dataset)
-  clean_lm(fit)
-}
-
-fit_mlr_yurko_0g <- function(dataset, weight_me=FALSE) {
-  if (!weight_me) { dataset$w = 1 }
-  fit = multinom(label ~ 
-                   yardline_100 +
-                   factor(down) + 
-                   log(ydstogo) +
-                   half_seconds_remaining +
-                   utm,
-                 weights = w,
-                 data = dataset)
-  clean_lm(fit)
-}
-
 fit_mlr_yurko_1 <- function(dataset, weight_me=FALSE) {
   if (!weight_me) { dataset$w = 1 }
   fit = multinom(label ~ 
                    yardline_100 +
-                   # gtg + ### even though better loss, the plots show a weird fit (overfitting...)
                    factor(down) + down:yardline_100 +
-                   # bs(log(ydstogo), df=3) + ### even though better loss, the plots show a weird fit (overfitting...) when use `gtg`
                    log(ydstogo) +
-                   bs(half_seconds_remaining, knots=c(30)) +
-                   utm:as.numeric(posteam_timeouts_remaining==0) +
-                   factor(era_A),
-                 weights = w,
+                   half_seconds_remaining
+                 ,weights = w,
                  data = dataset)
   clean_lm(fit)
 }
@@ -168,25 +67,108 @@ fit_mlr_yurko_1 <- function(dataset, weight_me=FALSE) {
 fit_mlr_yurko_2 <- function(dataset, weight_me=FALSE) {
   if (!weight_me) { dataset$w = 1 }
   fit = multinom(label ~ 
-                   yardline_100 +
-                   factor(down) + down:yardline_100 +
-                   bs(log(ydstogo), df=3) + 
-                   bs(half_seconds_remaining, knots=c(30)) +
-                   utm:as.numeric(posteam_timeouts_remaining==0) +
-                   factor(era_A),
-                 weights = w,
+                   as.numeric(down_combined34!=34):factor(down_combined34):(
+                     yardline_100 +
+                     log(ydstogo) +
+                     half_seconds_remaining
+                   ) + 
+                   as.numeric(down_combined34==34):(
+                     yardline_100 +
+                     log(ydstogo) +
+                     half_seconds_remaining
+                   ) +
+                   factor(down)
+                 ,weights = w,
                  data = dataset)
   clean_lm(fit)
 }
 
-fit_mlr_yurko_1d <- function(dataset, weight_me=FALSE) {
+fit_mlr_yurko_3 <- function(dataset, weight_me=FALSE) {
   if (!weight_me) { dataset$w = 1 }
   fit = multinom(label ~ 
-                   yardline_100 +
-                   factor(down) + down:yardline_100 +
-                   log(ydstogo) +
-                   bs(half_seconds_remaining, knots=c(30)) +
-                   utm:as.numeric(posteam_timeouts_remaining==0) +
+                   as.numeric(down_combined34!=34):factor(down_combined34):(
+                     yardline_100 +
+                     I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) +
+                     half_seconds_remaining
+                   ) + 
+                   as.numeric(down_combined34==34):(
+                     yardline_100 +
+                     I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) +
+                     half_seconds_remaining
+                   ) +
+                   factor(down)
+                 ,weights = w,
+                 data = dataset)
+  clean_lm(fit)
+}
+
+fit_mlr_yurko_4 <- function(dataset, weight_me=FALSE) {
+  if (!weight_me) { dataset$w = 1 }
+  fit = multinom(label ~ 
+                   as.numeric(down_combined34!=34):factor(down_combined34):(
+                       bs(half_seconds_remaining, df=3)*bs(yardline_100, df=4) +
+                       # yardline_100 + half_seconds_remaining +
+                       I(ydstogo==1) + I(ydstogo!=1):log(ydstogo)
+                   ) + 
+                   as.numeric(down_combined34==34):(
+                       bs(half_seconds_remaining, df=3)*bs(yardline_100, df=4) +
+                       # yardline_100 + half_seconds_remaining
+                       I(ydstogo==1) + I(ydstogo!=1):log(ydstogo)
+                   ) +
+                   factor(down)
+                 ,weights = w,
+                 data = dataset)
+  clean_lm(fit)
+}
+
+fit_mlr_yurko_sx1 <- function(dataset, weight_me=FALSE) {
+  if (!weight_me) { dataset$w = 1 }
+  fit = multinom(label ~ 
+                   as.numeric(down_combined34!=34):factor(down_combined34):(
+                     bs(half_seconds_remaining, df=3)*bs(yardline_100, df=4) +
+                     I(ydstogo==1) + I(ydstogo!=1):log(ydstogo)
+                   ) + 
+                   as.numeric(down_combined34==34):(
+                     bs(half_seconds_remaining, df=3)*bs(yardline_100, df=4) +
+                     I(ydstogo==1) + I(ydstogo!=1):log(ydstogo)
+                   ) +
+                   factor(down) +
+                   posteam_spread + posteam_spread:yardline_100
+                 ,weights = w,
+                 data = dataset)
+  clean_lm(fit)
+}
+
+fit_mlr_yurko_sx2 <- function(dataset, weight_me=FALSE) {
+  if (!weight_me) { dataset$w = 1 }
+  fit = multinom(label ~ 
+                   as.numeric(down_combined34!=34):factor(down_combined34):(
+                     bs(half_seconds_remaining, df=3)*bs(yardline_100, df=4) +
+                     I(ydstogo==1) + I(ydstogo!=1):log(ydstogo)
+                   ) + 
+                   as.numeric(down_combined34==34):(
+                      bs(half_seconds_remaining, df=3)*bs(yardline_100, df=4) +
+                      I(ydstogo==1) + I(ydstogo!=1):log(ydstogo)
+                   ) +
+                   factor(down) + factor(era_A) +
+                   posteam_spread + posteam_spread:yardline_100
+                 ,weights = w,
+                 data = dataset)
+  clean_lm(fit)
+}
+
+fit_mlr_yurko_sx3 <- function(dataset, weight_me=FALSE) {
+  if (!weight_me) { dataset$w = 1 }
+  fit = multinom(label ~ 
+                   as.numeric(down_combined34!=34):factor(down_combined34):(
+                       bs(half_seconds_remaining, df=3)*bs(yardline_100, df=4) +
+                       I(ydstogo==1) + I(ydstogo!=1):log(ydstogo)
+                   ) + 
+                   as.numeric(down_combined34==34):(
+                       bs(half_seconds_remaining, df=3)*bs(yardline_100, df=4) +
+                       I(ydstogo==1) + I(ydstogo!=1):log(ydstogo)
+                   ) +
+                   factor(down) + factor(era_A) +
                    I((score_differential <= -11)) + ### need a TD
                    I((score_differential >= 11)) + ### comfortable, field goal is fine
                    ### note:: fourth_quarter == game_seconds_remaining <= 900
@@ -194,11 +176,126 @@ fit_mlr_yurko_1d <- function(dataset, weight_me=FALSE) {
                    I((-3 <= score_differential & score_differential <= 0)*(game_seconds_remaining <= 900)) + ### ok with a field goal
                    I((1 <= score_differential & score_differential <= 3)*(game_seconds_remaining <= 900)) + ### prefer a TD but ok with a field goal
                    I((4 <= score_differential & score_differential <= 10)*(game_seconds_remaining <= 900)) + ### ok with a field goal but game is still close
-                   factor(era_A),
-                 weights = w,
+                   utm:as.numeric(posteam_timeouts_remaining==0) +
+                   posteam_spread + posteam_spread:yardline_100
+                 ,weights = w,
                  data = dataset)
   clean_lm(fit)
 }
+
+fit_mlr_yurko_sx4 <- function(dataset, weight_me=FALSE) {
+  if (!weight_me) { dataset$w = 1 }
+  fit = multinom(label ~ 
+                   as.numeric(down_combined34!=34):factor(down_combined34):(
+                       bs(half_seconds_remaining, df=3)*bs(yardline_100, df=4) +
+                       I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) +
+                       I((score_differential <= -11)) + ### need a TD
+                       I((score_differential >= 11)) + ### comfortable, field goal is fine
+                       ### note:: fourth_quarter == game_seconds_remaining <= 900
+                       I((score_differential <= -4)*(game_seconds_remaining <= 900)) + ### need a TD   
+                       I((-3 <= score_differential & score_differential <= 0)*(game_seconds_remaining <= 900)) + ### ok with a field goal
+                       I((1 <= score_differential & score_differential <= 3)*(game_seconds_remaining <= 900)) + ### prefer a TD but ok with a field goal
+                       I((4 <= score_differential & score_differential <= 10)*(game_seconds_remaining <= 900)) ### ok with a field goal but game is still close
+                   ) + 
+                   as.numeric(down_combined34==34):(
+                       bs(half_seconds_remaining, df=3)*bs(yardline_100, df=4) +
+                       I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) +
+                       I((score_differential <= -11)) + ### need a TD
+                       I((score_differential >= 11)) + ### comfortable, field goal is fine
+                       ### note:: fourth_quarter == game_seconds_remaining <= 900
+                       I((score_differential <= -4)*(game_seconds_remaining <= 900)) + ### need a TD   
+                       I((-3 <= score_differential & score_differential <= 0)*(game_seconds_remaining <= 900)) + ### ok with a field goal
+                       I((1 <= score_differential & score_differential <= 3)*(game_seconds_remaining <= 900)) + ### prefer a TD but ok with a field goal
+                       I((4 <= score_differential & score_differential <= 10)*(game_seconds_remaining <= 900)) ### ok with a field goal but game is still close
+                   ) +
+                   factor(down) + factor(era_A) +
+                   utm:as.numeric(posteam_timeouts_remaining==0) +
+                   posteam_spread + posteam_spread:yardline_100
+                 ,weights = w,
+                 data = dataset)
+  clean_lm(fit)
+}
+
+fit_mlr_yurko_oq4xdq4x_1 <- function(dataset, weight_me=FALSE) {
+  if (!weight_me) { dataset$w = 1 }
+  fit = multinom(label ~ 
+                   as.numeric(down_combined34!=34):factor(down_combined34):(
+                       bs(half_seconds_remaining, df=3)*bs(yardline_100, df=4) +
+                       I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) +
+                       I((score_differential <= -11)) + ### need a TD
+                       I((score_differential >= 11)) + ### comfortable, field goal is fine
+                       ### note:: fourth_quarter == game_seconds_remaining <= 900
+                       I((score_differential <= -4)*(game_seconds_remaining <= 900)) + ### need a TD   
+                       I((-3 <= score_differential & score_differential <= 0)*(game_seconds_remaining <= 900)) + ### ok with a field goal
+                       I((1 <= score_differential & score_differential <= 3)*(game_seconds_remaining <= 900)) + ### prefer a TD but ok with a field goal
+                       I((4 <= score_differential & score_differential <= 10)*(game_seconds_remaining <= 900)) ### ok with a field goal but game is still close
+                   ) + 
+                   as.numeric(down_combined34==34):(
+                       bs(half_seconds_remaining, df=3)*bs(yardline_100, df=4) +
+                       I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) +
+                       I((score_differential <= -11)) + ### need a TD
+                       I((score_differential >= 11)) + ### comfortable, field goal is fine
+                       ### note:: fourth_quarter == game_seconds_remaining <= 900
+                       I((score_differential <= -4)*(game_seconds_remaining <= 900)) + ### need a TD   
+                       I((-3 <= score_differential & score_differential <= 0)*(game_seconds_remaining <= 900)) + ### ok with a field goal
+                       I((1 <= score_differential & score_differential <= 3)*(game_seconds_remaining <= 900)) + ### prefer a TD but ok with a field goal
+                       I((4 <= score_differential & score_differential <= 10)*(game_seconds_remaining <= 900)) ### ok with a field goal but game is still close
+                   ) +
+                   factor(down) + factor(era_A) +
+                   utm:as.numeric(posteam_timeouts_remaining==0) +
+                   qbq_ot_0_sum + 
+                   oq_rot_0_total_sum +
+                   dq_dt_0_againstPass_sum +
+                   dq_dt_0_againstRun_sum +
+                   qbq_dt_0_sum + 
+                   oq_rdt_0_sum +
+                   dq_ot_0_againstPass_sum +
+                   dq_ot_0_againstRun_sum
+                 ,weights = w,
+                 data = dataset)
+  clean_lm(fit)
+}
+
+fit_mlr_yurko_oq4xdq4x_2 <- function(dataset, weight_me=FALSE) {
+  if (!weight_me) { dataset$w = 1 }
+  fit = multinom(label ~ 
+                   as.numeric(down_combined34!=34):factor(down_combined34):(
+                     bs(half_seconds_remaining, df=3)*bs(yardline_100, df=4) +
+                       I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) +
+                       I((score_differential <= -11)) + ### need a TD
+                       I((score_differential >= 11)) + ### comfortable, field goal is fine
+                       ### note:: fourth_quarter == game_seconds_remaining <= 900
+                       I((score_differential <= -4)*(game_seconds_remaining <= 900)) + ### need a TD   
+                       I((-3 <= score_differential & score_differential <= 0)*(game_seconds_remaining <= 900)) + ### ok with a field goal
+                       I((1 <= score_differential & score_differential <= 3)*(game_seconds_remaining <= 900)) + ### prefer a TD but ok with a field goal
+                       I((4 <= score_differential & score_differential <= 10)*(game_seconds_remaining <= 900)) ### ok with a field goal but game is still close
+                   ) + 
+                   as.numeric(down_combined34==34):(
+                     bs(half_seconds_remaining, df=3)*bs(yardline_100, df=4) +
+                       I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) +
+                       I((score_differential <= -11)) + ### need a TD
+                       I((score_differential >= 11)) + ### comfortable, field goal is fine
+                       ### note:: fourth_quarter == game_seconds_remaining <= 900
+                       I((score_differential <= -4)*(game_seconds_remaining <= 900)) + ### need a TD   
+                       I((-3 <= score_differential & score_differential <= 0)*(game_seconds_remaining <= 900)) + ### ok with a field goal
+                       I((1 <= score_differential & score_differential <= 3)*(game_seconds_remaining <= 900)) + ### prefer a TD but ok with a field goal
+                       I((4 <= score_differential & score_differential <= 10)*(game_seconds_remaining <= 900)) ### ok with a field goal but game is still close
+                   ) +
+                   factor(down) + factor(era_A) +
+                   utm:as.numeric(posteam_timeouts_remaining==0) +
+                   qbq_ot_0_sum + qbq_ot_0_sum:yardline_100 +
+                   oq_rot_0_total_sum +  oq_rot_0_total_sum:yardline_100 +
+                   dq_dt_0_againstPass_sum +  dq_dt_0_againstPass_sum:yardline_100 +
+                   dq_dt_0_againstRun_sum + dq_dt_0_againstRun_sum:yardline_100 +
+                   qbq_dt_0_sum +  qbq_dt_0_sum:yardline_100 +
+                   oq_rdt_0_sum + oq_rdt_0_sum:yardline_100 +
+                   dq_ot_0_againstPass_sum + dq_ot_0_againstPass_sum:yardline_100 +
+                   dq_ot_0_againstRun_sum + dq_ot_0_againstRun_sum:yardline_100
+                 ,weights = w,
+                 data = dataset)
+  clean_lm(fit)
+}
+
 
 ################################################################################
 #### Adjust for Team Quality:

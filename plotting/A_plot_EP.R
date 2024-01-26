@@ -11,13 +11,6 @@ setwd(filewd)
 ### load data and models ###
 ############################
 
-# MODEL_TYPE = "MLR"
-# source("../model_comparison/models_MLR.R")
-# model_name = "mlr_yurko_s1d1_w"
-# weighted_model = endsWith(model_name, "_w")
-# dataset_to_fit = data_full
-# model_fit = get(paste0("fit_",str_remove(model_name, "_w")))(dataset_to_fit, weight_me = weighted_model)
-
 # MODEL_TYPE = "XGB"
 # filewd = getwd()
 # setwd("../model_comparison")
@@ -32,10 +25,18 @@ setwd(filewd)
 # xgb_is_regression = str_detect(model_name, "xgb_R_")
 # xgb_is_BoundedRegression = str_detect(model_name, "xgb_BR_")
 
+# MODEL_TYPE = "MLR"
+# source("../model_comparison/models_MLR.R")
+# model_name = "mlr_yurko_sx4_w"
+# # model_name = "mlr_yurko_oq4xdq4x_1_w"
+# weighted_model = endsWith(model_name, "_w")
+# dataset_to_fit = data_full
+# model_fit = get(paste0("fit_",str_remove(model_name, "_w")))(dataset_to_fit, weight_me = weighted_model)
+
 MODEL_TYPE = "OLS"
 source("../model_comparison/models_OLS.R")
-model_name = "lm_sd9_w"
-# model_name = "lm_d5_w"
+# model_name = "lm_sd9_w"
+model_name = "lm_d5_w"
 weighted_model = endsWith(model_name, "_w")
 dataset_to_fit = data_full
 model_fit = get(paste0("fit_",str_remove(model_name, "_w")))(dataset_to_fit, weight_me = weighted_model)
@@ -45,7 +46,7 @@ no_dq = !str_detect(model_name, "dq")
 is_4x = str_detect(model_name, "4x") | (str_detect(model_name, "xgb") & str_detect(model_name, "2x"))
 spread_tq = str_detect(model_name, "_s")
 
-plot_varyingTimeByDown(model_fit, model_name)
+plot_varyingTimeByDown(model_fit, model_name) ###
 
 ############################
 ### visualize the models ###
