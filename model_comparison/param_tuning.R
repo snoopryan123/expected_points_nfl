@@ -39,8 +39,8 @@ if (!CATALYTIC) {
   model_names_list <- list(
     xgb_C_nflFastR_1_model_name,
     xgb_C_s_1_model_name,
-    xgb_C_s_1_wbe_model_name,
     xgb_C_oq2xdq2x_1_model_name,
+    xgb_C_s_1_wbe_model_name,
     xgb_C_oq2xdq2x_1_wbe_model_name
   )
 } else { ### Catalytic
@@ -323,7 +323,7 @@ evaluate_param_combo <- function(params) {
       VAL_SET_FORTUNING$pts_next_score, 
       predict_ep_xgb(xgb, VAL_SET_FORTUNING, xgb_features, model_name, 
                      Regression=xgb_is_Regression, BoundedRegression=xgb_is_BoundedRegression)$pred,
-      VAL_SET_FORTUNING$w
+      if (xgb_is_weightedByEpoch) VAL_SET_FORTUNING$w else rep(1, nrow(VAL_SET_FORTUNING))
     )
     # output$test_loss <- MAE(
     #   VAL_SET_FORTUNING$pts_next_score, 
