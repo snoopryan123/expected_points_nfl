@@ -10,14 +10,11 @@ setwd(filewd)
 ########################
 source("models_XGB.R")
 
-#FIXME
 model_names_list <- list(
-  xgb_C_s_1_wbe_model_name,
   xgb_C_s_1_model_name,
-  xgb_C_nflFastR_1_model_name
+  xgb_C_s_1_wbe_model_name,
+  xgb_C_oq2xdq2x_1_wbe_model_name
 )
-
-# j=1
 
 ###########################################
 ### train XGBoost model on full dataset ###
