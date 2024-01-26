@@ -61,7 +61,12 @@ sum(is.na(data_full_0A$dq_ot_0_againstRun_sum))
 sum(is.na(data_full_0A$dq_ot_0_againstPass_sum))
 
 ### remove era0 and era1
-data_full_AA = data_full_0A %>% filter(era0 != 1 & era1 != 1) 
+# data_full_AA = data_full_0A %>% filter(era0 != 1 & era1 != 1)
+# data_full_AA = data_full_0A %>% filter(season >= 2010)
+data_full_AA = data_full_0A %>% filter(era0 != 1 & era1 != 1 & era2 != 1)
+table(data_full_AA$season)
+table(data_full_AA$era)
+table(data_full_AA$era_A)
 ### remove non-pass and non-rush plays
 data_full_A = data_full_AA %>% drop_na(pass_or_rush)
 

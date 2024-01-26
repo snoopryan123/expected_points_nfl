@@ -187,7 +187,8 @@ load_params <- function(target_model_name) {
 
 ##############################
 xgb_C_nflFastR_model_name = "xgb_C_nflFastR"
-xgb_C_nflFastR_features = c(
+xgb_C_nflFastR_features = 
+c(
   "yardline_100", "down1", "down2", "down4", "down4", "ydstogo", "half_seconds_remaining", 
   "era0", "era1", "era2", "era3", "era4", 
   "season", "home", "posteam_timeouts_remaining", "defteam_timeouts_remaining", "retractable", "dome"
@@ -210,39 +211,41 @@ xgb_C_nflFastR_catalytic = FALSE
 
 ##############################
 xgb_C_nflFastR_1_model_name = "xgb_C_nflFastR_1"
-xgb_C_nflFastR_1_features = c(
-  "yardline_100", "down1", "down2", "down4", "down4", "ydstogo", "half_seconds_remaining",
-  "era0", "era1", "era2", "era3", "era4", 
-  "season", "home", "posteam_timeouts_remaining", "defteam_timeouts_remaining", "retractable", "dome"
-)
+xgb_C_nflFastR_1_features = 
+  c(
+    "yardline_100", "down1", "down2", "down4", "down4", "ydstogo", "half_seconds_remaining",
+    "era0", "era1", "era2", "era3", "era4", 
+    "season", "home", "posteam_timeouts_remaining", "defteam_timeouts_remaining", "retractable", "dome"
+  )
 xgb_C_nflFastR_1_params = load_params(xgb_C_nflFastR_1_model_name)[[1]]
 xgb_C_nflFastR_1_nrounds = load_params(xgb_C_nflFastR_1_model_name)[[2]]
 xgb_C_nflFastR_1_catalytic = load_params(xgb_C_nflFastR_1_model_name)[[3]]
 
 ##############################
 xgb_C_s_1_model_name = "xgb_C_s_1"
-xgb_C_s_1_features = c("yardline_100", "half_seconds_remaining", "era_A",
-                       "posteam_timeouts_remaining",  "half", "score_differential",
-                       "down1", "down2", "down3", "down4", "ydstogo",
-                       "posteam_spread"
-)
+xgb_C_s_1_features = 
+   c("yardline_100", "down1", "down2", "down3", "down4", "ydstogo", "half_seconds_remaining", 
+     "era_A", "posteam_timeouts_remaining",  "defteam_timeouts_remaining", 
+     "score_differential", "posteam_spread"
+   )
 xgb_C_s_1_params = load_params(xgb_C_s_1_model_name)[[1]]
 xgb_C_s_1_nrounds = load_params(xgb_C_s_1_model_name)[[2]]
 xgb_C_s_1_catalytic = load_params(xgb_C_s_1_model_name)[[3]]
 
-# ##############################
-# xgb_C_oq2xdq2x_1_model_name = "xgb_C_oq2xdq2x_1"
-# xgb_C_oq2xdq2x_1_features = c("yardline_100", "half_seconds_remaining", "era_A",
-#                               "posteam_timeouts_remaining",  "half", "score_differential",
-#                               "down1", "down2", "down3", "down4", "ydstogo",
-#                               "qbq_ot_0_sum", "oq_rot_0_total_sum", 
-#                               "qbq_dt_0_sum", "oq_rdt_0_sum", 
-#                               "dq_dt_0_againstPass_sum", "dq_ot_0_againstPass_sum",
-#                               "dq_dt_0_againstRun_sum", "dq_ot_0_againstRun_sum"
-# )
-# xgb_C_oq2xdq2x_1_params = load_params(xgb_C_oq2xdq2x_1_model_name)[[1]]
-# xgb_C_oq2xdq2x_1_nrounds = load_params(xgb_C_oq2xdq2x_1_model_name)[[2]]
-# xgb_C_oq2xdq2x_1_catalytic = load_params(xgb_C_oq2xdq2x_1_model_name)[[3]]
+##############################
+xgb_C_oq2xdq2x_1_model_name = "xgb_C_oq2xdq2x_1"
+xgb_C_oq2xdq2x_1_features =
+   c("yardline_100", "down1", "down2", "down3", "down4", "ydstogo", "half_seconds_remaining",
+     "era_A", "posteam_timeouts_remaining",  "defteam_timeouts_remaining",
+     "score_differential",
+     "qbq_ot_0_sum", "oq_rot_0_total_sum",
+     "qbq_dt_0_sum", "oq_rdt_0_sum",
+     "dq_dt_0_againstPass_sum", "dq_ot_0_againstPass_sum",
+     "dq_dt_0_againstRun_sum", "dq_ot_0_againstRun_sum"
+   )
+xgb_C_oq2xdq2x_1_params = load_params(xgb_C_oq2xdq2x_1_model_name)[[1]]
+xgb_C_oq2xdq2x_1_nrounds = load_params(xgb_C_oq2xdq2x_1_model_name)[[2]]
+xgb_C_oq2xdq2x_1_catalytic = load_params(xgb_C_oq2xdq2x_1_model_name)[[3]]
 
 #################################################
 ### XGBoost Models that are weighted by epoch ###
@@ -254,6 +257,13 @@ xgb_C_s_1_wbe_features = xgb_C_s_1_features
 xgb_C_s_1_wbe_params = load_params(xgb_C_s_1_wbe_model_name)[[1]]
 xgb_C_s_1_wbe_nrounds = load_params(xgb_C_s_1_wbe_model_name)[[2]]
 xgb_C_s_1_wbe_catalytic = load_params(xgb_C_s_1_wbe_model_name)[[3]]
+
+##############################
+xgb_C_oq2xdq2x_1_wbe_model_name = "xgb_C_oq2xdq2x_1_wbe"
+xgb_C_oq2xdq2x_1_wbe_features = xgb_C_oq2xdq2x_1_features
+xgb_C_oq2xdq2x_1_wbe_params = load_params(xgb_C_oq2xdq2x_1_wbe_model_name)[[1]]
+xgb_C_oq2xdq2x_1_wbe_nrounds = load_params(xgb_C_oq2xdq2x_1_wbe_model_name)[[2]]
+xgb_C_oq2xdq2x_1_wbe_catalytic = load_params(xgb_C_oq2xdq2x_1_wbe_model_name)[[3]]
 
 # ################################
 # ### Catalytic XGBoost Models ###

@@ -39,7 +39,9 @@ if (!CATALYTIC) {
   model_names_list <- list(
     xgb_C_nflFastR_1_model_name,
     xgb_C_s_1_model_name,
-    xgb_C_s_1_wbe_model_name
+    xgb_C_s_1_wbe_model_name,
+    xgb_C_oq2xdq2x_1_model_name,
+    xgb_C_oq2xdq2x_1_wbe_model_name
   )
 } else { ### Catalytic
   model_names_list <- list(

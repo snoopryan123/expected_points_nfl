@@ -17,6 +17,7 @@ test_set = data_full %>% filter(test_play)
 ### check
 print(paste("there are", dim(data_full)[1], "plays, with", 
             dim(train_set)[1], "training plays and", 
+            dim(train_set %>% filter(val_play))[1], "validation plays for XGB and", 
             dim(test_set)[1], "testing plays. It is",
             dim(train_set)[1] + dim(test_set)[1] == dim(data_full)[1], 
             "that they sum up properly."))
