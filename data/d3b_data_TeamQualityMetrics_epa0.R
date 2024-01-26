@@ -94,8 +94,8 @@ if (EPA0_FROM_TRAIN_DATA_ONLY) {
   #   geom_line(aes(x=(yardline_100), y=(ep0_pred), color=down), linewidth=1) +
   #   scale_color_brewer(palette="Set1") +
   #   xlab("yardline") + 
-  #   ylab(TeX("$EPA^{(0)}$")) +
-  #   # ylab("EPA0") +
+  #   ylab(TeX("$EP^{(0)}$")) +
+  #   # ylab("EP0") +
   #   scale_x_continuous()
   # # plot_ep0
   # # ggsave("plot_ep0.png", plot_ep0, width=8, height=6)
@@ -114,7 +114,7 @@ if (EPA0_FROM_TRAIN_DATA_ONLY) {
     geom_line(aes(x=(yardline_100), y=(ep0_pred), color=factor(down_3or4)), linewidth=1) +
     scale_color_brewer(palette="Set1", name="3rd or 4th\ndown") +
     xlab("yardline") + 
-    ylab(TeX("$EPA^{(0)}$")) +
+    ylab(TeX("$EP^{(0)}$")) +
     # ylab("EPA0") +
     scale_x_continuous()
   # plot_ep0
