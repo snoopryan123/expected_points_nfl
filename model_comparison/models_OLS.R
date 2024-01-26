@@ -31,92 +31,128 @@ fit_lm_d2 <- function(dataset, weight_me=FALSE) {
 fit_lm_d3 <- function(dataset, weight_me=FALSE) {
   if (!weight_me) { dataset$w = 1 }
   fit = lm(pts_next_score ~  
-             bs(yardline_100, df=5):factor(down) +
-             log(ydstogo):factor(down),
-           weights = w, data = dataset)
+             factor(down):(
+               bs(yardline_100, df=5): +
+               log(ydstogo)
+             )
+           ,weights = w, data = dataset)
   clean_lm(fit)
 }
 
 fit_lm_d4 <- function(dataset, weight_me=FALSE) {
   if (!weight_me) { dataset$w = 1 }
   fit = lm(pts_next_score ~  
-              bs(half_seconds_remaining, df=3, knots=c(30,120))*bs(yardline_100, df=5):factor(down) +
-              log(ydstogo):factor(down),
-           weights = w, data = dataset)
+             factor(down):(
+                 bs(half_seconds_remaining, df=3, knots=c(30,120))*bs(yardline_100, df=5) +
+                 log(ydstogo)
+             )
+           ,weights = w, data = dataset)
   clean_lm(fit)
 }
 
-################################################################################
-
-fit_lm_s1d <- function(dataset, weight_me=FALSE) {
-  if (!weight_me) { dataset$w = 1 }
-  fit = lm(pts_next_score ~ 
-             bs(half_seconds_remaining, df=3, knots=c(30,120))*bs(yardline_100, df=5):factor(down) +
-             log(ydstogo):factor(down) +
-             ##############################################
-             utm:as.numeric(posteam_timeouts_remaining==0) +
-             I((score_differential <= -11)) + ### need a TD
-             I((score_differential >= 11)) + ### comfortable, field goal is fine
-             ### note:: fourth_quarter == game_seconds_remaining <= 900
-             I((score_differential <= -4)*(game_seconds_remaining <= 900)) + ### need a TD   
-             I((-3 <= score_differential & score_differential <= 0)*(game_seconds_remaining <= 900)) + ### ok with a field goal
-             I((1 <= score_differential & score_differential <= 3)*(game_seconds_remaining <= 900)) + ### prefer a TD but ok with a field goal
-             I((4 <= score_differential & score_differential <= 10)*(game_seconds_remaining <= 900)) + ### ok with a field goal but game is still close
-             factor(era_A) +
-             posteam_spread,
-           weights = w, data = dataset)
-  clean_lm(fit)
-}
-
-fit_lm_s2d <- function(dataset, weight_me=FALSE) {
+fit_lm_d5 <- function(dataset, weight_me=FALSE) {
   if (!weight_me) { dataset$w = 1 }
   fit = lm(pts_next_score ~  
-             bs(half_seconds_remaining, df=3, knots=c(30,120))*bs(yardline_100, df=5):factor(down) +
-             log(ydstogo):factor(down) +
-             ##############################################
-             utm:as.numeric(posteam_timeouts_remaining==0) + 
-             I((score_differential <= -11)) + ### need a TD
-             I((score_differential <= -4)*(game_seconds_remaining <= 900)) + ### need a TD   ### note:: fourth_quarter == game_seconds_remaining <= 900
-             I((-3 <= score_differential & score_differential <= 0)*(game_seconds_remaining <= 900)) + ### ok with a field goal
-             I((1 <= score_differential & score_differential <= 3)*(game_seconds_remaining <= 900)) + ### prefer a TD but ok with a field goal
-             I((4 <= score_differential & score_differential <= 10)*(game_seconds_remaining <= 900)) + ### ok with a field goal but game is still close
-             I((score_differential >= 11)) + ### comfortable, field goal is fine
-             factor(era_A) +
-             posteam_spread + posteam_spread:yardline_100,
-           weights = w, data = dataset)
+             as.numeric(down_combined34!=34):factor(down_combined34):(
+                 bs(half_seconds_remaining, df=3, knots=c(30,120))*bs(yardline_100, df=5) +
+                 log(ydstogo)
+             ) + 
+             as.numeric(down_combined34==34):(
+               bs(half_seconds_remaining, df=3)*bs(yardline_100, df=4) +
+               log(ydstogo)
+             ) +
+             I(down==4)
+           ,weights = w, data = dataset)
   clean_lm(fit)
 }
 
-################################################################################
-
-# bs(half_seconds_remaining, df=3, knots=c(30,120))*bs(yardline_100, df=5) +
-
-# yardline_100 +
-# factor(down) + down:yardline_100 +
-# log(ydstogo) +
-# bs(half_seconds_remaining, knots=c(30)) +
-# bs(half_seconds_remaining, degree=1, df=1) +
-# bs(half_seconds_remaining, df=3, knots=c(30,120))*bs(yardline_100, df=5):factor(down) +
-
-fit_lm_s2d1 <- function(dataset, weight_me=FALSE) {
+fit_lm_sd6 <- function(dataset, weight_me=FALSE) {
   if (!weight_me) { dataset$w = 1 }
   fit = lm(pts_next_score ~  
-             factor(down) +
-             (
-                bs(half_seconds_remaining, df=3, knots=c(30,120))*bs(yardline_100, df=5) +
-                log(ydstogo) +
-                ##############################################
-                utm:as.numeric(posteam_timeouts_remaining==0) + 
-                I((score_differential <= -11)) + ### need a TD
-                I((score_differential <= -4)*(game_seconds_remaining <= 900)) + ### need a TD   ### note:: fourth_quarter == game_seconds_remaining <= 900
-                I((-3 <= score_differential & score_differential <= 0)*(game_seconds_remaining <= 900)) + ### ok with a field goal
-                I((1 <= score_differential & score_differential <= 3)*(game_seconds_remaining <= 900)) + ### prefer a TD but ok with a field goal
-                I((4 <= score_differential & score_differential <= 10)*(game_seconds_remaining <= 900)) + ### ok with a field goal but game is still close
-                I((score_differential >= 11)) + ### comfortable, field goal is fine
-                factor(era_A) +
-                posteam_spread + posteam_spread:yardline_100
-             ):factor(down),
-           weights = w, data = dataset)
+             as.numeric(down_combined34!=34):factor(down_combined34):(
+               bs(half_seconds_remaining, df=3, knots=c(30,120))*bs(yardline_100, df=5) +
+               I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) 
+             ) + 
+             as.numeric(down_combined34==34):(
+               bs(half_seconds_remaining, df=3)*bs(yardline_100, df=4) +
+               I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) 
+             ) +
+             I(down==4) +
+             posteam_spread + posteam_spread:yardline_100
+           ,weights = w, data = dataset)
+  clean_lm(fit)
+}
+
+fit_lm_sd7 <- function(dataset, weight_me=FALSE) {
+  if (!weight_me) { dataset$w = 1 }
+  fit = lm(pts_next_score ~  
+             as.numeric(down_combined34!=34):factor(down_combined34):(
+               bs(half_seconds_remaining, df=3, knots=c(30,120))*bs(yardline_100, df=5) +
+               factor(era_A):(I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) )
+             ) + 
+             as.numeric(down_combined34==34):(
+               bs(half_seconds_remaining, df=3)*bs(yardline_100, df=4) +
+               factor(era_A):(I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) )
+             ) +
+             I(down==4) + factor(era_A) +
+             posteam_spread + posteam_spread:yardline_100
+           ,weights = w, data = dataset)
+  clean_lm(fit)
+}
+
+fit_lm_sd8 <- function(dataset, weight_me=FALSE) {
+  if (!weight_me) { dataset$w = 1 }
+  fit = lm(pts_next_score ~  
+             as.numeric(down_combined34!=34):factor(down_combined34):(
+               utm:as.numeric(posteam_timeouts_remaining==0) +
+               utm:as.numeric(posteam_timeouts_remaining==1) +
+               bs(half_seconds_remaining, df=3, knots=c(30,120))*bs(yardline_100, df=5) +
+               factor(era_A):(I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) )
+             ) + 
+             as.numeric(down_combined34==34):(
+               utm:as.numeric(posteam_timeouts_remaining==0) +
+               utm:as.numeric(posteam_timeouts_remaining==1) +
+               bs(half_seconds_remaining, df=3)*bs(yardline_100, df=4) +
+               factor(era_A):(I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) )
+             ) +
+             I(down==4) + factor(era_A) +
+             posteam_spread + posteam_spread:yardline_100
+           ,weights = w, data = dataset)
+  clean_lm(fit)
+}
+
+fit_lm_sd9 <- function(dataset, weight_me=FALSE) {
+  if (!weight_me) { dataset$w = 1 }
+  fit = lm(pts_next_score ~  
+             as.numeric(down_combined34!=34):factor(down_combined34):(
+                 I((score_differential <= -11)) + ### need a TD
+                 I((score_differential >= 11)) + ### comfortable, field goal is fine
+                 ### note:: fourth_quarter == game_seconds_remaining <= 900
+                 I((score_differential <= -4)*(game_seconds_remaining <= 900)) + ### need a TD   
+                 I((-3 <= score_differential & score_differential <= 0)*(game_seconds_remaining <= 900)) + ### ok with a field goal
+                 I((1 <= score_differential & score_differential <= 3)*(game_seconds_remaining <= 900)) + ### prefer a TD but ok with a field goal
+                 I((4 <= score_differential & score_differential <= 10)*(game_seconds_remaining <= 900)) + ### ok with a field goal but game is still close
+               utm:as.numeric(posteam_timeouts_remaining==0) +
+                 utm:as.numeric(posteam_timeouts_remaining==1) +
+                 bs(half_seconds_remaining, df=3, knots=c(30,120))*bs(yardline_100, df=5) +
+                 factor(era_A):(I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) )
+             ) + 
+             as.numeric(down_combined34==34):(
+                 I((score_differential <= -11)) + ### need a TD
+                 I((score_differential >= 11)) + ### comfortable, field goal is fine
+                 ### note:: fourth_quarter == game_seconds_remaining <= 900
+                 I((score_differential <= -4)*(game_seconds_remaining <= 900)) + ### need a TD   
+                 I((-3 <= score_differential & score_differential <= 0)*(game_seconds_remaining <= 900)) + ### ok with a field goal
+                 I((1 <= score_differential & score_differential <= 3)*(game_seconds_remaining <= 900)) + ### prefer a TD but ok with a field goal
+                 I((4 <= score_differential & score_differential <= 10)*(game_seconds_remaining <= 900)) + ### ok with a field goal but game is still close
+                 utm:as.numeric(posteam_timeouts_remaining==0) +
+                 utm:as.numeric(posteam_timeouts_remaining==1) +
+                 bs(half_seconds_remaining, df=3)*bs(yardline_100, df=4) +
+                 factor(era_A):(I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) )
+             ) +
+             I(down==4) + factor(era_A) +
+             posteam_spread + posteam_spread:yardline_100
+           ,weights = w, data = dataset)
   clean_lm(fit)
 }
 
@@ -181,48 +217,6 @@ get_Romer_preds <- function(V_Romer, data_test) {
   V_Romer[data_test$yardline_100,]$v_smoothed
 }
 
-# ##################################################################
-# ### OLS Models fit from All Downs with Random Effect for Epoch ###
-# 
-# fit_lm_s2dE_R <- function(dataset, weight_me=FALSE) {
-#   if (!weight_me) { dataset$w = 1 }
-#   fit = lmer(pts_next_score ~
-#              bs(half_seconds_remaining, df=3, knots=c(30,120))*bs(yardline_100, df=5):factor(down) +
-#              log(ydstogo):factor(down) +
-#              utm:as.numeric(posteam_timeouts_remaining==0) +
-#              I((score_differential <= -11)) + ### need a TD
-#              I((score_differential <= -4)*(game_seconds_remaining <= 900)) + ### need a TD   ### note:: fourth_quarter == game_seconds_remaining <= 900
-#              I((-3 <= score_differential & score_differential <= 0)*(game_seconds_remaining <= 900)) + ### ok with a field goal
-#              I((1 <= score_differential & score_differential <= 3)*(game_seconds_remaining <= 900)) + ### prefer a TD but ok with a field goal
-#              I((4 <= score_differential & score_differential <= 10)*(game_seconds_remaining <= 900)) + ### ok with a field goal but game is still close
-#              I((score_differential >= 11)) + ### comfortable, field goal is fine
-#              factor(era_A) +
-#              posteam_spread + posteam_spread:yardline_100 +
-#              (1 | epoch),
-#            weights = w, data = dataset)
-#   # clean_lm(fit)
-#   fit
-# }
-# 
-# #######################################################
-# ### OLS Models that Sample 1 Play per Epoch and Bag ###
-# 
-# predict_lm_sampleBagged <- function(dataset, test_set, fit_model_func=fit_lm_s2dE, B=100, weight_me=FALSE, print_every=NA) {
-#   if (!weight_me) { dataset$w = 1 }
-#   preds = matrix(nrow=nrow(test_set), ncol=B)
-#   for (b in 1:B) {
-#     if (!is.na(print_every)) { if ((b-1) %% print_every == 0) print(paste0("model b=",b,"/",B)) }
-#     # browser()
-#     dataset_b = sample_one_play_per_epoch(dataset, seed=135*b+21234)
-#     fit_b = fit_model_func(dataset_b)
-#     pred_b = predict_lm(fit_b, test_set)
-#     preds[,b] = pred_b
-#   }
-#   print(preds)
-#   preds_bagged = rowMeans(preds)
-#   preds_bagged
-# }
-# 
 # #####################################################################
 # ### OLS Models that weight each play by 1/(# plays in that epoch) ###
 # 

@@ -18,31 +18,34 @@ setwd(filewd)
 # dataset_to_fit = data_full
 # model_fit = get(paste0("fit_",str_remove(model_name, "_w")))(dataset_to_fit, weight_me = weighted_model)
 
-# MODEL_TYPE = "OLS"
-# source("../model_comparison/models_OLS.R")
-# model_name = "lm_s2d1_w"
-# weighted_model = endsWith(model_name, "_w")
-# dataset_to_fit = data_full
-# model_fit = get(paste0("fit_",str_remove(model_name, "_w")))(dataset_to_fit, weight_me = weighted_model)
-
-MODEL_TYPE = "XGB"
-filewd = getwd()
-setwd("../model_comparison")
-source("models_XGB.R")
-setwd(filewd)
-### make sure to first train and save these XGB models in `train_full_models.R`
-model_name = "xgb_C_s_1"
-# model_name = "xgb_C_s_1_wbe"
+# MODEL_TYPE = "XGB"
+# filewd = getwd()
+# setwd("../model_comparison")
+# source("models_XGB.R")
+# setwd(filewd)
+# ### make sure to first train and save these XGB models in `train_full_models.R`
+# # model_name = "xgb_C_s_1"
+# # model_name = "xgb_C_s_1_wbe"
 # model_name = "xgb_C_oq2xdq2x_1_wbe"
-model_fit = xgb.load(paste0("../model_comparison/",model_name,".xgb"))
-xgb_features = get(paste0(model_name, "_features"))
-xgb_is_regression = str_detect(model_name, "xgb_R_")
-xgb_is_BoundedRegression = str_detect(model_name, "xgb_BR_")
+# model_fit = xgb.load(paste0("../model_comparison/",model_name,".xgb"))
+# xgb_features = get(paste0(model_name, "_features"))
+# xgb_is_regression = str_detect(model_name, "xgb_R_")
+# xgb_is_BoundedRegression = str_detect(model_name, "xgb_BR_")
+
+MODEL_TYPE = "OLS"
+source("../model_comparison/models_OLS.R")
+model_name = "lm_sd9_w"
+# model_name = "lm_d5_w"
+weighted_model = endsWith(model_name, "_w")
+dataset_to_fit = data_full
+model_fit = get(paste0("fit_",str_remove(model_name, "_w")))(dataset_to_fit, weight_me = weighted_model)
 
 print(model_fit)
 no_dq = !str_detect(model_name, "dq")
 is_4x = str_detect(model_name, "4x") | (str_detect(model_name, "xgb") & str_detect(model_name, "2x"))
 spread_tq = str_detect(model_name, "_s")
+
+plot_varyingTimeByDown(model_fit, model_name)
 
 ############################
 ### visualize the models ###
@@ -78,7 +81,7 @@ plot_varyingTime <- function(model_fit, model_name, half_=1) {
         dq_dt_0_againstPass_sum = 0, dq_ot_0_againstPass_sum = 0,
         dq_dt_0_againstRun_sum = 0, dq_ot_0_againstRun_sum = 0,
         posteam_spread = 0, posteam_spread_std = 0,
-        down=1, down1=1, down2=0, down3=0, down4=0, 
+        down=1, down1=1, down2=0, down3=0, down4=0, down_combined34 = ifelse(down==3|down==4,34,down),
         game_seconds_remaining = time_breaks[j] + ifelse(half_ == 1, 1800, 0), ####
         half_seconds_remaining = ifelse(game_seconds_remaining > 1800, game_seconds_remaining - 1800, game_seconds_remaining),  
         half_sec_rem_std = 1 - half_seconds_remaining/1800,
@@ -165,7 +168,7 @@ plot_varyingTimeByDown <- function(model_fit, model_name, half_=1) {
           dq_dt_0_againstRun_sum = 0, dq_ot_0_againstRun_sum = 0,
           posteam_spread = 0, posteam_spread_std = 0,
           down=dd, 
-          down1=as.numeric(dd==1), down2=as.numeric(dd==2), down3=as.numeric(dd==3), down4=as.numeric(dd==4), 
+          down1=as.numeric(dd==1), down2=as.numeric(dd==2), down3=as.numeric(dd==3), down4=as.numeric(dd==4), down_combined34 = ifelse(down==3|down==4,34,down),
           game_seconds_remaining = time_breaks[j] + ifelse(half_ == 1, 1800, 0), ####
           half_seconds_remaining = ifelse(game_seconds_remaining > 1800, game_seconds_remaining - 1800, game_seconds_remaining),  
           half_sec_rem_std = 1 - half_seconds_remaining/1800,
@@ -262,7 +265,7 @@ plot_varyingTQ <- function(model_fit, model_name, colname, N=7, keepFewSpreads=F
           # dq_dt_0_total_sum = ifelse(colname == "dq_dt_0_total_sum", tq_breaks[j], 0),
           # dq_ot_0_sum = ifelse(colname == "dq_ot_0_sum", tq_breaks[j], 0), 
           # posteam_spread = ifelse(colname == "posteam_spread", tq_breaks[j], 0),
-          down=1, down1=1, down2=0, down3=0, down4=0, 
+          down=1, down1=1, down2=0, down3=0, down4=0, down_combined34 = ifelse(down==3|down==4,34,down),
           game_seconds_remaining = 3600,
           half_seconds_remaining = 1800, half_sec_rem_std = 0, 
           half = ifelse(game_seconds_remaining > 1800, 1, 2),
@@ -301,7 +304,7 @@ plot_varyingTQ <- function(model_fit, model_name, colname, N=7, keepFewSpreads=F
           ydstogo=c(1:9, rep(10,90)), 
           posteam_spread = spread_breaks[j],
           posteam_spread_std = (posteam_spread - mean(data_full_0$posteam_spread))/sd(data_full_0$posteam_spread),
-          down=1, down1=1, down2=0, down3=0, down4=0, 
+          down=1, down1=1, down2=0, down3=0, down4=0, down_combined34 = ifelse(down==3|down==4,34,down),
           game_seconds_remaining = 3600,
           half_seconds_remaining = 1800, half_sec_rem_std = 0, 
           half = ifelse(game_seconds_remaining > 1800, 1, 2),
@@ -375,8 +378,16 @@ plot_varyingDown <- function(model_fit, model_name) {
         ydstogo=c(1:9, rep(10,90)), 
         posteam_spread = 0,
         posteam_spread_std = 0,
+        qbq_ot_0_sum = 0,
+        oq_rot_0_total_sum = 0,
+        qbq_dt_0_sum = 0,
+        oq_rdt_0_sum = 0,
+        dq_dt_0_againstPass_sum = 0,
+        dq_ot_0_againstPass_sum = 0,
+        dq_dt_0_againstRun_sum = 0,
+        dq_ot_0_againstRun_sum = 0,
         down=dd, 
-        down1=as.numeric(dd==1), down2=as.numeric(dd==2), down3=as.numeric(dd==3), down4=as.numeric(dd==4), 
+        down1=as.numeric(dd==1), down2=as.numeric(dd==2), down3=as.numeric(dd==3), down4=as.numeric(dd==4), down_combined34 = ifelse(down==3|down==4,34,down),
         # game_seconds_remaining = 3600, half_seconds_remaining = 1800,
         game_seconds_remaining = 2700, half_seconds_remaining = 900,
         # half_sec_rem_std = 0, 
@@ -461,7 +472,7 @@ plot_varyingScoreDiff <- function(model_fit, model_name) {
         dq_dt_0_againstPass_sum = 0, dq_ot_0_againstPass_sum = 0,
         dq_dt_0_againstRun_sum = 0, dq_ot_0_againstRun_sum = 0,
         posteam_spread = 0, posteam_spread_std = 0,
-        down=1, down1=1, down2=0, down3=0, down4=0, 
+        down=1, down1=1, down2=0, down3=0, down4=0, down_combined34 = ifelse(down==3|down==4,34,down),
         game_seconds_remaining = 300,
         half_seconds_remaining = ifelse(game_seconds_remaining > 1800, game_seconds_remaining - 1800, game_seconds_remaining),  
         half_sec_rem_std = 1 - half_seconds_remaining/1800,
@@ -530,6 +541,7 @@ plot_xgbC_evidenceOfOverfitting <- function(model_fit, model_name, colname, N=7,
       down2=as.numeric(down==2),
       down3=as.numeric(down==3),
       down4=as.numeric(down==4),
+      down_combined34 = ifelse(down==3|down==4,34,down),
     )
    
   if (MODEL_TYPE == "OLS") {

@@ -49,3 +49,5 @@ results_C =
   arrange(w_rmse)
 print(data.frame(results_C))
 
+write_csv(results_C, "test_results_predPerf_XGB.csv")
+

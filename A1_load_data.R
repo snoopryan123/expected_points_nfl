@@ -11,6 +11,8 @@ data_full_0 <- read_csv("data/data3.csv")
 ### the pointspread from nflFastR is flipped, so flip it back!
 data_full_0 <- data_full_0 %>% mutate(posteam_spread = -posteam_spread)
 
+data_full_0 <- data_full_0 %>% mutate(down_combined34 = ifelse(down==3 | down==4, 34, down))
+
 ### add num plays in epoch, and epoch weight w = 1/# plays in epoch
 data_full_0 <- 
   data_full_0 %>% 
