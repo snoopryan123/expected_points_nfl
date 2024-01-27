@@ -36,7 +36,7 @@ setwd(filewd)
 MODEL_TYPE = "OLS"
 source("../model_comparison/models_OLS.R")
 # model_name = "lm_sd9_w"
-model_name = "lm_d6_w"
+model_name = "lm_d5_w"
 weighted_model = endsWith(model_name, "_w")
 dataset_to_fit = data_full
 model_fit = get(paste0("fit_",str_remove(model_name, "_w")))(dataset_to_fit, weight_me = weighted_model)

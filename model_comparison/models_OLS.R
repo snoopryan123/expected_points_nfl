@@ -53,41 +53,37 @@ fit_lm_d4 <- function(dataset, weight_me=FALSE) {
 fit_lm_d5 <- function(dataset, weight_me=FALSE) {
   if (!weight_me) { dataset$w = 1 }
   fit = lm(pts_next_score ~  
-             as.numeric(down_combined34!=34):factor(down_combined34):(
-                 bs(half_seconds_remaining, df=3, knots=c(30,120))*bs(yardline_100, df=5) +
-                 log(ydstogo)
-             ) + 
-             as.numeric(down_combined34==34):(
-               bs(half_seconds_remaining, df=3)*bs(yardline_100, df=4) +
-               log(ydstogo)
-             ) +
-             I(down==4)
-           ,weights = w, data = dataset)
-  clean_lm(fit)
-}
-
-fit_lm_d6 <- function(dataset, weight_me=FALSE) {
-  if (!weight_me) { dataset$w = 1 }
-  fit = lm(pts_next_score ~  
              as.numeric(down!=3&down!=4):factor(down):(
                log(ydstogo) +
-               bs(half_seconds_remaining, df=3, knots=c(30,120))*bs(yardline_100, df=5) #+
-                 # log(ydstogo)
+               bs(half_seconds_remaining, df=3, knots=c(30,120))*bs(yardline_100, df=5) 
              ) + 
              as.numeric(down==3):(
                log(ydstogo) +
                bs(half_seconds_remaining, df=2, degree=2)*bs(yardline_100, df=4)
-               # bs(half_seconds_remaining, df=3, knots=c(120))*bs(yardline_100, df=3, knots=c(33,67))# +
-                 # log(ydstogo)
              ) +
-             # log(ydstogo) +
              as.numeric(down==4):(
                log(ydstogo) +
-               I(half_seconds_remaining >= 5*60):half_seconds_remaining:bs(yardline_100, df=4)
-               # bs(half_seconds_remaining, df=2, degree=1)*bs(yardline_100, df=4)
-               # half_seconds_remaining:yardline_100 +
-               # bs(, df=3)*bs(yardline_100, df=4) +
-               # bs(half_seconds_remaining, df=3)*bs(yardline_100, df=4) +
+               bs(half_seconds_remaining, df=2, degree=2)*bs(yardline_100, df=4)
+             ) 
+           ,weights = w, data = dataset)
+  clean_lm(fit)
+}
+
+fit_lm_d7 <- function(dataset, weight_me=FALSE) {
+  if (!weight_me) { dataset$w = 1 }
+  fit = lm(pts_next_score ~  
+             as.numeric(down!=3&down!=4):factor(down):(
+               log(ydstogo) +
+               bs(half_seconds_remaining, df=3, knots=c(30,120))*bs(yardline_100, df=5) 
+             ) + 
+             as.numeric(down==3):(
+               log(ydstogo) +
+               bs(half_seconds_remaining, df=2, degree=2)*bs(yardline_100, df=4)
+             ) +
+             as.numeric(down==4):(
+               log(ydstogo) +
+               as.numeric(half_seconds_remaining > 2*60):bs(yardline_100, df=5) +
+               as.numeric(half_seconds_remaining < 2*60):I(half==2):I(score_differential>=0):bs(yardline_100, df=5)
              ) 
            ,weights = w, data = dataset)
   clean_lm(fit)
@@ -96,15 +92,18 @@ fit_lm_d6 <- function(dataset, weight_me=FALSE) {
 fit_lm_sd6 <- function(dataset, weight_me=FALSE) {
   if (!weight_me) { dataset$w = 1 }
   fit = lm(pts_next_score ~  
-             as.numeric(down_combined34!=34):factor(down_combined34):(
-               bs(half_seconds_remaining, df=3, knots=c(30,120))*bs(yardline_100, df=5) +
-               I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) 
+             as.numeric(down!=3&down!=4):factor(down):(
+               I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) +
+               bs(half_seconds_remaining, df=3, knots=c(30,120))*bs(yardline_100, df=5) 
              ) + 
-             as.numeric(down_combined34==34):(
-               bs(half_seconds_remaining, df=3)*bs(yardline_100, df=4) +
-               I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) 
+             as.numeric(down==3):(
+               I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) +
+               bs(half_seconds_remaining, df=2, degree=2)*bs(yardline_100, df=4)
              ) +
-             I(down==4) +
+             as.numeric(down==4):(
+               I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) +
+               I(half_seconds_remaining >= 5*60):bs(yardline_100, df=5)
+             ) +
              posteam_spread + posteam_spread:yardline_100
            ,weights = w, data = dataset)
   clean_lm(fit)
@@ -113,6 +112,20 @@ fit_lm_sd6 <- function(dataset, weight_me=FALSE) {
 fit_lm_sd7 <- function(dataset, weight_me=FALSE) {
   if (!weight_me) { dataset$w = 1 }
   fit = lm(pts_next_score ~  
+             as.numeric(down!=3&down!=4):factor(down):(
+               I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) +
+                 bs(half_seconds_remaining, df=3, knots=c(30,120))*bs(yardline_100, df=5) 
+             ) + 
+             as.numeric(down==3):(
+               I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) +
+                 bs(half_seconds_remaining, df=2, degree=2)*bs(yardline_100, df=4)
+             ) +
+             as.numeric(down==4):(
+               I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) +
+                 I(half_seconds_remaining >= 5*60):bs(yardline_100, df=5)
+             ) +
+             posteam_spread + posteam_spread:yardline_100
+           
                as.numeric(down_combined34!=34):factor(down_combined34):(
                bs(half_seconds_remaining, df=3, knots=c(30,120))*bs(yardline_100, df=5) +
                factor(era_A):(I(ydstogo==1) + I(ydstogo!=1):log(ydstogo) )

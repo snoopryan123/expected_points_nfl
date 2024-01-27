@@ -68,11 +68,9 @@ data_full_AA = data_full_0A %>% filter(era0 != 1 & era1 != 1 & era2 != 1)
 table(data_full_AA$season)
 table(data_full_AA$era)
 table(data_full_AA$era_A)
-### remove non-pass and non-rush plays
-data_full_A = data_full_AA %>% drop_na(pass_or_rush)
 
 ### final dataset
-data_full = data_full_A
+data_full = data_full_AA
 
 ### dataset descriptors
 print(paste("there are",  length(unique(data_full$game_id)), "games in our dataset"))

@@ -38,6 +38,9 @@ pred_lm_d5_w = tibble(pred = predict_lm(lm_d5_w, test_set), model = "lm_d5_w")
 lm_d6_w = fit_lm_d6(train_set, weight_me=T)
 pred_lm_d6_w = tibble(pred = predict_lm(lm_d6_w, test_set), model = "lm_d6_w")
 
+lm_d7_w = fit_lm_d7(train_set, weight_me=T)
+pred_lm_d7_w = tibble(pred = predict_lm(lm_d7_w, test_set), model = "lm_d7_w")
+
 lm_sd6_w = fit_lm_sd6(train_set, weight_me=T)
 pred_lm_sd6_w = tibble(pred = predict_lm(lm_sd6_w, test_set), model = "lm_sd6_w")
 
@@ -63,7 +66,7 @@ pred_lm_sd9 = tibble(pred = predict_lm(lm_sd9, test_set), model = "lm_sd9")
 preds = bind_rows(
   # pred_lm_d1, pred_lm_d2, pred_lm_d3, pred_lm_d4,
   pred_lm_d1_w, pred_lm_d2_w, pred_lm_d3_w, pred_lm_d4_w,
-  pred_lm_d5_w, pred_lm_d6_w,
+  pred_lm_d5_w, pred_lm_d6_w, pred_lm_d7_w,
   pred_lm_sd6_w, pred_lm_sd7_w, pred_lm_sd8_w, pred_lm_sd9_w
 )
 
