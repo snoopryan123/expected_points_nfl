@@ -11,19 +11,18 @@ setwd(filewd)
 ### load data and models ###
 ############################
 
-# MODEL_TYPE = "XGB"
-# filewd = getwd()
-# setwd("../model_comparison")
-# source("models_XGB.R")
-# setwd(filewd)
-# ### make sure to first train and save these XGB models in `train_full_models.R`
-# # model_name = "xgb_C_s_1"
-# # model_name = "xgb_C_s_1_wbe"
-# model_name = "xgb_C_oq2xdq2x_1_wbe"
-# model_fit = xgb.load(paste0("../model_comparison/",model_name,".xgb"))
-# xgb_features = get(paste0(model_name, "_features"))
-# xgb_is_regression = str_detect(model_name, "xgb_R_")
-# xgb_is_BoundedRegression = str_detect(model_name, "xgb_BR_")
+MODEL_TYPE = "XGB"
+filewd = getwd()
+setwd("../model_comparison")
+source("models_XGB.R")
+setwd(filewd)
+### make sure to first train and save these XGB models in `train_full_models.R`
+# model_name = "xgb_C_s_1_wbe"
+model_name = "xgb_C_oq2xdq2x_1_wbe"
+model_fit = xgb.load(paste0("../model_comparison/",model_name,".xgb"))
+xgb_features = get(paste0(model_name, "_features"))
+xgb_is_regression = str_detect(model_name, "xgb_R_")
+xgb_is_BoundedRegression = str_detect(model_name, "xgb_BR_")
 
 # MODEL_TYPE = "OLS"
 # source("../model_comparison/models_OLS.R")
@@ -32,14 +31,14 @@ setwd(filewd)
 # dataset_to_fit = data_full
 # model_fit = get(paste0("fit_",str_remove(model_name, "_w")))(dataset_to_fit, weight_me = weighted_model)
 
-MODEL_TYPE = "MLR"
-source("../model_comparison/models_MLR.R")
-# model_name = "mlr_yurko_5_w"
-# model_name = "mlr_yurko_sx4_w"
-model_name = "mlr_yurko_oq4xdq4x_1_w"
-weighted_model = endsWith(model_name, "_w")
-dataset_to_fit = data_full
-model_fit = get(paste0("fit_",str_remove(model_name, "_w")))(dataset_to_fit, weight_me = weighted_model)
+# MODEL_TYPE = "MLR"
+# source("../model_comparison/models_MLR.R")
+# # model_name = "mlr_yurko_5_w"
+# # model_name = "mlr_yurko_sx4_w"
+# model_name = "mlr_yurko_oq4xdq4x_1_w"
+# weighted_model = endsWith(model_name, "_w")
+# dataset_to_fit = data_full
+# model_fit = get(paste0("fit_",str_remove(model_name, "_w")))(dataset_to_fit, weight_me = weighted_model)
 
 print(model_fit)
 no_dq = !str_detect(model_name, "dq")
@@ -306,7 +305,8 @@ plot_varyingTQ <- function(model_fit, model_name, colname, N=7, keepFewSpreads=F
   } else {
     spread_breaks = seq(-10,10,by=1)
     if (keepFewSpreads) {
-      spread_breaks = c(9,7,-3,-2)
+      # spread_breaks = c(9,7,-3,-2)
+      spread_breaks = c(8,7)
     }
     
     plot_set = tibble()
