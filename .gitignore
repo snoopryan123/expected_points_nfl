@@ -9,7 +9,6 @@ old/*
 OLD
 OLD/*
 1_simulation/sim_v2/job_output/*
-*.xgb
 *.rds
 *.png
 
