@@ -1,16 +1,18 @@
 
 # Codebase for `[working title]`
 
-* something along the lines of:
+* Title something along the lines of:
   * Application of Bayesian Nonparametric Learning   
   * A statistical view of expected points models in American football
 
 # Get play-by-play data
-* enter `data` folder
-* run `d1_data_acquisition.R` -> output `data_nflFastR_pbp_1999_2022.csv`
-* run `d2_data_acquisition.R` -> output `data2.csv`
-* run `d3a_data_TeamQualityMetrics_epa0HyperParamTuning.R` to tune the hyperparameters for the 8 hand-crafted team quality metrics
-* clear the environment workspace and run `d3b_data_TeamQualityMetrics_epa0.R` -> output `data3.csv`
+* create the dataset from code:
+  * enter `data` folder
+  * run `d1_data_acquisition.R` -> output `data_nflFastR_pbp_1999_2022.csv`
+  * run `d2_data_acquisition.R` -> output `data2.csv`
+  * run `d3a_data_TeamQualityMetrics_epa0HyperParamTuning.R` to tune the hyperparameters for the 8 hand-crafted team quality metrics
+  * clear the environment workspace and run `d3b_data_TeamQualityMetrics_epa0.R` -> output `data3.csv`
+* alternatively, download `data3.csv` from `https://upenn.box.com/s/bw9p9szpjpbwrcqnisvur3oio9sfj9af` and put in `data/` folder
 
 # Model comparison
 * enter `model_comparison` folder
@@ -19,7 +21,7 @@
 * test MLR (multinomial logistic regression) models: run `test_predPerf_MLR.R` 
 * train and save XGB models on the full dataset: run `train_fullXGBModels.R` parallelized on a cluster via `run_train_fullXGBModels.sh`, which outputs `.xgb` files that store the fitted the models
 
-# Plotting
+# Plots/Visualizations
 * enter `plotting` folder
 * run `A_plot_EP.R` to visualize EP models
     * Before visualizing XGB models, need to train and save full XGBoost models via `model_comparison/train_full_models.R`; some of these models should already be saved in the Github
@@ -28,6 +30,6 @@
 * run `A_plot_summary_stats.R` to visualize some data summary statistics
 
 # Team quality knockoffs
-* run `FIXME`
+* enter `team_quality_knockoffs` folder
 
 
