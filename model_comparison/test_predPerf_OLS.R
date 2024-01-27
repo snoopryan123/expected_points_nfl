@@ -38,23 +38,20 @@ pred_lm_d5_w = tibble(pred = predict_lm(lm_d5_w, test_set), model = "lm_d5_w")
 lm_d6_w = fit_lm_d6(train_set, weight_me=T)
 pred_lm_d6_w = tibble(pred = predict_lm(lm_d6_w, test_set), model = "lm_d6_w")
 
-lm_d7_w = fit_lm_d7(train_set, weight_me=T)
-pred_lm_d7_w = tibble(pred = predict_lm(lm_d7_w, test_set), model = "lm_d7_w")
+lm_sd1_w = fit_lm_sd1(train_set, weight_me=T)
+pred_lm_sd1_w = tibble(pred = predict_lm(lm_sd1_w, test_set), model = "lm_sd1_w")
 
-lm_sd6_w = fit_lm_sd6(train_set, weight_me=T)
-pred_lm_sd6_w = tibble(pred = predict_lm(lm_sd6_w, test_set), model = "lm_sd6_w")
+lm_sd2_w = fit_lm_sd2(train_set, weight_me=T)
+pred_lm_sd2_w = tibble(pred = predict_lm(lm_sd2_w, test_set), model = "lm_sd2_w")
 
-lm_sd7_w = fit_lm_sd7(train_set, weight_me=T)
-pred_lm_sd7_w = tibble(pred = predict_lm(lm_sd7_w, test_set), model = "lm_sd7_w")
+lm_sd3_w = fit_lm_sd3(train_set, weight_me=T)
+pred_lm_sd3_w = tibble(pred = predict_lm(lm_sd3_w, test_set), model = "lm_sd3_w")
 
-lm_sd8_w = fit_lm_sd8(train_set, weight_me=T)
-pred_lm_sd8_w = tibble(pred = predict_lm(lm_sd8_w, test_set), model = "lm_sd8_w")
+lm_sd4_w = fit_lm_sd4(train_set, weight_me=T)
+pred_lm_sd4_w = tibble(pred = predict_lm(lm_sd4_w, test_set), model = "lm_sd4_w")
 
-lm_sd9_w = fit_lm_sd9(train_set, weight_me=T)
-pred_lm_sd9_w = tibble(pred = predict_lm(lm_sd9_w, test_set), model = "lm_sd9_w")
-
-lm_sd9 = fit_lm_sd9(train_set)
-pred_lm_sd9 = tibble(pred = predict_lm(lm_sd9, test_set), model = "lm_sd9")
+lm_sd4 = fit_lm_sd4(train_set)
+pred_lm_sd4 = tibble(pred = predict_lm(lm_sd4, test_set), model = "lm_sd4")
 
 # lm_s2dE_w = fit_lm_weightedByEpoch(train_set, fit_model_func=fit_lm_s2dE)   
 # # model_name_s2dE = "lm_s2dE_w"
@@ -63,16 +60,16 @@ pred_lm_sd9 = tibble(pred = predict_lm(lm_sd9, test_set), model = "lm_sd9")
 
 ################################################################################
 
-preds = bind_rows(
-  # pred_lm_d1, pred_lm_d2, pred_lm_d3, pred_lm_d4,
-  pred_lm_d1_w, pred_lm_d2_w, pred_lm_d3_w, pred_lm_d4_w,
-  pred_lm_d5_w, pred_lm_d6_w, pred_lm_d7_w,
-  pred_lm_sd6_w, pred_lm_sd7_w, pred_lm_sd8_w, pred_lm_sd9_w
-)
-
 # preds = bind_rows(
-#   pred_Romer, pred_lm_sd9, pred_lm_sd9_w
+#   ## pred_lm_d1, pred_lm_d2, pred_lm_d3, pred_lm_d4,
+#   pred_lm_d1_w, pred_lm_d2_w, pred_lm_d3_w, pred_lm_d4_w,
+#   pred_lm_d5_w, pred_lm_d6_w,
+#   pred_lm_sd1_w, pred_lm_sd2_w, pred_lm_sd3_w, pred_lm_sd4_w
 # )
+
+preds = bind_rows(
+  pred_Romer, pred_lm_sd4, pred_lm_sd4_w
+)
 
 get_loss <- function(preds, test_set) {
   preds %>% 

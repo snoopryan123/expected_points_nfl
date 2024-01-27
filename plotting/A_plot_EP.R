@@ -25,18 +25,18 @@ setwd(filewd)
 # xgb_is_regression = str_detect(model_name, "xgb_R_")
 # xgb_is_BoundedRegression = str_detect(model_name, "xgb_BR_")
 
-# MODEL_TYPE = "MLR"
-# source("../model_comparison/models_MLR.R")
-# model_name = "mlr_yurko_sx4_w"
-# # model_name = "mlr_yurko_oq4xdq4x_1_w"
+# MODEL_TYPE = "OLS"
+# source("../model_comparison/models_OLS.R")
+# model_name = "lm_sd4_w"
 # weighted_model = endsWith(model_name, "_w")
 # dataset_to_fit = data_full
 # model_fit = get(paste0("fit_",str_remove(model_name, "_w")))(dataset_to_fit, weight_me = weighted_model)
 
-MODEL_TYPE = "OLS"
-source("../model_comparison/models_OLS.R")
-# model_name = "lm_sd9_w"
-model_name = "lm_d5_w"
+MODEL_TYPE = "MLR"
+source("../model_comparison/models_MLR.R")
+# model_name = "mlr_yurko_5_w"
+# model_name = "mlr_yurko_sx4_w"
+model_name = "mlr_yurko_oq4xdq4x_1_w"
 weighted_model = endsWith(model_name, "_w")
 dataset_to_fit = data_full
 model_fit = get(paste0("fit_",str_remove(model_name, "_w")))(dataset_to_fit, weight_me = weighted_model)
@@ -46,13 +46,24 @@ no_dq = !str_detect(model_name, "dq")
 is_4x = str_detect(model_name, "4x") | (str_detect(model_name, "xgb") & str_detect(model_name, "2x"))
 spread_tq = str_detect(model_name, "_s")
 
-plot_varyingTimeByDown(model_fit, model_name) ###
+# plot_varyingTimeByDown(model_fit, model_name) ###
 
 ############################
 ### visualize the models ###
 ############################
 # l = -3; u = 9;
 l = -3.5; u = 7;
+
+get_plot_title <- function() {
+  weighted_model_desc = if (weighted_model) "weighted" else "unweighted"
+  w_model_desc = if (weighted_model) "w" else ""
+  model_type_desc = case_when(
+    MODEL_TYPE == "OLS" ~ "linear regression",
+    MODEL_TYPE == "MLR" ~ "multinomial logistic regression",
+    MODEL_TYPE == "XGB" ~ "XGBoost",
+  )
+  paste0(weighted_model_desc, " ", model_type_desc, " (",w_model_desc,MODEL_TYPE,")")
+}
 
 plot_varyingTime <- function(model_fit, model_name, half_=1) {
   my_palette <- c(
@@ -127,6 +138,7 @@ plot_varyingTime <- function(model_fit, model_name, half_=1) {
     scale_x_continuous(breaks=seq(0,100,10)) +
     scale_y_continuous(limits=c(l,u),breaks=seq(-20,20,1)) +
     xlab("yard line y") +
+    labs(title=get_plot_title()) +
     scale_colour_manual(values = my_palette) +
     ylab("expected points of the next score") #+
   # theme(axis.title = element_text(size=20),
@@ -215,6 +227,7 @@ plot_varyingTimeByDown <- function(model_fit, model_name, half_=1) {
     scale_x_continuous(breaks=seq(0,100,10)) +
     scale_y_continuous(limits=c(l,u),breaks=seq(-20,20,1)) +
     xlab("yard line y") +
+    labs(title=get_plot_title()) +
     scale_colour_manual(values = my_palette) +
     ylab("expected points of the next score") #+
   # theme(axis.title = element_text(size=20),
@@ -227,7 +240,7 @@ plot_varyingTimeByDown <- function(model_fit, model_name, half_=1) {
   # return(plot)
 }
 
-plot_varyingTQ <- function(model_fit, model_name, colname, N=7, keepFewSpreads=FALSE) {
+plot_varyingTQ <- function(model_fit, model_name, colname, N=7, keepFewSpreads=FALSE, noTitle=FALSE) {
   
   if (!spread_tq) {
     my_palette <- brewer.pal(name="PuRd",n=9)[3:11]
@@ -337,7 +350,6 @@ plot_varyingTQ <- function(model_fit, model_name, colname, N=7, keepFewSpreads=F
     )
   }
   
-  plot_title = ""
   if (spread_tq) {
     plot = pred_ep %>%
       mutate(color_col = fct_reorder(factor(posteam_spread), -posteam_spread)) 
@@ -355,8 +367,10 @@ plot_varyingTQ <- function(model_fit, model_name, colname, N=7, keepFewSpreads=F
     # scale_y_continuous(breaks=seq(-20,20,1)) +
     scale_y_continuous(limits=c(l,u),breaks=seq(-20,20,1)) +
     # labs(title=paste0("model: ", model_name)) +
-    xlab("yard line y") + labs(title=plot_title) +
+    xlab("yard line y") + 
     ylab("expected points of the next score") +
+    # labs(title=plot_title) +
+    labs(title= if (!noTitle) get_plot_title()) +
     # theme(axis.title = element_text(size=20),
     #       axis.text = element_text(size=20),
     #       legend.text = element_text(size=20),
@@ -419,7 +433,6 @@ plot_varyingDown <- function(model_fit, model_name) {
     )
   }
   
-  plot_title = ""
   plot = pred_ep %>%
     ggplot(aes(x = yardline_100, y = pred, color = factor(down))) +
     labs(color=legend_title)  +
@@ -429,8 +442,9 @@ plot_varyingDown <- function(model_fit, model_name) {
     # scale_y_continuous(breaks=seq(-20,20,1)) +
     scale_y_continuous(limits=c(l,u),breaks=seq(-20,20,1)) +
     # labs(title=paste0("model: ", model_name)) +
-    xlab("yard line y") + labs(title=plot_title) +
+    xlab("yard line y") +
     ylab("expected points of the next score") +
+    labs(title=get_plot_title()) +
     # theme(axis.title = element_text(size=20),
     #       axis.text = element_text(size=20),
     #       legend.text = element_text(size=20),
@@ -591,19 +605,21 @@ make_plots_batch <- function(model_name, model_fit) {
     # p4 = plot_varyingTQ(model_fit, model_name, "qbq_dt_0_sum")
     # p5 = plot_varyingTQ(model_fit, model_name, "oq_rdt_0_sum")
     # p6 = plot_varyingTQ(model_fit, model_name, "dq_ot_0_sum")
-    p1 = plot_varyingTQ(model_fit, model_name, "qbq_ot_0_sum")
-    p2 = plot_varyingTQ(model_fit, model_name, "oq_rot_0_total_sum")
-    p3 = plot_varyingTQ(model_fit, model_name, "dq_dt_0_againstPass_sum")
-    p4 = plot_varyingTQ(model_fit, model_name, "dq_dt_0_againstRun_sum")
-    p5 = plot_varyingTQ(model_fit, model_name, "qbq_dt_0_sum")
-    p6 = plot_varyingTQ(model_fit, model_name, "oq_rdt_0_sum")
-    p7 = plot_varyingTQ(model_fit, model_name, "dq_ot_0_againstPass_sum")
-    p8 = plot_varyingTQ(model_fit, model_name, "dq_ot_0_againstRun_sum")
+    p1 = plot_varyingTQ(model_fit, model_name, "qbq_ot_0_sum", noTitle=T)
+    p2 = plot_varyingTQ(model_fit, model_name, "oq_rot_0_total_sum", noTitle=T)
+    p3 = plot_varyingTQ(model_fit, model_name, "dq_dt_0_againstPass_sum", noTitle=T)
+    p4 = plot_varyingTQ(model_fit, model_name, "dq_dt_0_againstRun_sum", noTitle=T)
+    p5 = plot_varyingTQ(model_fit, model_name, "qbq_dt_0_sum", noTitle=T)
+    p6 = plot_varyingTQ(model_fit, model_name, "oq_rdt_0_sum", noTitle=T)
+    p7 = plot_varyingTQ(model_fit, model_name, "dq_ot_0_againstPass_sum", noTitle=T)
+    p8 = plot_varyingTQ(model_fit, model_name, "dq_ot_0_againstRun_sum", noTitle=T)
     if (no_dq) {
       p14 = plot_grid(p1,p2,p4,p5, nrow=2 )
       save_plot(paste0("plot_model_",model_name,"_4OQ.png"), p14, base_width=16, base_height=12)
     } else {
-      p18 = plot_grid(p1,p2,p3,p4,p5,p6,p7,p8, nrow=2 )
+      p18 = plot_grid(p1,p2,p3,p4,p5,p6,p7,p8, nrow=2)
+      # p18 = plot_grid(p1,p2,p3,p4,p5,p6,p7,p8, nrow=2,
+      #                 labels=get_plot_title(), label_x = -1/2,label_size=20)
       save_plot(paste0("plot_model_",model_name,"_8TQ.png"), p18, base_width=30, base_height=12)
       # p16 = plot_grid(p1,p2,p3,p4,p5,p6, nrow=2 )
       # save_plot(paste0("plot_model_",model_name,"_6TQ.png"), p16, base_width=24, base_height=12)

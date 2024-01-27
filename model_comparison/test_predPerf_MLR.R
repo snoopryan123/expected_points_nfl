@@ -27,6 +27,14 @@ pred_ep_mlr_yurko_paper = predict_mlr_ep(mlr_yurko_paper, test_set, "mlr_yurko_p
 # mlr_yurko_4_w = fit_mlr_yurko_4(train_set, weight_me=T)
 # pred_ep_mlr_yurko_4_w = predict_mlr_ep(mlr_yurko_4_w, test_set, "mlr_yurko_4_w")
 # 
+# print(""); print("mlr_yurko_5_w"); print("");
+# mlr_yurko_5_w = fit_mlr_yurko_5(train_set, weight_me=T)
+# pred_ep_mlr_yurko_5_w = predict_mlr_ep(mlr_yurko_5_w, test_set, "mlr_yurko_5_w")
+
+print(""); print("mlr_yurko_1x_w"); print("");
+mlr_yurko_1x_w = fit_mlr_yurko_1x(train_set, weight_me=T)
+pred_ep_mlr_yurko_1x_w = predict_mlr_ep(mlr_yurko_1x_w, test_set, "mlr_yurko_1x_w")
+
 # print(""); print("mlr_yurko_sx1_w"); print("");
 # mlr_yurko_sx1_w = fit_mlr_yurko_sx1(train_set, weight_me=T)
 # pred_ep_mlr_yurko_sx1_w = predict_mlr_ep(mlr_yurko_sx1_w, test_set, "mlr_yurko_sx1_w")
@@ -53,13 +61,14 @@ pred_ep_mlr_yurko_oq4xdq4x_1_w = predict_mlr_ep(mlr_yurko_oq4xdq4x_1_w, test_set
 
 # preds = bind_rows(
 #   pred_ep_mlr_yurko_paper,
-#   pred_ep_mlr_yurko_1_w, pred_ep_mlr_yurko_2_w, pred_ep_mlr_yurko_3_w, pred_ep_mlr_yurko_4_w,
+#   pred_ep_mlr_yurko_1_w, pred_ep_mlr_yurko_2_w, pred_ep_mlr_yurko_3_w, 
+#   pred_ep_mlr_yurko_4_w, pred_ep_mlr_yurko_5_w, pred_ep_mlr_yurko_1x_w,
 #   pred_ep_mlr_yurko_sx1_w, pred_ep_mlr_yurko_sx2_w, pred_ep_mlr_yurko_sx3_w, pred_ep_mlr_yurko_sx4_w,
-#   pred_ep_mlr_yurko_oq4xdq4x_1_w, 
+#   pred_ep_mlr_yurko_oq4xdq4x_1_w,
 # )
 
 preds = bind_rows(
-  pred_ep_mlr_yurko_paper, pred_ep_mlr_yurko_sx4_w, pred_ep_mlr_yurko_oq4xdq4x_1_w, 
+  pred_ep_mlr_yurko_paper, pred_ep_mlr_yurko_1x_w, pred_ep_mlr_yurko_sx4_w, pred_ep_mlr_yurko_oq4xdq4x_1_w,
 )
 
 get_loss <- function(preds, test_set) {
