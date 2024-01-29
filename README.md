@@ -6,7 +6,8 @@
   * A statistical view of expected points models in American football
 
 # Get play-by-play data
-* download `data2.csv` and `data3.csv` from https://upenn.box.com/s/kp43egvarlv6bsgbxuchnbc9fcj9iave and put in `data/` folder, and/or generate these datasets from code:
+* download `data2.csv` and `data3.csv` from https://upenn.box.com/s/kp43egvarlv6bsgbxuchnbc9fcj9iave and put in `data/` folder
+* you can also generate these datasets from code:
   * enter `data` folder
   * run `d1_data_acquisition.R` -> output `data_nflFastR_pbp_1999_2022.csv`
   * run `d2_data_acquisition.R` -> output `data2.csv`
