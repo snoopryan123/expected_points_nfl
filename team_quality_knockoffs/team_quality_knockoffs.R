@@ -157,7 +157,7 @@ get_qbq_ot <- function(D, fake_epa0 = FALSE) {
   epa0_name = if (fake_epa0) "fake_epa0" else "epa0"
   data1a = D
   
-  alpha_op = 0.995 ### 
+  alpha_op = 0.9975 ### 
   gamma_qb = 0.75 ###
   N0_op = 50 ### shrinkage prior: N0 attempts of value 0
   
@@ -221,8 +221,8 @@ get_oq_ot <- function(D, fake_epa0 = FALSE) {
   epa0_name = if (fake_epa0) "fake_epa0" else "epa0"
   data1a = D
   
-  beta_o = 0.995 ###
-  gamma_o = 1/5 ###
+  beta_o = 0.9975 ###
+  gamma_o = 0.75 ###
   N0_ot = 1500 ### shrinkage prior: N0 attempts of value 0
   
   all_offteamnames = sort(unique( (data1a %>% drop_na(posteam))$posteam ))
@@ -310,10 +310,8 @@ get_dq_dt <- function(D, fake_epa0 = FALSE) {
   epa0_name = if (fake_epa0) "fake_epa0" else "epa0"
   data2a = D
   
-  beta = 0.995 ###
-  # gamma = 1/20 ###
-  # gamma = 1/5 ###
-  gamma = 1/3 ###
+  beta = 0.9975 ###
+  gamma = 0.75 ###
   N0_dt_againstPass = 500 ### shrinkage prior: N0 attempts of value 0
   N0_dt_againstRun = 500 ### shrinkage prior: N0 attempts of value 0
   N0_dt_total = 1500 ### shrinkage prior: N0 attempts of value 0
@@ -760,7 +758,7 @@ for (i in 1:nrow(Ws)) {
 }
 
 colMeans(knocked_off_vars) 
-write_csv(colMeans(knocked_off_vars), "knockoffs_results.csv")
+# write_csv(colMeans(knocked_off_vars), "knockoffs_results.csv")
 
 
 
