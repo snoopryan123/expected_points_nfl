@@ -21,7 +21,7 @@
 * test MLR (multinomial logistic regression) models: run `test_predPerf_MLR.R` (on a cluster via `run_test_MLR.sh`)
 * train and save XGB models on the full dataset: run `train_fullXGBModels.R` parallelized on a cluster via `run_train_fullXGBModels.sh`, which outputs `.xgb` files that store the fitted the models
 
-# Plots/Visualizations
+# Plots/visualizations
 * enter `plotting` folder
 * run `A_plot_EP.R` to visualize EP models
     * Before visualizing XGB models, need to train and save full XGBoost models via `model_comparison/train_full_models.R`; some of these models should already be saved in the Github
