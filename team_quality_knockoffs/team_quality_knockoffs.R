@@ -492,9 +492,7 @@ get_oqdt_dqot_metrics <- function(DD) {
       select(row_idx, season, posteam, defteam, pass_or_rush, 
              oq_ot_0_total_sum, dq_dt_0_total_sum, oq_ot_0_total_mean, dq_dt_0_total_mean,
              dq_dt_0_againstPass_sum, dq_dt_0_againstRun_sum,
-             qbq_ot_0_sum, qbq_ot_0_mean, oq_rot_0_total_sum, oq_rot_0_total_mean,
-             kq0_sum, kq0_mean, pq0_sum, pq0_mean,
-             qb_name, kicker_name, punter_name
+             qbq_ot_0_sum, qbq_ot_0_mean, oq_rot_0_total_sum, oq_rot_0_total_mean, qb_name, 
        )
     N_j = nrow(data_team_j)
     ## data_team_j
@@ -565,20 +563,6 @@ get_oqdt_dqot_metrics <- function(DD) {
     oq_rdt_0_j_mean = oq_dt_0_j_idx
     oq_rdt_0_j_mean[oq_rdt_0_j_mean != 0] = data_team_j$oq_rot_0_total_mean[oq_dt_0_j_idx]
     
-    ##############################
-    kq0_dt_sum_j = oq_dt_0_j_idx
-    kq0_dt_sum_j[kq0_dt_sum_j != 0] = data_team_j$kq0_sum[oq_dt_0_j_idx]
-    
-    pq0_dt_sum_j = oq_dt_0_j_idx
-    pq0_dt_sum_j[pq0_dt_sum_j != 0] = data_team_j$pq0_sum[oq_dt_0_j_idx]
-    
-    ##############################
-    kicker_name_dt_j = oq_dt_0_j_idx
-    kicker_name_dt_j[kicker_name_dt_j != 0] = data_team_j$kicker_name[oq_dt_0_j_idx]
-    
-    punter_name_dt_j = oq_dt_0_j_idx
-    punter_name_dt_j[punter_name_dt_j != 0] = data_team_j$punter_name[oq_dt_0_j_idx]
-    
     qb_name_dt_j = oq_dt_0_j_idx
     qb_name_dt_j[qb_name_dt_j != 0] = data_team_j$qb_name[oq_dt_0_j_idx]
     
@@ -610,19 +594,13 @@ get_oqdt_dqot_metrics <- function(DD) {
     data_team_j$oq_rdt_0_sum = oq_rdt_0_j_sum
     data_team_j$oq_rdt_0_mean = oq_rdt_0_j_mean
     
-    data_team_j$kq0_dt_sum = kq0_dt_sum_j
-    data_team_j$pq0_dt_sum = pq0_dt_sum_j
-    
-    data_team_j$kicker_name_dt = kicker_name_dt_j
-    data_team_j$punter_name_dt = punter_name_dt_j
     data_team_j$qb_name_dt = qb_name_dt_j
   
     data_team_j_off = data_team_j %>% filter(posteam == team_j) %>% select(
       row_idx, posteam, all_of(starts_with("dq_ot_0"))
     )
     data_team_j_def = data_team_j %>% filter(defteam == team_j) %>% select(
-      row_idx, defteam, all_of(starts_with("oq_dt_0")), all_of(starts_with("qbq_dt_0")), all_of(starts_with("oq_rdt_0")), 
-      all_of(starts_with("kq0_dt")), all_of(starts_with("pq0_dt")), kicker_name_dt, punter_name_dt, qb_name_dt
+      row_idx, defteam, all_of(starts_with("oq_dt_0")), all_of(starts_with("qbq_dt_0")), all_of(starts_with("oq_rdt_0")), qb_name_dt
     )
     
     oq_dt_0 = bind_rows(oq_dt_0, data_team_j_def)

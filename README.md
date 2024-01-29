@@ -31,5 +31,6 @@
 
 # Team quality knockoffs
 * enter `team_quality_knockoffs` folder
+* run `team_quality_knockoffs.R` (on a cluster via `run_team_quality_knockoffs.sh`)
 
 
