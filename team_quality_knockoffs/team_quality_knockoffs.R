@@ -779,12 +779,10 @@ for (i in 1:nrow(Ws)) {
   tau = (prop_tib %>% filter(below_q) %>% head(1))$t
   knocked_off_i = as_tibble( Ws[i,] < tau )
   knocked_off_vars = bind_rows(knocked_off_vars, knocked_off_i)
-  # knocked_off_i = names(Ws)[ as.numeric(Ws[i,]) < tau ]
-  # knocked_off_vars[[i]] = knocked_off_i
 }
 
 colMeans(knocked_off_vars) 
-# write_csv(colMeans(knocked_off_vars), "knockoffs_results.csv")
+write_csv(colMeans(knocked_off_vars), "knockoffs_results.csv")
 
 
 
