@@ -7,6 +7,9 @@ args <- commandArgs(trailingOnly = TRUE)
 j <- as.numeric(args[1]) ### index of `the`model_names_list`, to choose which model to tune, for parallelism
 CATALYTIC = as.logical(args[2])
 TUNE_ALL_6_PARAMS_AT_ONCE = TRUE
+
+### load data
+PRE_LOADED_TrainTestSplitAndTeamQualities = TRUE
 source("A_train_test_main.R")
 source("models_XGB.R")
 

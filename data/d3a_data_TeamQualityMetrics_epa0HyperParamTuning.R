@@ -6,6 +6,10 @@ HYPERPARAM_TUNING = TRUE
 source("../A0_header.R")
 data00 <- read_csv("data2.csv")
 
+##############################
+#### tune the hyperparams ####
+##############################
+
 ### hyperparam grid
 K = 4
 K_grid = seq(1/K,1,by=1/K)

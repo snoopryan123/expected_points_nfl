@@ -2,6 +2,7 @@
 args <- commandArgs(trailingOnly = TRUE)
 j <- as.numeric(args[1])
 
+PRE_LOADED_TrainTestSplitAndTeamQualities = TRUE #FIXME
 ########################
 filewd = getwd()
 setwd("..")

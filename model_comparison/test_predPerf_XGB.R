@@ -1,7 +1,14 @@
 
+# SEED = 99 #FIXME
+# PRE_LOADED_TrainTestSplitAndTeamQualities = FALSE
+# source("A_train_test_main.R")
+
+PRE_LOADED_TrainTestSplitAndTeamQualities = TRUE
 source("A_train_test_main.R")
 
 source("models_XGB.R")
+
+################################################################################
 
 print(""); print(xgb_C_nflFastR_1_model_name); print("");
 xgb_C_nflFastR_1 = train_xgb(xgb_C_nflFastR_1_features, train_set, xgb_C_nflFastR_1_params, xgb_C_nflFastR_1_nrounds, watchSet=test_set, catalytic=xgb_C_nflFastR_1_catalytic)
@@ -25,7 +32,7 @@ xgb_C_oq2xdq2x_1_wbe = train_xgb(xgb_C_oq2xdq2x_1_wbe_features, train_set, xgb_C
                                  watchSet=test_set, catalytic=xgb_C_oq2xdq2x_1_wbe_catalytic, weight_by_epoch = TRUE)
 pred_ep_xgb_C_oq2xdq2x_1_wbe = predict_ep_xgb(xgb_C_oq2xdq2x_1_wbe, test_set, xgb_C_oq2xdq2x_1_wbe_features, xgb_C_oq2xdq2x_1_wbe_model_name)
 
-##########################################
+################################################################################
 
 preds_XGB = bind_rows(
   pred_ep_xgb_C_nflFastR_1,

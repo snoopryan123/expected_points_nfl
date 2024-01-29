@@ -1,4 +1,9 @@
 
+# SEED = 99 #FIXME
+# PRE_LOADED_TrainTestSplitAndTeamQualities = FALSE
+# source("A_train_test_main.R")
+
+PRE_LOADED_TrainTestSplitAndTeamQualities = TRUE
 source("A_train_test_main.R")
 
 source("models_OLS.R")
@@ -20,32 +25,32 @@ pred_Romer = tibble(pred = get_Romer_preds(m_Romer, test_set), model = "Romer")
 # # lm_d4 = fit_lm_d4(train_set)
 # # pred_lm_d4 = tibble(pred = predict_lm(lm_d4, test_set), model = "lm_d4")
 
-lm_d1_w = fit_lm_d1(train_set, weight_me=T)
-pred_lm_d1_w = tibble(pred = predict_lm(lm_d1_w, test_set), model = "lm_d1_w")
-
-lm_d2_w = fit_lm_d2(train_set, weight_me=T)
-pred_lm_d2_w = tibble(pred = predict_lm(lm_d2_w, test_set), model = "lm_d2_w")
-
-lm_d3_w = fit_lm_d3(train_set, weight_me=T)
-pred_lm_d3_w = tibble(pred = predict_lm(lm_d3_w, test_set), model = "lm_d3_w")
-
-lm_d4_w = fit_lm_d4(train_set, weight_me=T)
-pred_lm_d4_w = tibble(pred = predict_lm(lm_d4_w, test_set), model = "lm_d4_w")
-
-lm_d5_w = fit_lm_d5(train_set, weight_me=T)
-pred_lm_d5_w = tibble(pred = predict_lm(lm_d5_w, test_set), model = "lm_d5_w")
-
-lm_d6_w = fit_lm_d6(train_set, weight_me=T)
-pred_lm_d6_w = tibble(pred = predict_lm(lm_d6_w, test_set), model = "lm_d6_w")
-
-lm_sd1_w = fit_lm_sd1(train_set, weight_me=T)
-pred_lm_sd1_w = tibble(pred = predict_lm(lm_sd1_w, test_set), model = "lm_sd1_w")
-
-lm_sd2_w = fit_lm_sd2(train_set, weight_me=T)
-pred_lm_sd2_w = tibble(pred = predict_lm(lm_sd2_w, test_set), model = "lm_sd2_w")
-
-lm_sd3_w = fit_lm_sd3(train_set, weight_me=T)
-pred_lm_sd3_w = tibble(pred = predict_lm(lm_sd3_w, test_set), model = "lm_sd3_w")
+# lm_d1_w = fit_lm_d1(train_set, weight_me=T)
+# pred_lm_d1_w = tibble(pred = predict_lm(lm_d1_w, test_set), model = "lm_d1_w")
+# 
+# lm_d2_w = fit_lm_d2(train_set, weight_me=T)
+# pred_lm_d2_w = tibble(pred = predict_lm(lm_d2_w, test_set), model = "lm_d2_w")
+# 
+# lm_d3_w = fit_lm_d3(train_set, weight_me=T)
+# pred_lm_d3_w = tibble(pred = predict_lm(lm_d3_w, test_set), model = "lm_d3_w")
+# 
+# lm_d4_w = fit_lm_d4(train_set, weight_me=T)
+# pred_lm_d4_w = tibble(pred = predict_lm(lm_d4_w, test_set), model = "lm_d4_w")
+# 
+# lm_d5_w = fit_lm_d5(train_set, weight_me=T)
+# pred_lm_d5_w = tibble(pred = predict_lm(lm_d5_w, test_set), model = "lm_d5_w")
+# 
+# lm_d6_w = fit_lm_d6(train_set, weight_me=T)
+# pred_lm_d6_w = tibble(pred = predict_lm(lm_d6_w, test_set), model = "lm_d6_w")
+# 
+# lm_sd1_w = fit_lm_sd1(train_set, weight_me=T)
+# pred_lm_sd1_w = tibble(pred = predict_lm(lm_sd1_w, test_set), model = "lm_sd1_w")
+# 
+# lm_sd2_w = fit_lm_sd2(train_set, weight_me=T)
+# pred_lm_sd2_w = tibble(pred = predict_lm(lm_sd2_w, test_set), model = "lm_sd2_w")
+# 
+# lm_sd3_w = fit_lm_sd3(train_set, weight_me=T)
+# pred_lm_sd3_w = tibble(pred = predict_lm(lm_sd3_w, test_set), model = "lm_sd3_w")
 
 lm_sd4_w = fit_lm_sd4(train_set, weight_me=T)
 pred_lm_sd4_w = tibble(pred = predict_lm(lm_sd4_w, test_set), model = "lm_sd4_w")

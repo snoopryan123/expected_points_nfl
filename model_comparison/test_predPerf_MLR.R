@@ -1,11 +1,14 @@
 
+# SEED = 99 #FIXME
+# PRE_LOADED_TrainTestSplitAndTeamQualities = FALSE
+# source("A_train_test_main.R")
+
+PRE_LOADED_TrainTestSplitAndTeamQualities = TRUE
 source("A_train_test_main.R")
 
 source("models_MLR.R")
 
-######################
-### Fit the models ###
-######################
+################################################################################
 
 print(""); print("mlr_yurko_paper"); print("");
 mlr_yurko_paper = fit_mlr_yurko_paper(train_set)
@@ -55,9 +58,7 @@ print(""); print("mlr_yurko_oq4xdq4x_1_w"); print("");
 mlr_yurko_oq4xdq4x_1_w = fit_mlr_yurko_oq4xdq4x_1(train_set, weight_me=T)
 pred_ep_mlr_yurko_oq4xdq4x_1_w = predict_mlr_ep(mlr_yurko_oq4xdq4x_1_w, test_set, "mlr_yurko_oq4xdq4x_1_w")
 
-###################
-### test losses ###
-###################
+################################################################################
 
 # preds_MLR = bind_rows(
 #   pred_ep_mlr_yurko_paper,

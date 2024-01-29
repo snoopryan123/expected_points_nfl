@@ -1,5 +1,5 @@
 
-
+PRE_LOADED_TrainTestSplitAndTeamQualities = TRUE #FIXME
 ########################
 filewd = getwd()
 setwd("..")

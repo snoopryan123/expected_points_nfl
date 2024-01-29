@@ -73,7 +73,6 @@ options(pillar.sigfig=4)
 ### Saving LM, GLM, and MULTINOM objects ###
 ############################################
 
-###
 compute_scoreTimeRatio <- function(score_differential, game_seconds_remaining) {
   score_differential/(game_seconds_remaining + 0.01)
 }
@@ -113,6 +112,35 @@ load_lm <- function(filename) {
   return(cm)
 }
 
+###############################
+### standardizing functions ###
+###############################
+
+std <- function(x) { (x-mean(x)) / sd(x) }
+
+standardize_team_qualities <- function(dataset) {
+  ### standardizing the columns as-is 
+  dataset$qbq_ot_0_sum = std(dataset$qbq_ot_0_sum)
+  dataset$oq_rot_0_total_sum = std(dataset$oq_rot_0_total_sum)
+  dataset$dq_dt_0_againstRun_sum = std(dataset$dq_dt_0_againstRun_sum)
+  dataset$dq_dt_0_againstPass_sum = std(dataset$dq_dt_0_againstPass_sum)
+  dataset$qbq_dt_0_sum = std(dataset$qbq_dt_0_sum)
+  dataset$oq_rdt_0_sum = std(dataset$oq_rdt_0_sum)
+  dataset$dq_ot_0_againstRun_sum = std(dataset$dq_ot_0_againstRun_sum)
+  dataset$dq_ot_0_againstPass_sum = std(dataset$dq_ot_0_againstPass_sum)
+  
+  # browser()
+  sum(is.na(dataset$qbq_ot_0_sum))
+  sum(is.na(dataset$oq_rot_0_total_sum))
+  sum(is.na(dataset$dq_dt_0_againstRun_sum))
+  sum(is.na(dataset$dq_dt_0_againstPass_sum))
+  sum(is.na(dataset$qbq_dt_0_sum))
+  sum(is.na(dataset$oq_rdt_0_sum))
+  sum(is.na(dataset$dq_ot_0_againstRun_sum))
+  sum(is.na(dataset$dq_ot_0_againstPass_sum))
+  
+  dataset
+}
 
 ###################################
 ######### Plot Functions ##########

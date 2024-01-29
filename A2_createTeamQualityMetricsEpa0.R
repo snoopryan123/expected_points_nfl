@@ -1,78 +1,38 @@
 
-HYPERPARAM_TUNING = if (!exists("HYPERPARAM_TUNING")) FALSE else HYPERPARAM_TUNING
+EPA0_FROM_TRAIN_DATA_ONLY = TRUE
+USE_ALREADY_DEFINED_EP0_MODEL = TRUE
 
-if (!HYPERPARAM_TUNING) {
-  ### load data 
-  source("../A0_header.R")
-  data00 <- read_csv("data2.csv")
-  
-  ### DO NOT tune the hyperparameters;
-  ### create the final team quality metrics to be used in this study
-  EPA0_FROM_TRAIN_DATA_ONLY = TRUE
-  
-  alpha_op = 0.9975 ### 
-  gamma_qb = 0.75 ###
-  N0_op = 50 ### shrinkage prior: N0 attempts of value 0
-  
-  beta_o = 0.9975 ###
-  gamma_o = 0.75 ###
-  N0_ot = 1500 ### shrinkage prior: N0 attempts of value 0
-  
-  beta = 0.9975 ###
-  gamma = 0.75 ###
-  N0_dt_againstPass = 500 ### shrinkage prior: N0 attempts of value 0
-  N0_dt_againstRun = 500 ### shrinkage prior: N0 attempts of value 0
-  N0_dt_total = 1500 ### shrinkage prior: N0 attempts of value 0
-} else {
-  ### tune the hyperparameters!
-  ### the hyperparameters will come from another file that calls this file...
-}
+alpha_op = 0.9975 ### 
+gamma_qb = 0.75 ###
+N0_op = 50 ### shrinkage prior: N0 attempts of value 0
 
-#################################
-#### Create train test split ####
-#################################
+beta_o = 0.9975 ###
+gamma_o = 0.75 ###
+N0_ot = 1500 ### shrinkage prior: N0 attempts of value 0
 
-all_epochs = unique(data00$epoch)
-set.seed(99) # Aaron Donald!
-HOLD_OUT_EPOCHS = sort(sample(all_epochs, size = round(0.25*length(all_epochs)), replace = FALSE))
-TRAIN_EPOCHS = setdiff(all_epochs, HOLD_OUT_EPOCHS)
-VAL_EPOCHS = sort(sample(TRAIN_EPOCHS, size = round(0.5*length(TRAIN_EPOCHS)), replace = FALSE)) ### for xgb param tuning
-
-length(HOLD_OUT_EPOCHS)
-length(TRAIN_EPOCHS)
-length(VAL_EPOCHS)
-
-data00 =
-  data00 %>%
-  mutate(
-    train_play = epoch %in% TRAIN_EPOCHS,
-    val_play = epoch %in% VAL_EPOCHS,
-    test_play = epoch %in% HOLD_OUT_EPOCHS
-  )
-
-sum(data00$train_play)
-sum(data00$val_play)
-sum(data00$test_play)
+beta = 0.9975 ###
+gamma = 0.75 ###
+N0_dt_againstPass = 500 ### shrinkage prior: N0 attempts of value 0
+N0_dt_againstRun = 500 ### shrinkage prior: N0 attempts of value 0
+N0_dt_total = 1500 ### shrinkage prior: N0 attempts of value 0
 
 #######################################
 ##### create EP0 and EPA0 columns #####
 #######################################
 
-data0 = data00 %>% mutate(down_3or4 = down3 + down4)
+data0 = data_full_0 %>% mutate(down_3or4 = down3 + down4)
 
-fit_ep0_regression_model <- function(dataset) {
-  r.ep0 = lm(
-    pts_next_score ~ 
-      down_3or4 +
-      # down2 + down3 + down4 + 
-      # game_seconds_remaining + 
-      # splines::bs(yardline_100,3) + 
-      # splines::bs(log(ydstogo),3), 
-      yardline_100 +
-      log(ydstogo),
-    data = dataset
-  )
-  r.ep0
+if (!USE_ALREADY_DEFINED_EP0_MODEL) {
+  fit_ep0_regression_model <- function(dataset) {
+    r.ep0 = lm(
+      pts_next_score ~ 
+        down_3or4 +
+        yardline_100 +
+        log(ydstogo),
+      data = dataset
+    )
+    r.ep0
+  }
 }
 
 if (EPA0_FROM_TRAIN_DATA_ONLY) {
@@ -782,12 +742,7 @@ sum(is.na(data2c$oq_rdt_0_sum))
 sum(is.na(data2c$dq_ot_0_againstRun_sum))
 sum(is.na(data2c$dq_ot_0_againstPass_sum))
 
-data3 = data2c 
+dataTQ = data2c 
 
-### save
-if (!HYPERPARAM_TUNING) {
-  write_csv(data3, "data3.csv")
-}
-
-print("we have successfully created the Team Quality metrics and added them to the dataset `data3`")
+print("we have successfully created the Team Quality metrics and added them to the dataset `dataTQ`")
 

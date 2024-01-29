@@ -149,6 +149,16 @@ model_data1a = model_data1a %>%
   mutate(epoch = cur_group_id()) %>%
   ungroup() 
 
+### add num plays in epoch, and epoch weight w = 1/# plays in epoch
+model_data1a <- 
+  model_data1a %>% 
+  group_by(epoch) %>%
+  mutate(
+    epoch_length = n(),
+    epoch_weight = 1/epoch_length
+  ) %>%
+  ungroup()
+
 # epochs (Drive_Score_Half's) which begin in the 1st and 3rd quarters only
 drive_score_starts_in_q13 = model_data1a %>% 
   filter(qtr %in% c(1,3)) %>% 
@@ -161,36 +171,34 @@ model_data1a <- model_data1a %>%
   mutate(drive_score_starts_in_q13 = replace_na(drive_score_starts_in_q13, FALSE)) 
 
 # View(model_data1a %>% filter(row_number() <= 300))
+names(model_data1a)
+data.frame(model_data1a %>% select(epoch, epoch_length, epoch_weight))
 
-#################################
-#### Create train test split ####
-#################################
+#############################
+##### Some more columns #####
+#############################
 
-all_epochs = unique(model_data1a$epoch)
-set.seed(99) # Aaron Donald!
-HOLD_OUT_EPOCHS = sort(sample(all_epochs, size = round(0.25*length(all_epochs)), replace = FALSE))
-TRAIN_EPOCHS = setdiff(all_epochs, HOLD_OUT_EPOCHS)
-VAL_EPOCHS = sort(sample(TRAIN_EPOCHS, size = round(0.5*length(TRAIN_EPOCHS)), replace = FALSE)) ### for xgb param tuning
+### the pointspread from nflFastR is flipped, so flip it back!
+modelData2 <- model_data1a %>% mutate(posteam_spread = -posteam_spread)
 
-length(HOLD_OUT_EPOCHS)
-length(TRAIN_EPOCHS)
-length(VAL_EPOCHS)
+### indicator for combined 3rd/4th down
+modelData2 <- modelData2 %>% mutate(down_combined34 = ifelse(down==3 | down==4, 34, down))
 
-model_data1b = 
-  model_data1a %>%
+std <- function(x) { (x-mean(x)) / sd(x) }
+### some more columns
+modelData2 = 
+  modelData2 %>% 
   mutate(
-    train_play = epoch %in% TRAIN_EPOCHS,
-    val_play = epoch %in% VAL_EPOCHS,
-    test_play = epoch %in% HOLD_OUT_EPOCHS
-  )
-
-sum(model_data1b$train_play)
-sum(model_data1b$val_play)
-sum(model_data1b$test_play)
+    posteam_coach = ifelse(home == 1, home_coach, away_coach),
+    posteam_spread_std = std(posteam_spread),
+    utm = as.numeric(half_seconds_remaining <= 120),
+    gtg = (yardline_100 <= 10),
+    era_A = case_when(era0==1~0, era1==1~1, era2==1~2, era3==1~3, era4==1~4, TRUE~NA_real_)
+  )  
 
 #####################
 ##### save data #####
 #####################
 
-write_csv(model_data1b, "data2.csv")
+write_csv(modelData2, "data2.csv")
  
