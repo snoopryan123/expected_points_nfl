@@ -105,6 +105,7 @@ keep_every_kth_row <- function(D,k) {
   ##################################################################
 
   # ep0_sd = summary(lm_ep0)$sigma
+  # ep0_sd = sd(D$ep0)/20
   ep0_sd = 1/20#1/5
   D = generate_fake_EPA0(D, ep0_sd=ep0_sd)
 

@@ -23,14 +23,14 @@ data_full_0$w = data_full_0$epoch_weight
 ################################################################################
 
 keep_just_recent_data <- function(data_full_0, verbose=TRUE) {
-  # data_full_AA = data_full_0 %>% filter(season >= 2010)
-  data_full_AA = data_full_0 %>% filter(era0 != 1 & era1 != 1 & era2 != 1)
+  data_full_AA = data_full_0 %>% filter(season >= 2010)
   data_full_AA
-  
+  print("seasons:")
+
   if (verbose) {
     ### dataset descriptors
     print(table(data_full_AA$season))
-    print(table(data_full_AA$era))
+    # print(table(data_full_AA$era))
     print(table(data_full_AA$era_A))
     print(paste("there are",  length(unique(data_full_AA$game_id)), "games in our dataset"))
     print(paste("there are",  length(unique(data_full_AA$epoch)), "epochs in our dataset"))
