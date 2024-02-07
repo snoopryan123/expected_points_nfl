@@ -1,18 +1,15 @@
 
-# Codebase for `[working title]`
-
-* Title something along the lines of:
-  * Application of Bayesian Nonparametric Learning   
-  * A statistical view of expected points models in American football
+# Codebase for `[working title: A statistical view of expected points models in American football]`
 
 # Get play-by-play data
-* download `data2.csv` and `data3.csv` from https://upenn.box.com/s/kp43egvarlv6bsgbxuchnbc9fcj9iave and put in `data/` folder
+* download `data4.csv` from https://upenn.box.com/s/kp43egvarlv6bsgbxuchnbc9fcj9iave and put in `data/` folder
 * you can also generate these datasets from code:
   * enter `data` folder
   * run `d1_data_acquisition.R` -> output `data_nflFastR_pbp_1999_2022.csv`
   * run `d2_data_acquisition.R` -> output `data2.csv`
   * run `d3a_data_TeamQualityMetrics_epa0HyperParamTuning.R` to tune the hyperparameters for the 8 hand-crafted team quality metrics
   * clear the environment workspace and run `d3b_data_TeamQualityMetrics_epa0.R` -> output `data3.csv`, which contains one initial train/test split column and 8 hand-crafted team quality metrics built from EPA0 fit from this initial training set.
+  * run `d4_data_drives.R` -> output `data4.csv`
 
 # Model comparison
 * enter `model_comparison` folder
