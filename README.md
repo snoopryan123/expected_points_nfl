@@ -14,6 +14,7 @@
 # Model comparison
 * enter `model_comparison` folder
 * tune XGB (XGBoost) params: run `param_tuning.R` parallelized on a cluster via `run_param_tuning.sh`, then transfer the outputted `.yaml` files (which store the tuned params) from the folder `param_tuning_results` into the folder `param_tuning_results_FINAL`
+  * the saved `.yaml` files that store the tuned XGB hyperparameters should already be in `param_tuning_results_FINAL`
 * test models: `FIXME`
 * train and save models on the full dataset: `FIXME`
  
