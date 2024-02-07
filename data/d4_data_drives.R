@@ -49,7 +49,7 @@ df5
 ### final dataset
 data4 = 
   data3 %>%
-  left_join(df4) %>%
+  left_join(df5) %>%
   select(-label, -drive)
 
 dim(data3)

@@ -1,4 +1,4 @@
-model_name: xgb_C_nflFastR_1
+model_name: xgb_C_epochEP_nflFastR_1
 CATALYTIC: no
 booster: gbtree
 objective: multi:softprob

@@ -1,9 +1,9 @@
-model_name: xgb_C_s_1_wbe
+model_name: xgb_C_driveEP_s_1_weightByDrive
 CATALYTIC: no
 booster: gbtree
 objective: multi:softprob
 eval_metric: mlogloss
-num_class: 7.0
+num_class: 5.0
 eta: 0.0363187
 gamma: 0.0006212
 subsample: 0.21

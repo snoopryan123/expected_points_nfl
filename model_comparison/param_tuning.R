@@ -26,36 +26,38 @@ if (!CATALYTIC) {
   nrounds = 15000
   nrow_grid_full = 100 #250
 } else { ### Catalytic
-  print_every_n = 25 
-  nrounds = 15000 
-  
-  M_vec = c(10**5)
-  tau_vec = 10**c(5) 
-  M_tau_df = expand.grid(M = M_vec, tau = tau_vec) %>% mutate(w = tau/M)
-  nrow_grid_1 = 40 # number of combos of (max_depth, min_child_weight) to tune, nrow(grid1) == nrow_grid_1 *  nrow(M_tau_df)
-  nrow_grid_2 = 18 # number of combos of (subsample, colsample_bytree) to tune, nrow(grid2) == (2 * nrow_grid_2 + 3) *  nrow(M_tau_df)
-  nrow_grid_3 = 40 # number of combos of (eta, gamma) to tune, nrow(grid3) == nrow_grid_3 *  nrow(M_tau_df)
+  # print_every_n = 25 
+  # nrounds = 15000 
+  # 
+  # M_vec = c(10**5)
+  # tau_vec = 10**c(5) 
+  # M_tau_df = expand.grid(M = M_vec, tau = tau_vec) %>% mutate(w = tau/M)
+  # nrow_grid_1 = 40 # number of combos of (max_depth, min_child_weight) to tune, nrow(grid1) == nrow_grid_1 *  nrow(M_tau_df)
+  # nrow_grid_2 = 18 # number of combos of (subsample, colsample_bytree) to tune, nrow(grid2) == (2 * nrow_grid_2 + 3) *  nrow(M_tau_df)
+  # nrow_grid_3 = 40 # number of combos of (eta, gamma) to tune, nrow(grid3) == nrow_grid_3 *  nrow(M_tau_df)
 }
 
-##################################################################
 if (!CATALYTIC) { 
   model_names_list <- list(
-    xgb_C_nflFastR_1_model_name,
-    xgb_C_s_1_model_name,
-    xgb_C_oq2xdq2x_1_model_name,
-    xgb_C_s_1_wbe_model_name,
-    xgb_C_oq2xdq2x_1_wbe_model_name
+    xgb_C_epochEP_nflFastR_1_model_name,
+    xgb_C_epochEP_s_1_model_name,
+    xgb_C_epochEP_oq2xdq2x_1_model_name,
+    xgb_C_epochEP_s_1_weightByEpoch_model_name,
+    xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name,
+    xgb_C_driveEP_s_1_model_name,
+    xgb_C_driveEP_oq2xdq2x_1_model_name,
+    xgb_C_driveEP_s_1_weightByDrive_model_name,
+    xgb_C_driveEP_oq2xdq2x_1_weightByDrive_model_name
   )
 } else { ### Catalytic
-  model_names_list <- list(
-    xgb_C_s_1_model_name
-  )
-  ### make sure the indices of the below list match the indices of the above list...
-  catalytic_model_names_list <- list(
-    "mlr_yurko_s1d"
-  )
+  # model_names_list <- list(
+  #   xgb_C_s_1_model_name
+  # )
+  # ### make sure the indices of the below list match the indices of the above list...
+  # catalytic_model_names_list <- list(
+  #   "mlr_yurko_s1d"
+  # )
 }
-##################################################################
 
 num_models = length(model_names_list)
 num_models
@@ -68,10 +70,13 @@ print(model_names_list)
 model_name <- model_names_list[[j]]
 catalytic_model_name = if (CATALYTIC) catalytic_model_names_list[[j]]
 xgb_features <- get(paste0(model_name, "_features"))
+xgb_is_epoch_based_EP = str_detect(model_name, "epochEP")
+xgb_is_drive_based_EP = str_detect(model_name, "driveEP")
 xgb_is_Regression = str_detect(model_name, "xgb_R_")
 xgb_is_BoundedRegression = str_detect(model_name, "xgb_BR_")
-xgb_is_weightedByEpoch = str_detect(model_name, "_wbe")
-xgb_is_weightedByGame = str_detect(model_name, "_wbg")
+xgb_is_weightedByEpoch = str_detect(model_name, "weightByEpoch")
+xgb_is_weightedByDrive = str_detect(model_name, "weightByDrive")
+# xgb_is_weightedByGame = str_detect(model_name, "weightByGame")
 xgb_monotonicities <- if (xgb_is_Regression | xgb_is_BoundedRegression) get(paste0(model_name, "_monotonicities"))  
 xgb_fit_on_110_data = str_detect(model_name, "110")
 num_features = length(xgb_features)
@@ -252,10 +257,17 @@ grid_to_ParamList <- function(grid) {
                     objective = "reg:squarederror",
                     eval_metric = c("mae"))
     } else {
+      if (xgb_is_epoch_based_EP) {
+        num_class = 7
+      } else if (xgb_is_drive_based_EP) {
+        num_class = 5
+      } else {
+        stop(paste0("Either `xgb_is_epoch_based_EP` or `xgb_is_drive_based_EP` must be TRUE."))
+      }
       param <- list(booster = "gbtree",  
                     objective = "multi:softprob",
                     eval_metric = c("mlogloss"),
-                    num_class = 7)
+                    num_class = num_class)
     }
     param <- c(param,
                list(
@@ -292,7 +304,7 @@ plot_xgb_tune_results <- function(losses, grid_) {
     facet_wrap(~parameter, scales = "free_x") +
     labs(x = NULL, y = "loss") +
     theme_bw()
-  ggsave(paste0("job_output/plot_tuning_", model_name, ".png"), plot_, width=8, height=6)
+  # ggsave(paste0("job_output/plot_tuning_", model_name, ".png"), plot_, width=8, height=6)
 }
 
 #######################
@@ -304,35 +316,46 @@ evaluate_param_combo <- function(params) {
   VAL_SET_FORTUNING = TRAIN_SET %>% filter(val_play) 
   TRAIN_SET_FORTUNING = TRAIN_SET %>% filter(!val_play) 
   
-  ### catalytic training data is made in here too!
-  xgb <- train_xgb(xgb_features, TRAIN_SET_FORTUNING, params,
+  xgb <- train_xgb(xgb_features, TRAIN_SET_FORTUNING, params, 
                    nrounds=1500, ## dummy, not used, since param_tuning=TRUE
-                   watchSet=VAL_SET_FORTUNING,
-                   w=FALSE, ## dummy, the value of catalytic will determine whether w is T or F
-                   catalytic=CATALYTIC, 
-                   Regression=xgb_is_Regression, BoundedRegression=xgb_is_BoundedRegression, wp=FALSE,
-                   catalytic_model_name=catalytic_model_name, param_tuning=TRUE, print_every_n=print_every_n,
-                   weight_by_epoch=xgb_is_weightedByEpoch, weight_by_game=xgb_is_weightedByGame
-  )
+                   watchSet=VAL_SET_FORTUNING, 
+                   epoch_based_EP=xgb_is_epoch_based_EP, drive_based_EP=xgb_is_drive_based_EP, wp=FALSE,
+                   weight_by_epoch=xgb_is_weightedByEpoch, weight_by_drive=xgb_is_weightedByDrive,
+                   Regression=xgb_is_Regression, BoundedRegression=xgb_is_BoundedRegression,
+                   catalytic=CATALYTIC,   catalytic_model_name=catalytic_model_name,
+                   param_tuning=TRUE, print_every_n=print_every_n)
   
   # bundle up the results together for returning
   output <- params
   output$nrounds <- xgb$best_iteration
   output$test_loss <- xgb$best_score
   
-  ### tune the xgboost fit using w_RMSE, not logloss
-  if (xgb_is_BoundedRegression | !xgb_is_Regression) { 
-    output$test_loss <- RMSE(
-      VAL_SET_FORTUNING$pts_next_score, 
-      predict_ep_xgb(xgb, VAL_SET_FORTUNING, xgb_features, model_name, 
-                     Regression=xgb_is_Regression, BoundedRegression=xgb_is_BoundedRegression)$pred,
-      if (xgb_is_weightedByEpoch) VAL_SET_FORTUNING$w else rep(1, nrow(VAL_SET_FORTUNING))
-    )
-    # output$test_loss <- MAE(
-    #   VAL_SET_FORTUNING$pts_next_score, 
-    #   predict_ep_xgb(xgb, VAL_SET_FORTUNING, xgb_features, model_name, 
-    #                  Regression=xgb_is_Regression, BoundedRegression=xgb_is_BoundedRegression)$pred
-    # )
+  ### tune the xgboost fit using RMSE or w_RMSE, not logloss
+  if (!xgb_is_Regression) { 
+    
+    val_preds = predict_ep_xgb(
+      xgb, VAL_SET_FORTUNING, xgb_features, model_name, 
+      epoch_based_EP=xgb_is_epoch_based_EP, drive_based_EP=xgb_is_drive_based_EP,
+      Regression=xgb_is_Regression, BoundedRegression=xgb_is_BoundedRegression
+    ) 
+    
+    if (xgb_is_epoch_based_EP) {
+      val_y = VAL_SET_FORTUNING$pts_next_score
+    } else if (xgb_is_drive_based_EP) {
+      val_y = VAL_SET_FORTUNING$pts_end_of_drive
+    } else {
+      stop(paste0("Either `xgb_is_epoch_based_EP` or `xgb_is_drive_based_EP` must be TRUE."))
+    }
+    
+    if (xgb_is_weightedByEpoch) {
+      val_w = VAL_SET_FORTUNING$epoch_weight
+    } else if (xgb_is_weightedByDrive) {
+      val_w = VAL_SET_FORTUNING$drive_weight
+    } else {
+      val_w = rep(1, nrow(VAL_SET_FORTUNING))
+    }
+    
+    output$test_loss <- RMSE(val_preds$pred, val_y, val_w)
   } 
   
   print(paste("Loss for this param combo is", output$test_loss))

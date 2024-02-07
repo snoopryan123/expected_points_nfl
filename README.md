@@ -3,7 +3,7 @@
 
 # Get play-by-play data
 * download `data4.csv` from https://upenn.box.com/s/kp43egvarlv6bsgbxuchnbc9fcj9iave and put in `data/` folder
-* you can also generate these datasets from code:
+* you can also generate the dataset from code:
   * enter `data` folder
   * run `d1_data_acquisition.R` -> output `data_nflFastR_pbp_1999_2022.csv`
   * run `d2_data_acquisition.R` -> output `data2.csv`
@@ -13,7 +13,7 @@
 
 # Model comparison
 * enter `model_comparison` folder
-* tune XGB (XGBoost) params: run `param_tuning.R` parallelized on a cluster via `run_param_tuning.sh`, then transfer the outputted `.yaml` files, which store the tuned params from the folder `param_tuning_results` into the folder `param_tuning_results_FINAL`
+* tune XGB (XGBoost) params: run `param_tuning.R` parallelized on a cluster via `run_param_tuning.sh`, then transfer the outputted `.yaml` files (which store the tuned params) from the folder `param_tuning_results` into the folder `param_tuning_results_FINAL`
 * test XGB models: run `test_predPerf_XGB.R` (on a cluster via `run_test_XGB.sh`)
 * test MLR (multinomial logistic regression) models: run `test_predPerf_MLR.R` (on a cluster via `run_test_MLR.sh`)
 * train and save XGB models on the full dataset: run `train_fullXGBModels.R` parallelized on a cluster via `run_train_fullXGBModels.sh`, which outputs `.xgb` files that store the fitted the models
