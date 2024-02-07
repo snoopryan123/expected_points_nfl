@@ -4,12 +4,12 @@ booster: gbtree
 objective: multi:softprob
 eval_metric: mlogloss
 num_class: 5.0
-eta: 0.0353948
-gamma: 6.1824403e-05
-subsample: 0.38
-colsample_bytree: 0.7368421
-max_depth: 5
-min_child_weight: 16
-nrounds: 340.0
-test_loss: 1.1353897
+eta: 0.0366513
+gamma: 2.2310212
+subsample: 0.62
+colsample_bytree: 0.6315789
+max_depth: 6
+min_child_weight: 23
+nrounds: 438.0
+test_loss: 0.9990899
 
