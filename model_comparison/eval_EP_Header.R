@@ -4,8 +4,8 @@ if (length(args) == 2) {
   N_train = 100 #FIXME # num. train sets in which we randomly draw 1 play per epoch
   N_test = 100 #FIXME # num. test sets in which we randomly draw 1 play per epoch
   epoch_based_EP = as.logical(args[1])
-  b = as.numeric(args[2]) ### index of the boot. training dataset (b == 0 means use the original training set) (for parallelization)
-  B = as.numeric(args[3]) ### num. bootstrapped datasets
+  b = as.numeric(args[2])-1 ### index of the boot. training dataset (b == 0 means use the original training set) (for parallelization)
+  B = as.numeric(args[3])-1 ### num. bootstrapped datasets
 } else {
   ### local machine
   N_train = 3 #FIXME # num. train sets in which we randomly draw 1 play per epoch
