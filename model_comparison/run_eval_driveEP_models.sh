@@ -7,4 +7,4 @@
 ## MORE RAM
 #$ -l m_mem_free=15G
 
-Rscript --vanilla eval_EP_models.R FALSE FALSE
+Rscript --vanilla eval_EP_models.R FALSE TRUE
