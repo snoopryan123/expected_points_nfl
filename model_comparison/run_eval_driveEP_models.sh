@@ -5,6 +5,6 @@
 
 #$ -o job_output/$JOB_NAME-$JOB_ID.log
 ## MORE RAM
-#$ -l m_mem_free=15G
+#$ -l m_mem_free=75G
 
 Rscript --vanilla eval_EP_models.R FALSE TRUE

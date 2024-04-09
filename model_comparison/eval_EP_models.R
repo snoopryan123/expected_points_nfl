@@ -1,12 +1,14 @@
 
-N_train = 100 #FIXME # num. train sets in which we randomly draw 1 play per epoch
-N_test = 100 #FIXME # num. test sets in which we randomly draw 1 play per epoch
-
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args) == 2) {
+  N_train = 100 #FIXME # num. train sets in which we randomly draw 1 play per epoch
+  N_test = 100 #FIXME # num. test sets in which we randomly draw 1 play per epoch
   epoch_based_EP = as.logical(args[1])
   retrain_models_even_if_saved = as.logical(args[2])
 } else {
+  ### local machine
+  N_train = 3 #FIXME # num. train sets in which we randomly draw 1 play per epoch
+  N_test = 10 #FIXME # num. test sets in which we randomly draw 1 play per epoch
   epoch_based_EP = FALSE #FIXME
   retrain_models_even_if_saved = FALSE #FIXME
 }
