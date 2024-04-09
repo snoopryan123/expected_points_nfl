@@ -6,7 +6,7 @@ source("eval_EP_Header.R")
 #######################
 
 for (j in 1:length(xgb_model_names_list)) {
-  print(paste0("bootstrapped dataset b=", b, "/", B, " for model", " j=",j,"/",length(xgb_model_names_list), " ", xgb_model_name))
+  print(paste0("bootstrapped dataset b=", b, "/", B, " for model", " j=",j,"/",length(xgb_model_names_list)))
   # print(paste0("model j=",j,"/",length(xgb_model_names_list)))
   xgb_model_name <- xgb_model_names_list[[j]]
   

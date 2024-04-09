@@ -1,6 +1,6 @@
 
 args <- commandArgs(trailingOnly = TRUE)
-if (length(args) == 2) {
+if (length(args) > 0) {
   N_train = 100 #FIXME # num. train sets in which we randomly draw 1 play per epoch
   N_test = 100 #FIXME # num. test sets in which we randomly draw 1 play per epoch
   epoch_based_EP = as.logical(args[1])
