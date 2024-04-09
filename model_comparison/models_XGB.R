@@ -195,6 +195,22 @@ predict_ep_xgb <- function(xgb, test_set, xgb_features, model_name,
   return(tibble(pred=pred_ep, model=model_name))
 }
 
+randomlyDrawOnePlayPerGroup <- function(dataset, seed, drive_based_EP=TRUE, N=100) {
+  if (!drive_based_EP) {
+    epoch_based_EP = TRUE
+  }
+  group_var = if (drive_based_EP) "Drive" else if (epoch_based_EP) "epoch" 
+  
+  datasets_lst = list()
+  for (i in 1:N) {
+    print(paste0("randomly sampling 1 play per ", tolower(group_var)," for the i=",i," of ",N,"^th time."))
+    set.seed(seed + i*seed*3)
+    dataset_i = dataset %>% group_by_at(group_var) %>% slice_sample(n=1) %>% ungroup()
+    datasets_lst[[i]] = dataset_i
+  }
+  datasets_lst
+}
+
 ###########################################################
 ### XGBoost epoch-EP Classification Models (unweighted) ###
 ###########################################################
@@ -303,3 +319,114 @@ xgb_C_driveEP_oq2xdq2x_1_weightByDrive_params = load_params(xgb_C_driveEP_oq2xdq
 xgb_C_driveEP_oq2xdq2x_1_weightByDrive_nrounds = load_params(xgb_C_driveEP_oq2xdq2x_1_weightByDrive_model_name)[[2]]
 xgb_C_driveEP_oq2xdq2x_1_weightByDrive_catalytic = load_params(xgb_C_driveEP_oq2xdq2x_1_weightByDrive_model_name)[[3]]
 
+
+
+###############################################################################################
+### XGBoost drive-EP Classification Models trained from randomly drawing one play per drive ###
+###############################################################################################
+
+####
+xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_model_name = "xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup"
+xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_model_name_RAW = str_remove(xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_model_name, "_randomlyDrawOnePlayPerGroup")
+xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_features = get(paste0(xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_model_name_RAW, "_features"))
+xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_params = load_params(xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_model_name_RAW)[[1]]
+xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_nrounds = load_params(xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_model_name_RAW)[[2]]
+xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_catalytic = load_params(xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_model_name_RAW)[[3]]
+
+####
+xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name = "xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup"
+xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name_RAW = str_remove(xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name, "_randomlyDrawOnePlayPerGroup")
+xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_features = get(paste0(xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name_RAW, "_features"))
+xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_params = load_params(xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name_RAW)[[1]]
+xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_nrounds = load_params(xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name_RAW)[[2]]
+xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_catalytic = load_params(xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name_RAW)[[3]]
+
+#################################################################
+### Randomly draw one play per drive or epoch, train N models ###
+#################################################################
+
+train_xgb_randomlyDrawnPlayPerGroup <- function(
+    xgb_model_name, xgb_features, train_set, xgb_params, xgb_nrounds, test_set, drive_based_EP=TRUE, N=100
+) {
+  if (!drive_based_EP) { epoch_based_EP = TRUE }
+  group_var = if (drive_based_EP) "Drive" else if (epoch_based_EP) "epoch" 
+  
+  ### get N train sets; each is formed by randomly sampling one play per group (drive or epoch)
+  train_sets_lst = randomlyDrawOnePlayPerGroup(train_set, seed=273442, drive_based_EP=drive_based_EP, N=N)
+  
+  ### train the model from each train set
+  xgb_lst = list()
+  for (i in 1:N) {
+    print(paste0("training ", xgb_model_name," on training set i=",i,"/",N))
+    train_set_i = train_sets_lst[[i]]
+    xgb_i <- train_xgb(
+      xgb_features, train_set_i, xgb_params, xgb_nrounds, watchSet=test_set, 
+      epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP, 
+      weight_by_epoch=FALSE, weight_by_drive=FALSE
+    )
+    xgb_lst[[i]] = xgb_i
+  }
+  xgb_lst
+}
+
+predict_xgb_randomlyDrawnPlayPerGroup <- function(
+    xgb_lst, test_set, xgb_features, xgb_model_name, epoch_based_EP, drive_based_EP, EP=TRUE
+) {
+
+  preds_lst = list()
+  for (i in 1:length(xgb_lst)) {
+    # print("eval xgb i=",i,"/",)
+    xgb_i <- xgb_lst[[i]]
+    if (EP) {
+      ### EP hat
+      EP_hat_i = predict_ep_xgb(xgb_i, test_set, xgb_features, xgb_model_name, 
+                                epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP)$pred
+      preds_lst[[i]] = EP_hat_i
+    } else {
+      ### p_hat
+      p_hat_mat_i = predict_probs_xgb(xgb_i, test_set, xgb_features, 
+                                      epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP)
+      preds_lst[[i]] = p_hat_mat_i
+    }
+  }
+  
+  ### average across each of the models
+  if (EP) {
+    ### EP hat
+    preds = apply(do.call(rbind, preds_lst), 2, mean)
+  } else {
+    ### p_hat
+    # Convert the list of matrices to a 3D array
+    preds_lst_3d <- array(unlist(preds_lst), dim = c(nrow(preds_lst[[1]]), ncol(preds_lst[[1]]), length(preds_lst)))
+    preds = apply(preds_lst_3d, MARGIN=c(1,2), FUN=mean)
+    colnames(preds) = colnames(preds_lst[[1]])
+  }
+  
+  preds
+}
+
+#################################################################
+#################################################################
+# ##################################################################
+# ### OLS Models fit from All Downs with Random Effect for Epoch ###
+# library(lme4)
+# 
+# fit_lm_s2dE_R <- function(dataset, w=FALSE) {
+#   if (w) { w = dataset$w } else { w = rep(1, nrow(dataset)) }
+#   fit = lmer(pts_next_score ~
+#                bs(half_seconds_remaining, df=3, knots=c(30,120))*bs(yardline_100, df=5):factor(down) +
+#                log(ydstogo):factor(down) +
+#                utm:as.numeric(posteam_timeouts_remaining==0) +
+#                I((score_differential <= -11)) + ### need a TD
+#                I((score_differential <= -4)*(game_seconds_remaining <= 900)) + ### need a TD   ### note:: fourth_quarter == game_seconds_remaining <= 900
+#                I((-3 <= score_differential & score_differential <= 0)*(game_seconds_remaining <= 900)) + ### ok with a field goal
+#                I((1 <= score_differential & score_differential <= 3)*(game_seconds_remaining <= 900)) + ### prefer a TD but ok with a field goal
+#                I((4 <= score_differential & score_differential <= 10)*(game_seconds_remaining <= 900)) + ### ok with a field goal but game is still close
+#                I((score_differential >= 11)) + ### comfortable, field goal is fine
+#                factor(era_A) +
+#                posteam_spread + posteam_spread:yardline_100 +
+#                (1 | epoch),
+#              weights = w, data = dataset)
+#   # clean_lm(fit)
+#   fit
+# }
