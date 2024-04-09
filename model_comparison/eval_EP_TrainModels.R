@@ -45,7 +45,7 @@ for (j in 1:length(xgb_model_names_list)) {
   }
     
   ### save the model
-  filename = paste0("fitted_models/trainedModel_",xgb_model_name,"_b=",b,".rds")
+  filename = paste0("fitted_models/trainedModel_",xgb_model_name,"_b",b,".rds")
   saveRDS(xgb, filename)
 }
 
