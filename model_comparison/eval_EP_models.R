@@ -28,7 +28,9 @@ source("models_XGB.R")
 
 ###
 map_drive_outcome_to_value = data_full %>% distinct(outcome_drive, pts_end_of_drive) %>% arrange(outcome_drive)
+map_drive_outcome_to_value$outcome_drive_str = drive_EP_outcomes
 map_epoch_outcome_to_value = data_full %>% distinct(outcome_epoch, pts_next_score) %>% arrange(outcome_epoch)
+map_epoch_outcome_to_value$outcome_epoch_str = epoch_EP_outcomes
 
 #######################
 ### TRAIN EP MODELS ###
@@ -44,13 +46,18 @@ if (epoch_based_EP) {
     xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name
   )
 } else if (drive_based_EP) {
+  # xgb_model_names_list <- list(
+  #   xgb_C_driveEP_s_1_model_name,
+  #   xgb_C_driveEP_s_1_weightByDrive_model_name,
+  #   xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_model_name,
+  #   xgb_C_driveEP_oq2xdq2x_1_model_name,
+  #   xgb_C_driveEP_oq2xdq2x_1_weightByDrive_model_name,
+  #   xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name
+  # )
   xgb_model_names_list <- list(
     xgb_C_driveEP_s_1_model_name,
     xgb_C_driveEP_s_1_weightByDrive_model_name,
-    xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_model_name,
-    xgb_C_driveEP_oq2xdq2x_1_model_name,
-    xgb_C_driveEP_oq2xdq2x_1_weightByDrive_model_name,
-    xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name
+    xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_model_name
   )
 } else {
   stop(paste0("Either `epoch_based_EP` or `drive_based_EP` must be TRUE."))
@@ -99,6 +106,7 @@ if (!retrain_models_even_if_saved & file.exists(filename)) {
 ### randomly sample one play per epoch drive, then within the sampled test set calculate:
 # RMSE(EP_hat, value(y))
 # LOGLOSS(p_hat, y)
+# COVG(pred_set(p_hat), y)
 
 ##############################################################
 ### EVALUATE BY RANDOMLY SAMPLING ONE PLAY PER EPOCH/DRIVE ###
@@ -114,9 +122,11 @@ test_sets_lst = randomlyDrawOnePlayPerGroup(test_set, seed=98296, drive_based_EP
 
 MAT_rmse_EPHat_ValueY = matrix(nrow = length(test_sets_lst), ncol = length(EP_models_lst))
 MAT_logloss_PHat_Y = matrix(nrow = length(test_sets_lst), ncol = length(EP_models_lst))
+MAT_covg_PHat_Y = matrix(nrow = length(test_sets_lst), ncol = length(EP_models_lst))
 
 colnames(MAT_rmse_EPHat_ValueY) = names(EP_models_lst)
 colnames(MAT_logloss_PHat_Y) = names(EP_models_lst)
+colnames(MAT_covg_PHat_Y) = names(EP_models_lst)
 
 for (j in 1:length(EP_models_lst)) {
   xgb_model_name <- names(EP_models_lst)[j]
@@ -131,6 +141,7 @@ for (j in 1:length(EP_models_lst)) {
     test_set_i = test_sets_lst[[i]]
     value_y_i = if (drive_based_EP) test_set_i$pts_end_of_drive else if (epoch_based_EP) test_set_i$pts_next_score
     y_i = if (drive_based_EP) test_set_i$outcome_drive else if (epoch_based_EP) test_set_i$outcome_epoch
+    y_i_str = (tibble(outcome_drive = y_i) %>% left_join(map_drive_outcome_to_value, by="outcome_drive"))$outcome_drive_str
     
     if (!xgb_is_randomlyDrawOnePlayPerGroup) {
       ### EP_hat
@@ -139,7 +150,6 @@ for (j in 1:length(EP_models_lst)) {
       ### p_hat
       p_hat_mat_ij = predict_probs_xgb(xgb, test_set_i, xgb_features, 
                                        epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP)
-      p_hat_times_y_ij = p_hat_mat_ij[cbind(1:nrow(p_hat_mat_ij), y_i+1)]
     } else {
       ### EP_hat
       EP_hat_ij = predict_xgb_randomlyDrawnPlayPerGroup(
@@ -150,22 +160,29 @@ for (j in 1:length(EP_models_lst)) {
         xgb, test_set_i, xgb_features, xgb_model_name, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP, EP=FALSE
       ) 
     }
-
     # RMSE(EP_hat, value(y))
     MAT_rmse_EPHat_ValueY[i,j] = RMSE(EP_hat_ij, value_y_i)
     # LOGLOSS(p_hat, y)
+    p_hat_times_y_ij = p_hat_mat_ij[cbind(1:nrow(p_hat_mat_ij), y_i+1)]
     MAT_logloss_PHat_Y[i,j] = -mean(log(p_hat_times_y_ij))
+    ### pred_set(p_hat)
+    pred_sets_95_ij = get_pred_sets(p_hat_mat_ij, q_=0.95)
+    # COVG(pred_set(p_hat), y)
+    covered_ij = sapply(1:length(y_i_str), function(l) y_i_str[l] %in% pred_sets_95_ij[[l]])
+    MAT_covg_PHat_Y[i,j] = mean(covered_ij)
   }
 }
 
 EVAL_ARRAY <- abind( 
   MAT_rmse_EPHat_ValueY, 
   MAT_logloss_PHat_Y,
+  MAT_covg_PHat_Y,
   along=3 
 )
 dimnames(EVAL_ARRAY)[[3]] = c(
   "rmse_EPHat_ValueY", 
-  "logloss_PHat_Y"
+  "logloss_PHat_Y",
+  "covg_PredSetPHat_Y"
 )
 # EVAL_ARRAY
 

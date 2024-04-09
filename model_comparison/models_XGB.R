@@ -145,6 +145,9 @@ train_xgb <- function(xgb_features, train_set, params, nrounds, watchSet=FALSE,
   return(xgb)
 }
 
+epoch_EP_outcomes = c("Touchdown","Opp_Touchdown","Field_Goal","Opp_Field_Goal","Safety","Opp_Safety","No_Score")
+drive_EP_outcomes = c("Touchdown","Field_Goal","No_Score","Opp_Safety","Opp_Touchdown")
+
 predict_probs_xgb <-  function(xgb, test_set, xgb_features, 
                                epoch_based_EP=FALSE, drive_based_EP=FALSE, wp=FALSE) {
   
@@ -154,11 +157,11 @@ predict_probs_xgb <-  function(xgb, test_set, xgb_features,
   if (epoch_based_EP) {
     # print(data_full %>% distinct(outcome_epoch, pts_next_score) %>% arrange(outcome_epoch))
     pred_matrix = matrix(xgb_pred, ncol=7, nrow=length(xgb_pred)/7, byrow=TRUE)
-    colnames(pred_matrix) = c("Touchdown","Opp_Touchdown","Field_Goal","Opp_Field_Goal","Safety","Opp_Safety","No_Score")
+    colnames(pred_matrix) = epoch_EP_outcomes
   } else if (drive_based_EP) {
     # print(data_full %>% distinct(outcome_drive, pts_end_of_drive) %>% arrange(outcome_drive))
     pred_matrix = matrix(xgb_pred, ncol=5, nrow=length(xgb_pred)/5, byrow=TRUE)
-    colnames(pred_matrix) = c("Touchdown","Field_Goal","No_Score","Opp_Safety","Opp_Touchdown")
+    colnames(pred_matrix) = drive_EP_outcomes
   } else if (wp) { ### win probability model
     pred_matrix = xgb_pred
   } else {
@@ -209,6 +212,19 @@ randomlyDrawOnePlayPerGroup <- function(dataset, seed, drive_based_EP=TRUE, N=10
     datasets_lst[[i]] = dataset_i
   }
   datasets_lst
+}
+
+get_pred_sets <- function(p_hat_mat, q_=0.95) {
+  if (is.null(colnames(p_hat_mat))) stop()
+  
+  get_pred_set <- function(i) {
+    p_vec = p_hat_mat[i,]
+    last_idx_in_pred_set = unname(which(cumsum(sort(p_vec, decreasing = T)) >= q_)[1])
+    names(p_vec[1:last_idx_in_pred_set])
+  }
+  
+  pred_set_lst = sapply(1:nrow(p_hat_mat), FUN = get_pred_set)
+  pred_set_lst
 }
 
 ###########################################################
