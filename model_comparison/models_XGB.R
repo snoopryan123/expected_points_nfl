@@ -240,7 +240,8 @@ get_clustered_bootstrap_dataset <- function(dataset, group_var) {
   ) %>% mutate(ii = 1:n()) 
   group_ids_boot[[group_var]] = group_ids_boot$g
   group_ids_boot = group_ids_boot %>% select(-g)
-  df_cb = left_join(group_ids_boot, dataset)
+  # df_cb = left_join(group_ids_boot, dataset)
+  df_cb = left_join(group_ids_boot, dataset, relationship = "many-to-many")
   
   return(df_cb)
 }

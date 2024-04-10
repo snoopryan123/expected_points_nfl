@@ -12,8 +12,6 @@ OLD/*
 *.rds
 *.png
 
-!fitted_models
-!*/fitted_models/*
 !param_tuning_results_FINAL
 
 !losses_driveEP.csv 
