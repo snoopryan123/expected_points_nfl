@@ -7,4 +7,4 @@
 ## MORE RAM
 #$ -l m_mem_free=15G
 
-Rscript --vanilla eval_EP_TrainModels.R FALSE 100000 101
+Rscript --vanilla eval_EP_EvalLosses.R FALSE 100000 101
