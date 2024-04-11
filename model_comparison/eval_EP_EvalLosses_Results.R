@@ -17,6 +17,7 @@ for (b in 1:B) {
   df_eval_b = read_csv(evalFilename(b=b), show_col_types = F)
   df_eval_lst[[b]] = df_eval_b
 }
+print("about to do.call(rbind(.")
 df_eval = do.call(rbind, df_eval_lst)
 df_eval = df_eval %>% arrange(i, b)
 df_eval

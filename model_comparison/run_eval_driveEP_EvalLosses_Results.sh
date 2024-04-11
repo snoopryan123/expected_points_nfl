@@ -5,6 +5,6 @@
 
 #$ -o job_output/$JOB_NAME-$JOB_ID.log
 ## MORE RAM
-#$ -l m_mem_free=40G
+#$ -l m_mem_free=100G
 
 Rscript --vanilla eval_EP_EvalLosses_Results.R FALSE 100000 101
