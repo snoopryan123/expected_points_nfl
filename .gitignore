@@ -12,6 +12,8 @@ OLD/*
 *.rds
 *.png
 
+eval_models
+
 !param_tuning_results_FINAL
 
 !losses_driveEP.csv 
