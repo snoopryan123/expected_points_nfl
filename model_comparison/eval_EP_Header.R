@@ -9,7 +9,7 @@ if (length(args) > 0) {
 } else {
   ### local machine
   N_train = 3 #FIXME # num. train sets in which we randomly draw 1 play per epoch
-  N_test = 10 #FIXME # num. test sets in which we randomly draw 1 play per epoch
+  N_test = 5 #FIXME # num. test sets in which we randomly draw 1 play per epoch
   epoch_based_EP = FALSE #FIXME
   b = 1 #FIXME
   B = 3 #FIXME
@@ -59,15 +59,15 @@ if (epoch_based_EP) {
   #   xgb_C_driveEP_oq2xdq2x_1_weightByDrive_model_name,
   #   xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name
   # )
-  # xgb_model_names_list <- list(
-  #   xgb_C_driveEP_s_1_model_name,
-  #   xgb_C_driveEP_s_1_weightByDrive_model_name,
-  #   xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_model_name
-  # )
   xgb_model_names_list <- list(
     xgb_C_driveEP_s_1_model_name,
-    xgb_C_driveEP_s_1_weightByDrive_model_name
+    xgb_C_driveEP_s_1_weightByDrive_model_name,
+    xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_model_name
   )
+  # xgb_model_names_list <- list(
+  #   xgb_C_driveEP_s_1_model_name,
+  #   xgb_C_driveEP_s_1_weightByDrive_model_name
+  # )
 } else {
   stop(paste0("Either `epoch_based_EP` or `drive_based_EP` must be TRUE."))
 }
