@@ -1,0 +1,14 @@
+model_name: xgb_R_driveEP_s_1_weightByDrive
+CATALYTIC: no
+booster: gbtree
+objective: reg:squarederror
+eval_metric: rmse
+eta: 0.0522722
+gamma: 9.8325522e-09
+subsample: 0.39
+colsample_bytree: 0.75
+max_depth: 6
+min_child_weight: 10
+nrounds: 210.0
+test_loss: 0.9998089
+

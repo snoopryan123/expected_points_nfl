@@ -114,5 +114,10 @@ write_csv(
   paste0("results_losses_",if (drive_based_EP) "driveEP" else if (epoch_based_EP) "epochEP",".csv")
 )
 
-
+### view results
+# library(tidyverse)
+# temp1 = read_csv("results_losses_driveEP.csv")
+# temp2 = read_csv("results_bootCovg_driveEP.csv")
+# temp1
+# temp2
 

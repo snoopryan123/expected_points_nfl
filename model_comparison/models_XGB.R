@@ -447,6 +447,36 @@ predict_xgb_randomlyDrawnPlayPerGroup <- function(
   preds
 }
 
+#################################################################################
+### XGBoost drive-EP (Monotonic) Regression Models that are weighted by drive ###
+#################################################################################
+
+####
+xgb_R_driveEP_s_1_weightByDrive_model_name = "xgb_R_driveEP_s_1_weightByDrive"
+xgb_R_driveEP_s_1_weightByDrive_features = 
+  c("yardline_100", "down1", "down2", "down3", "down4", 
+    "ydstogo", "half_seconds_remaining", "era_A", 
+    "posteam_timeouts_remaining",  "defteam_timeouts_remaining", 
+    "score_differential", "posteam_spread"
+  )
+xgb_R_driveEP_s_1_weightByDrive_monotonicities =  c(-1,0,0,0,0, -1,0,1, 1,-1, 0,-1)
+xgb_R_driveEP_s_1_weightByDrive_params = load_params(xgb_R_driveEP_s_1_weightByDrive_model_name)[[1]]
+xgb_R_driveEP_s_1_weightByDrive_nrounds = load_params(xgb_R_driveEP_s_1_weightByDrive_model_name)[[2]]
+xgb_R_driveEP_s_1_weightByDrive_catalytic = load_params(xgb_R_driveEP_s_1_weightByDrive_model_name)[[3]]
+
+####
+xgb_R_driveEP_s_2_weightByDrive_model_name = "xgb_R_driveEP_s_2_weightByDrive"
+xgb_R_driveEP_s_2_weightByDrive_features = 
+  c("yardline_100", "down",
+    "ydstogo", "half_seconds_remaining", "era_A", 
+    "posteam_timeouts_remaining",  "defteam_timeouts_remaining", 
+    "score_differential", "posteam_spread"
+  )
+xgb_R_driveEP_s_2_weightByDrive_monotonicities =  c(-1,-1, -1,0,1, 1,-1, 0,-1)
+xgb_R_driveEP_s_2_weightByDrive_params = load_params(xgb_R_driveEP_s_2_weightByDrive_model_name)[[1]]
+xgb_R_driveEP_s_2_weightByDrive_nrounds = load_params(xgb_R_driveEP_s_2_weightByDrive_model_name)[[2]]
+xgb_R_driveEP_s_2_weightByDrive_catalytic = load_params(xgb_R_driveEP_s_2_weightByDrive_model_name)[[3]]
+
 #################################################################
 #################################################################
 # ##################################################################

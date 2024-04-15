@@ -39,16 +39,24 @@ if (!CATALYTIC) {
 
 if (!CATALYTIC) { 
   model_names_list <- list(
-    xgb_C_epochEP_nflFastR_1_model_name,
-    xgb_C_epochEP_s_1_model_name,
-    xgb_C_epochEP_oq2xdq2x_1_model_name,
-    xgb_C_epochEP_s_1_weightByEpoch_model_name,
-    xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name,
     xgb_C_driveEP_s_1_model_name,
     xgb_C_driveEP_oq2xdq2x_1_model_name,
     xgb_C_driveEP_s_1_weightByDrive_model_name,
-    xgb_C_driveEP_oq2xdq2x_1_weightByDrive_model_name
+    xgb_C_driveEP_oq2xdq2x_1_weightByDrive_model_name,
+    xgb_R_driveEP_s_1_weightByDrive_model_name,
+    xgb_R_driveEP_s_2_weightByDrive_model_name
   )
+  # model_names_list <- list(
+  #   xgb_C_epochEP_nflFastR_1_model_name,
+  #   xgb_C_epochEP_s_1_model_name,
+  #   xgb_C_epochEP_oq2xdq2x_1_model_name,
+  #   xgb_C_epochEP_s_1_weightByEpoch_model_name,
+  #   xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name,
+  #   xgb_C_driveEP_s_1_model_name,
+  #   xgb_C_driveEP_oq2xdq2x_1_model_name,
+  #   xgb_C_driveEP_s_1_weightByDrive_model_name,
+  #   xgb_C_driveEP_oq2xdq2x_1_weightByDrive_model_name
+  # )
 } else { ### Catalytic
   # model_names_list <- list(
   #   xgb_C_s_1_model_name
@@ -255,7 +263,7 @@ grid_to_ParamList <- function(grid) {
     } else if (xgb_is_Regression) {
       param <- list(booster = "gbtree",  
                     objective = "reg:squarederror",
-                    eval_metric = c("mae"))
+                    eval_metric = c("rmse"))
     } else {
       if (xgb_is_epoch_based_EP) {
         num_class = 7
