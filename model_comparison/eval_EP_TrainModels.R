@@ -6,16 +6,27 @@ source("eval_EP_Header.R")
 #######################
 
 for (j in 1:length(xgb_model_names_list)) {
+# for (j in 3:4) {
   print(paste0("bootstrapped dataset b=", b, "/", B, " for model", " j=",j,"/",length(xgb_model_names_list)))
-  # print(paste0("model j=",j,"/",length(xgb_model_names_list)))
-  xgb_model_name <- xgb_model_names_list[[j]]
-  
-  xgb_features <- get(paste0(xgb_model_name, "_features"))
-  xgb_is_weightedByEpoch = str_detect(xgb_model_name, "weightByEpoch")
-  xgb_is_weightedByDrive = str_detect(xgb_model_name, "weightByDrive")
-  xgb_is_randomlyDrawOnePlayPerGroup = str_detect(xgb_model_name, "randomlyDrawOnePlayPerGroup")
-  xgb_params <- get(paste0(xgb_model_name, "_params"))
-  xgb_nrounds <- get(paste0(xgb_model_name, "_nrounds"))
+
+  ### model j's attributes
+  model_name <- xgb_model_names_list[[j]]
+  model_type <- if (str_detect(model_name, "xgb")) "XGB" else if (str_detect(model_name, "mlr")) "MLR" else stop()
+  if (model_type == "XGB") {
+    xgb_features <- get(paste0(model_name, "_features"))
+    xgb_is_Regression = str_detect(model_name, "xgb_R_")
+    xgb_is_BoundedRegression = str_detect(model_name, "xgb_BR_")
+    xgb_monotonicities <- if (xgb_is_Regression | xgb_is_BoundedRegression) get(paste0(model_name, "_monotonicities"))  
+    xgb_params <- get(paste0(model_name, "_params"))
+    xgb_nrounds <- get(paste0(model_name, "_nrounds"))
+  } else if (model_type == "MLR") {
+    mlr_model_name = str_remove_all(model_name, "_weightByDrive|_weightByEpoch")
+    fit_mlr_func = get(paste0("fit_", mlr_model_name))
+    
+  }
+  xgb_is_weightedByEpoch = str_detect(model_name, "weightByEpoch")
+  xgb_is_weightedByDrive = str_detect(model_name, "weightByDrive")
+  xgb_is_randomlyDrawOnePlayPerGroup = str_detect(model_name, "randomlyDrawOnePlayPerGroup")
   
   ### bootstrapped training dataset
   if (b == 0) { ### use original training dataset
@@ -33,19 +44,39 @@ for (j in 1:length(xgb_model_names_list)) {
     
   ### train the EP model on this dataset
   if (!xgb_is_randomlyDrawOnePlayPerGroup) {
-    xgb <- train_xgb(
-      xgb_features, train_set_b, xgb_params, xgb_nrounds, watchSet=test_set, 
-      epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP, 
-      weight_by_epoch=xgb_is_weightedByEpoch, weight_by_drive=xgb_is_weightedByDrive
-    )
+    if (model_type == "XGB") {
+      fit <- train_xgb(
+        xgb_features, train_set_b, xgb_params, xgb_nrounds, watchSet=test_set, 
+        epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP, 
+        weight_by_epoch=xgb_is_weightedByEpoch, weight_by_drive=xgb_is_weightedByDrive,
+        Regression=xgb_is_Regression, BoundedRegression=xgb_is_BoundedRegression
+      )
+    } else if (model_type == "MLR") {
+      if (xgb_is_weightedByDrive) {
+        fit = fit_mlr_weightedByDrive(train_set_b, fit_model_func=fit_mlr_func)
+      } else if (xgb_is_weightedByEpoch) {
+        fit = fit_mlr_weightedByEpoch(train_set_b, fit_model_func=fit_mlr_func)
+      } else {
+        fit = fit_mlr_func(train_set_b)
+      }
+    } else {
+      stop()
+    }
   } else {
-    xgb = train_xgb_randomlyDrawnPlayPerGroup(
-      xgb_model_name, xgb_features, train_set_b, xgb_params, xgb_nrounds, test_set, drive_based_EP=TRUE, N=N_train
-    ) 
+    if (model_type == "XGB") {
+      fit = train_xgb_randomlyDrawnPlayPerGroup(
+        model_name, xgb_features, train_set_b, xgb_params, xgb_nrounds, test_set, 
+        Regression=xgb_is_Regression, BoundedRegression=xgb_is_BoundedRegression, drive_based_EP=TRUE, N=N_train
+      ) 
+    } else if (model_type == "MLR") {
+      stop()
+    } else {
+      stop()
+    }
   }
-    
+  
   ### save the model
-  filename = paste0("fitted_models/trainedModel_",xgb_model_name,"_b",b,".rds")
-  saveRDS(xgb, filename)
+  filename = paste0("fitted_models/trainedModel_",model_name,"_b",b,".rds")
+  saveRDS(fit, filename)
 }
 

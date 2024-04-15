@@ -4,15 +4,22 @@ if (length(args) > 0) {
   N_train = 100 #FIXME # num. train sets in which we randomly draw 1 play per epoch
   N_test = 100 #FIXME # num. test sets in which we randomly draw 1 play per epoch
   epoch_based_EP = as.logical(args[1])
-  b = as.numeric(args[2])-1 ### index of the boot. training dataset (b == 0 means use the original training set) (for parallelization)
-  B = as.numeric(args[3])-1 ### num. bootstrapped datasets
+  accuracy_only = as.numeric(args[2])
+  b = as.numeric(args[3])-1 ### index of the boot. training dataset (b == 0 means use the original training set) (for parallelization)
+  B = as.numeric(args[4])-1 ### num. bootstrapped datasets
 } else {
   ### local machine
   N_train = 3 #FIXME # num. train sets in which we randomly draw 1 play per epoch
   N_test = 5 #FIXME # num. test sets in which we randomly draw 1 play per epoch
   epoch_based_EP = FALSE #FIXME
-  b = 1 #FIXME
-  B = 3 #FIXME
+  
+  accuracy_only = TRUE #FIXME
+  b = 0 #FIXME
+  B = 0 #FIXME
+  
+  # accuracy_only = FALSE #FIXME
+  # b = 1 #FIXME
+  # B = 3 #FIXME
 }
 drive_based_EP = !epoch_based_EP
 group_var = if (drive_based_EP) "Drive" else if (epoch_based_EP) "epoch" 
@@ -20,6 +27,7 @@ group_var = if (drive_based_EP) "Drive" else if (epoch_based_EP) "epoch"
 print(paste0("drive_based_EP = ", drive_based_EP))
 print(paste0("epoch_based_EP = ", epoch_based_EP))
 print(paste0("group_var = ", group_var))
+print(paste0("accuracy_only = ", accuracy_only))
 print(paste0("b = ", b))
 print(paste0("B = ", B))
 
@@ -30,6 +38,7 @@ print(paste0("B = ", B))
 PRE_LOADED_TrainTestSplitAndTeamQualities = TRUE
 source("A_train_test_main.R")
 source("models_XGB.R")
+source("models_MLR.R")
 
 ###
 map_drive_outcome_to_value = data_full %>% distinct(outcome_drive, pts_end_of_drive) %>% arrange(outcome_drive)
@@ -42,15 +51,31 @@ map_epoch_outcome_to_value$outcome_epoch_str = epoch_EP_outcomes
 ######################
 
 ### get list of names of models
-if (epoch_based_EP) {
-  xgb_model_names_list <- list(
-    xgb_C_epochEP_nflFastR_1_model_name,
-    xgb_C_epochEP_s_1_model_name,
-    xgb_C_epochEP_s_1_weightByEpoch_model_name,
-    xgb_C_epochEP_oq2xdq2x_1_model_name,
-    xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name
-  )
-} else if (drive_based_EP) {
+if (drive_based_EP) {
+  if (accuracy_only) {
+    xgb_model_names_list <- list(
+      "mlr_driveEP_yurko_s3dE",
+      "mlr_driveEP_yurko_s3dE_weightByDrive",
+      xgb_R_driveEP_s_1_weightByDrive_model_name,
+      xgb_C_driveEP_s_1_weightByDrive_model_name
+    )
+    # xgb_model_names_list <- list(
+    #   "mlr_driveEP_yurko_s2dE",
+    #   "mlr_driveEP_yurko_s2dE_weightByDrive",
+    #   "mlr_driveEP_yurko_s3dE",
+    #   "mlr_driveEP_yurko_s3dE_weightByDrive",
+    #   xgb_R_driveEP_s_1_weightByDrive_model_name,
+    #   xgb_R_driveEP_s_2_weightByDrive_model_name,
+    #   xgb_C_driveEP_s_1_weightByDrive_model_name
+    # )
+  } else {
+    xgb_model_names_list <- list(
+      xgb_C_driveEP_s_1_model_name,
+      xgb_C_driveEP_s_1_weightByDrive_model_name,
+      xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_model_name
+    )
+  }
+  
   # xgb_model_names_list <- list(
   #   xgb_C_driveEP_s_1_model_name,
   #   xgb_C_driveEP_s_1_weightByDrive_model_name,
@@ -59,15 +84,18 @@ if (epoch_based_EP) {
   #   xgb_C_driveEP_oq2xdq2x_1_weightByDrive_model_name,
   #   xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name
   # )
-  xgb_model_names_list <- list(
-    xgb_C_driveEP_s_1_model_name,
-    xgb_C_driveEP_s_1_weightByDrive_model_name,
-    xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_model_name
-  )
   # xgb_model_names_list <- list(
   #   xgb_C_driveEP_s_1_model_name,
   #   xgb_C_driveEP_s_1_weightByDrive_model_name
   # )
+} else if (epoch_based_EP) {
+  xgb_model_names_list <- list(
+    xgb_C_epochEP_nflFastR_1_model_name,
+    xgb_C_epochEP_s_1_model_name,
+    xgb_C_epochEP_s_1_weightByEpoch_model_name,
+    xgb_C_epochEP_oq2xdq2x_1_model_name,
+    xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name
+  )
 } else {
   stop(paste0("Either `epoch_based_EP` or `drive_based_EP` must be TRUE."))
 }

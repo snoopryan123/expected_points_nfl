@@ -11,23 +11,21 @@ setwd(filewd)
 ### plot selection bias in team quality ###
 ###########################################
 
-plot_selection_bias0a = data_full %>%
-  select(pts_next_score, yardline_100, posteam_spread) %>%
+plot_selection_bias1A = data_full %>%
+  select(pts_next_score, pts_end_of_drive, yardline_100, posteam_spread) %>%
   filter(yardline_100 <= 30) %>%
-  # filter(posteam_spread %in% -14:14) %>%
   mutate(
     point_spread_bin = cut(posteam_spread, breaks=c(-30,-3.5,3.5,30))
-    # yardline_bin = cut(yardline_100, breaks=seq(0,100,by=10)),
-    # point_spread_bin = cut(posteam_spread, breaks=c(-30,-15,-7,-3,0,3,7,14,30))
   ) %>%
   group_by(point_spread_bin) %>%
   summarise(
-    avg_next_pts = mean(pts_next_score)
+    # avg_next_pts = mean(pts_next_score)
+    avg_next_pts = mean(pts_end_of_drive)
   ) %>%
-  # ggplot(aes(x = fct_reorder(point_spread_bin, -avg_next_pts), y = avg_next_pts, )) +
   ggplot(aes(x = point_spread_bin, y = avg_next_pts, )) +
   geom_col(fill="firebrick") +
-  ylab("average empirical points\n of the next score") +
+  # ylab("average empirical points\n of the next score") +
+  ylab("average empirical points\n at the end of the drive") +
   xlab("point spread bin") +
   theme(
     axis.text.x = element_text(size=25, angle = 45, vjust = 1, hjust=1),
@@ -36,15 +34,14 @@ plot_selection_bias0a = data_full %>%
     axis.title = element_text(size=40)
   ) +
   labs(title = TeX("$$yardline \\in (0,30]$$"))
-# plot_selection_bias0a
-ggsave("plot_selection_bias0a.png", plot_selection_bias0a, width=6, height=8)
+# plot_selection_bias1A
+ggsave("plot_selection_bias1A.png", plot_selection_bias1A, width=6, height=8)
 
-plot_selection_bias4a = 
+plot_selection_bias1B = 
   data_full %>%
-  select(pts_next_score, yardline_100, posteam_spread) %>%
+  select(yardline_100, posteam_spread) %>%
   filter(yardline_100 <= 30) %>%
   mutate(
-    # yardline_bin = cut(yardline_100, breaks=c(0,30,70,100)),
     point_spread_bin = cut(posteam_spread, breaks=c(-30,-3.5,3.5,30))
   ) %>%
   group_by(point_spread_bin) %>%
@@ -52,7 +49,6 @@ plot_selection_bias4a =
     count = n()
   ) %>% 
   mutate(freq = count/sum(count)) %>%
-  ### plot
   ggplot(aes(x = point_spread_bin, y = freq, )) +
   geom_col(fill="dodgerblue3") +
   ylab("empirical frequency") +
@@ -64,12 +60,25 @@ plot_selection_bias4a =
     axis.title = element_text(size=40)
   ) +
   labs(title = TeX("$$yardline \\in (0,30]$$"))
-# plot_selection_bias4a
-ggsave("plot_selection_bias4a.png", plot_selection_bias4a, width=6, height=8)
+# plot_selection_bias1B
+ggsave("plot_selection_bias1B.png", plot_selection_bias1B, width=6, height=8)
+
+### base-rate empirical avg next pts
+data_full %>%
+  select(pts_next_score, pts_end_of_drive, yardline_100, posteam_spread) %>%
+  mutate(
+    point_spread_bin = cut(posteam_spread, breaks=c(-30,-3.5,3.5,30))
+  ) %>%
+  group_by(point_spread_bin) %>%
+  summarise(
+    # avg_next_pts = mean(pts_next_score)
+    avg_next_pts = mean(pts_end_of_drive)
+  ) %>%
+  arrange(-avg_next_pts)
 
 ################################################################################
 
-plot_selection_bias0 = 
+plot_selection_bias2A = 
   data_full %>%
   select(pts_next_score, yardline_100, posteam_spread) %>%
   filter(posteam_spread %in% -14:14) %>%
@@ -96,24 +105,10 @@ plot_selection_bias0 =
     axis.title = element_text(size=40)
   ) +
   xlab("yards from opponent's endzone") + ylab("point spread bin") 
-# plot_selection_bias0
-ggsave("plot_selection_bias0.png", plot_selection_bias0, width=9, height=6)
+# plot_selection_bias2A
+# ggsave("plot_selection_bias2A.png", plot_selection_bias2A, width=9, height=6)
 
-
-### base-rate empirical avg next pts
-data_full %>%
-  select(pts_next_score, yardline_100, posteam_spread) %>%
-  # filter(yardline_100 <= 30) %>%
-  mutate(
-    point_spread_bin = cut(posteam_spread, breaks=c(-30,-3.5,3.5,30))
-  ) %>%
-  group_by(point_spread_bin) %>%
-  summarise(
-    avg_next_pts = mean(pts_next_score)
-  ) %>%
-  arrange(-avg_next_pts)
-
-plot_selection_bias1 = 
+plot_selection_bias2B = 
   data_full %>%
   # filter(season > 2010) %>%
   select(posteam_spread, yardline_100) %>%
@@ -128,10 +123,10 @@ plot_selection_bias1 =
   xlab("point spread of the offensive team") +
   ylab("mean yardline") +
   geom_smooth(se=FALSE, method = "lm", color="dodgerblue2", linewidth=1)
-# plot_selection_bias1
-ggsave("plot_selection_bias1.png", plot_selection_bias1, width=6, height=6)
+# plot_selection_bias2B
+# ggsave("plot_selection_bias2B.png", plot_selection_bias2B, width=6, height=6)
 
-plot_selection_bias2 = 
+plot_selection_bias2C = 
   data_full %>%
   # filter(season > 2010) %>%
   select(posteam_spread, yardline_100) %>%
@@ -146,10 +141,10 @@ plot_selection_bias2 =
   ylab("mean point spread") +
   xlab("yards from opponent's endzone") +
   geom_smooth(se=FALSE, method = "lm", color="dodgerblue2", size=1)
-# plot_selection_bias2
-ggsave("plot_selection_bias2.png", plot_selection_bias2, width=6, height=6)
+# plot_selection_bias2C
+ggsave("plot_selection_bias2C.png", plot_selection_bias2C, width=6, height=6)
 
-plot_selection_bias3 = 
+plot_selection_bias2D = 
   data_full %>%
   select(pts_next_score, yardline_100, posteam_spread) %>%
   # filter(posteam_spread %in% -14:14) %>%
@@ -173,10 +168,10 @@ plot_selection_bias3 =
   theme(axis.text.x = element_text(size=13)) +
   guides(fill=guide_legend(title="freq")) +
   xlab("yards from opponent's endzone") + ylab("point spread bin") 
-# plot_selection_bias3
-ggsave("plot_selection_bias3.png", plot_selection_bias3, width=11, height=6)
+# plot_selection_bias2D
+ggsave("plot_selection_bias2D.png", plot_selection_bias2D, width=11, height=6)
 
-plot_selection_bias4 = data_full %>%
+plot_selection_bias2E = data_full %>%
   select(pts_next_score, yardline_100, posteam_spread) %>%
   # filter(posteam_spread %in% -14:14) %>%
   mutate(
@@ -207,8 +202,8 @@ plot_selection_bias4 = data_full %>%
     axis.title = element_text(size=40)
   ) +
   xlab("point spread bin")
-# plot_selection_bias4
-ggsave("plot_selection_bias4.png", plot_selection_bias4, width=12, height=7)
+# plot_selection_bias2E
+ggsave("plot_selection_bias2E.png", plot_selection_bias2E, width=12, height=7)
 
 ### base-rate empirical frequency
 data_full %>%

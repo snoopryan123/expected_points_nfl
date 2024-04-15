@@ -11,57 +11,79 @@ setwd(filewd)
 ### load data and models ###
 ############################
 
-MODEL_TYPE = "XGB"
+##################
 filewd = getwd()
 setwd("../model_comparison")
 source("models_XGB.R")
+source("../model_comparison/models_MLR.R")
 setwd(filewd)
-### make sure to first train and save these XGB models in `train_full_models.R`
-# model_name = "xgb_C_s_1_wbe"
-model_name = "xgb_C_oq2xdq2x_1_wbe"
-model_fit = xgb.load(paste0("../model_comparison/",model_name,".xgb"))
-xgb_features = get(paste0(model_name, "_features"))
-xgb_is_regression = str_detect(model_name, "xgb_R_")
-xgb_is_BoundedRegression = str_detect(model_name, "xgb_BR_")
+##################
 
-# MODEL_TYPE = "OLS"
-# source("../model_comparison/models_OLS.R")
-# model_name = "lm_sd4_w"
-# weighted_model = endsWith(model_name, "_w")
-# dataset_to_fit = data_full
-# model_fit = get(paste0("fit_",str_remove(model_name, "_w")))(dataset_to_fit, weight_me = weighted_model)
+# MODEL_TYPE = "XGB"
+# ### make sure to first train and save these XGB models in `train_full_models.R`
+# model_name = "xgb_C_driveEP_s_1_weightByDrive"
+# # model_name = "xgb_R_driveEP_s_1_weightByDrive"
+# # model_name = "xgb_C_oq2xdq2x_1_wbe"
+# model_fit = xgb.load(paste0("trainedFullModel_",model_name,".xgb"))
+# xgb_features = get(paste0(model_name, "_features"))
+# xgb_is_regression = str_detect(model_name, "xgb_R_")
+# xgb_is_BoundedRegression = str_detect(model_name, "xgb_BR_")
 
-# MODEL_TYPE = "MLR"
-# source("../model_comparison/models_MLR.R")
-# # model_name = "mlr_yurko_5_w"
-# # model_name = "mlr_yurko_sx4_w"
-# model_name = "mlr_yurko_oq4xdq4x_1_w"
-# weighted_model = endsWith(model_name, "_w")
-# dataset_to_fit = data_full
-# model_fit = get(paste0("fit_",str_remove(model_name, "_w")))(dataset_to_fit, weight_me = weighted_model)
+MODEL_TYPE = "MLR"
+model_name = "mlr_driveEP_yurko_s3dE_weightByDrive"
+dataset_to_fit = data_full
+mlr_model_name = str_remove_all(model_name, "_weightByDrive|_weightByEpoch")
+fit_mlr_func = get(paste0("fit_", mlr_model_name))
+if (str_detect(model_name, "_weightByDrive")) {
+  model_fit = fit_mlr_weightedByDrive(dataset_to_fit, fit_model_func=fit_mlr_func)
+} else if (str_detect(model_name, "_weightByEpoch")) {
+  model_fit = fit_mlr_weightedByEpoch(dataset_to_fit, fit_model_func=fit_mlr_func)
+} else {
+  model_fit = fit_mlr_func(dataset_to_fit)
+}
+
+# # MODEL_TYPE = "OLS"
+# # source("../model_comparison/models_OLS.R")
+# # model_name = "lm_sd4_w"
+# # weighted_model = endsWith(model_name, "_w")
+# # dataset_to_fit = data_full
+# # model_fit = get(paste0("fit_",str_remove(model_name, "_w")))(dataset_to_fit, weight_me = weighted_model)
 
 print(model_fit)
 no_dq = !str_detect(model_name, "dq")
 is_4x = str_detect(model_name, "4x") | (str_detect(model_name, "xgb") & str_detect(model_name, "2x"))
 spread_tq = str_detect(model_name, "_s")
+epoch_based_EP = str_detect(model_name, "epochEP")
+drive_based_EP = str_detect(model_name, "driveEP")
 
 # plot_varyingTimeByDown(model_fit, model_name) ###
 
 ############################
 ### visualize the models ###
 ############################
-# l = -3; u = 9;
-l = -3.5; u = 7;
+
+if (epoch_based_EP) {  l = -3.5; u = 7; } else if (drive_based_EP) { l = -1; u = 7; }
 
 get_plot_title <- function() {
-  weighted_model_desc = if (weighted_model) "weighted" else "unweighted"
-  w_model_desc = if (weighted_model) "w" else ""
+  weighted_model_desc = if (str_detect(model_name, "_weightByDrive|_weightByEpoch")) "weighted" else ""
   model_type_desc = case_when(
     MODEL_TYPE == "OLS" ~ "linear regression",
     MODEL_TYPE == "MLR" ~ "multinomial logistic regression",
     MODEL_TYPE == "XGB" ~ "XGBoost",
   )
-  paste0(weighted_model_desc, " ", model_type_desc, " (",w_model_desc,MODEL_TYPE,")")
+  if (MODEL_TYPE == "XGB") {
+    if (xgb_is_regression) {
+      model_type_desc = paste0(model_type_desc, " (regression)")
+    } else if (xgb_is_BoundedRegression) {
+      model_type_desc = paste0(model_type_desc, " (bounded regression)")
+    } else {
+      model_type_desc = paste0(model_type_desc, " (multinomial)")
+    }
+  }
+  
+  # paste0(weighted_model_desc, " ", model_type_desc, " (",w_model_desc,MODEL_TYPE,")")
+  paste0(weighted_model_desc, " ", model_type_desc)
+  # model_name
 }
 
 plot_varyingTime <- function(model_fit, model_name, half_=1) {
@@ -112,12 +134,12 @@ plot_varyingTime <- function(model_fit, model_name, half_=1) {
     )
   } else if (MODEL_TYPE == "MLR") {
     pred_ep = bind_cols(
-      predict_mlr_ep(model_fit, plot_set, model_name),
+      predict_mlr_ep(model_fit, plot_set, model_name, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP),
       plot_set
     )
   } else if (MODEL_TYPE == "XGB") {
     pred_ep = bind_cols(
-      predict_ep_xgb(model_fit, plot_set, xgb_features, model_name, Regression=xgb_is_regression, BoundedRegression=xgb_is_BoundedRegression),
+      predict_ep_xgb(model_fit, plot_set, xgb_features, model_name, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP, Regression=xgb_is_regression, BoundedRegression=xgb_is_BoundedRegression),
       plot_set
     )
   }
@@ -139,7 +161,8 @@ plot_varyingTime <- function(model_fit, model_name, half_=1) {
     xlab("yard line y") +
     labs(title=get_plot_title()) +
     scale_colour_manual(values = my_palette) +
-    ylab("expected points of the next score") #+
+    ylab("expected points")
+    # ylab("expected points of the next score") #+
   # theme(axis.title = element_text(size=20),
   #       axis.text = element_text(size=20),
   #       legend.text = element_text(size=20),
@@ -201,12 +224,12 @@ plot_varyingTimeByDown <- function(model_fit, model_name, half_=1) {
     )
   } else if (MODEL_TYPE == "MLR") {
     pred_ep = bind_cols(
-      predict_mlr_ep(model_fit, plot_set, model_name),
+      predict_mlr_ep(model_fit, plot_set, model_name, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP),
       plot_set
     )
   } else if (MODEL_TYPE == "XGB") {
     pred_ep = bind_cols(
-      predict_ep_xgb(model_fit, plot_set, xgb_features, model_name, Regression=xgb_is_regression, BoundedRegression=xgb_is_BoundedRegression),
+      predict_ep_xgb(model_fit, plot_set, xgb_features, model_name, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP, Regression=xgb_is_regression, BoundedRegression=xgb_is_BoundedRegression),
       plot_set
     )
   }
@@ -228,7 +251,8 @@ plot_varyingTimeByDown <- function(model_fit, model_name, half_=1) {
     xlab("yard line y") +
     labs(title=get_plot_title()) +
     scale_colour_manual(values = my_palette) +
-    ylab("expected points of the next score") #+
+    ylab("expected points")
+    # ylab("expected points of the next score") #+
   # theme(axis.title = element_text(size=20),
   #       axis.text = element_text(size=20),
   #       legend.text = element_text(size=20),
@@ -245,7 +269,7 @@ plot_varyingTQ <- function(model_fit, model_name, colname, N=7, keepFewSpreads=F
     my_palette <- brewer.pal(name="PuRd",n=9)[3:11]
   } else if (keepFewSpreads) {
     # my_palette <- brewer.pal(name="PuRd",n=9)[c(3,5,7,9)]
-    my_palette <- c("magenta", "forestgreen", "firebrick", "dodgerblue2")
+    my_palette <- c("magenta", "forestgreen", "goldenrod", "black", "firebrick", "dodgerblue2")
   } else {
     my_palette <- c(
       rev(brewer.pal(name="Blues",n=9)[3:9]),
@@ -306,7 +330,7 @@ plot_varyingTQ <- function(model_fit, model_name, colname, N=7, keepFewSpreads=F
     spread_breaks = seq(-10,10,by=1)
     if (keepFewSpreads) {
       # spread_breaks = c(9,7,-3,-2)
-      spread_breaks = c(8,7)
+      spread_breaks = c(0,1, -10,-8)
     }
     
     plot_set = tibble()
@@ -340,12 +364,12 @@ plot_varyingTQ <- function(model_fit, model_name, colname, N=7, keepFewSpreads=F
     )
   } else if (MODEL_TYPE == "MLR") {
     pred_ep = bind_cols(
-      predict_mlr_ep(model_fit, plot_set, model_name),
+      predict_mlr_ep(model_fit, plot_set, model_name, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP),
       plot_set
     )
   } else if (MODEL_TYPE == "XGB") {
     pred_ep = bind_cols(
-      predict_ep_xgb(model_fit, plot_set, xgb_features, model_name, Regression=xgb_is_regression, BoundedRegression=xgb_is_BoundedRegression),
+      predict_ep_xgb(model_fit, plot_set, xgb_features, model_name, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP, Regression=xgb_is_regression, BoundedRegression=xgb_is_BoundedRegression),
       plot_set
     )
   }
@@ -368,7 +392,8 @@ plot_varyingTQ <- function(model_fit, model_name, colname, N=7, keepFewSpreads=F
     scale_y_continuous(limits=c(l,u),breaks=seq(-20,20,1)) +
     # labs(title=paste0("model: ", model_name)) +
     xlab("yard line y") + 
-    ylab("expected points of the next score") +
+    # ylab("expected points of the next score") +
+    ylab("expected points") +
     # labs(title=plot_title) +
     labs(title= if (!noTitle) get_plot_title()) +
     # theme(axis.title = element_text(size=20),
@@ -423,12 +448,12 @@ plot_varyingDown <- function(model_fit, model_name) {
     )
   } else if (MODEL_TYPE == "MLR") {
     pred_ep = bind_cols(
-      predict_mlr_ep(model_fit, plot_set, model_name),
+      predict_mlr_ep(model_fit, plot_set, model_name, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP),
       plot_set
     )
   } else if (MODEL_TYPE == "XGB") {
     pred_ep = bind_cols(
-      predict_ep_xgb(model_fit, plot_set, xgb_features, model_name, Regression=xgb_is_regression, BoundedRegression=xgb_is_BoundedRegression),
+      predict_ep_xgb(model_fit, plot_set, xgb_features, model_name, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP, Regression=xgb_is_regression, BoundedRegression=xgb_is_BoundedRegression),
       plot_set
     )
   }
@@ -443,7 +468,8 @@ plot_varyingDown <- function(model_fit, model_name) {
     scale_y_continuous(limits=c(l,u),breaks=seq(-20,20,1)) +
     # labs(title=paste0("model: ", model_name)) +
     xlab("yard line y") +
-    ylab("expected points of the next score") +
+    # ylab("expected points of the next score") +
+    ylab("expected points")
     labs(title=get_plot_title()) +
     # theme(axis.title = element_text(size=20),
     #       axis.text = element_text(size=20),
@@ -507,12 +533,12 @@ plot_varyingScoreDiff <- function(model_fit, model_name) {
     )
   } else if (MODEL_TYPE == "MLR") {
     pred_ep = bind_cols(
-      predict_mlr_ep(model_fit, plot_set, model_name),
+      predict_mlr_ep(model_fit, plot_set, model_name, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP),
       plot_set
     )
   } else if (MODEL_TYPE == "XGB") {
     pred_ep = bind_cols(
-      predict_ep_xgb(model_fit, plot_set, xgb_features, model_name, Regression=xgb_is_regression, BoundedRegression=xgb_is_BoundedRegression),
+      predict_ep_xgb(model_fit, plot_set, xgb_features, model_name, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP, Regression=xgb_is_regression, BoundedRegression=xgb_is_BoundedRegression),
       plot_set
     )
   }
@@ -566,12 +592,12 @@ plot_xgbC_evidenceOfOverfitting <- function(model_fit, model_name, colname, N=7,
     )
   } else if (MODEL_TYPE == "MLR") {
     pred_ep = bind_cols(
-      predict_mlr_ep(model_fit, plot_set, model_name),
+      predict_mlr_ep(model_fit, plot_set, model_name, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP),
       plot_set
     )
   } else if (MODEL_TYPE == "XGB") {
     pred_ep = bind_cols(
-      predict_ep_xgb(model_fit, plot_set, xgb_features, model_name, Regression=xgb_is_regression, BoundedRegression=xgb_is_BoundedRegression),
+      predict_ep_xgb(model_fit, plot_set, xgb_features, model_name, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP, Regression=xgb_is_regression, BoundedRegression=xgb_is_BoundedRegression),
       plot_set
     )
   }
@@ -590,7 +616,8 @@ plot_xgbC_evidenceOfOverfitting <- function(model_fit, model_name, colname, N=7,
     xlab("yard line y") + 
     # labs(title=plot_title) +
     # scale_colour_manual(values = my_palette) +
-    ylab("expected points of the next score") 
+    # ylab("expected points of the next score") 
+    ylab("expected points")
   plot
   
   return(plot)

@@ -388,7 +388,8 @@ xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_catalytic = load_params(xgb
 #################################################################
 
 train_xgb_randomlyDrawnPlayPerGroup <- function(
-    xgb_model_name, xgb_features, train_set, xgb_params, xgb_nrounds, test_set, drive_based_EP=TRUE, N=100
+    xgb_model_name, xgb_features, train_set, xgb_params, xgb_nrounds, test_set, 
+    Regression, BoundedRegression, drive_based_EP=TRUE, N=100
 ) {
   if (!drive_based_EP) { epoch_based_EP = TRUE }
   group_var = if (drive_based_EP) "Drive" else if (epoch_based_EP) "epoch" 
@@ -404,7 +405,8 @@ train_xgb_randomlyDrawnPlayPerGroup <- function(
     xgb_i <- train_xgb(
       xgb_features, train_set_i, xgb_params, xgb_nrounds, watchSet=test_set, 
       epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP, 
-      weight_by_epoch=FALSE, weight_by_drive=FALSE
+      weight_by_epoch=FALSE, weight_by_drive=FALSE,
+      Regression = Regression, BoundedRegression = BoundedRegression
     )
     xgb_lst[[i]] = xgb_i
   }

@@ -25,14 +25,19 @@ colnames(MAT_logloss_PHat_Y) = as.character(xgb_model_names_list)
 colnames(MAT_covg_PHat_Y) = as.character(xgb_model_names_list)
 colnames(MAT_boot_covg_PHat_Y) = as.character(xgb_model_names_list)
 
-eval_losses <- function(test_sets_lst, xgb_model_name) {
+eval_losses <- function(test_sets_lst, model_name) {
   
-  ### load xgb model variables
-  xgb_features <- get(paste0(xgb_model_name, "_features"))
-  xgb_is_randomlyDrawOnePlayPerGroup = str_detect(xgb_model_name, "randomlyDrawOnePlayPerGroup")
+  ### model's attributes
+  model_type <- if (str_detect(model_name, "xgb")) "XGB" else if (str_detect(model_name, "mlr")) "MLR" else stop()
+  if (model_type == "XGB") {
+    xgb_features <- get(paste0(model_name, "_features"))
+  } 
+  xgb_is_randomlyDrawOnePlayPerGroup = str_detect(model_name, "randomlyDrawOnePlayPerGroup")
+  xgb_is_regression = str_detect(model_name, "_R_")
+  xgb_is_boundedRegression = str_detect(model_name, "_BR_")
   
   ### load trained xgb model
-  xgb <- readRDS(paste0("fitted_models/trainedModel_",xgb_model_name,"_b",0,".rds"))
+  fit <- readRDS(paste0("fitted_models/trainedModel_",model_name,"_b",0,".rds"))
   
   ### vectors of losses accross the N_test test sets
   VEC_rmse_EPHat_ValueY = numeric(length(test_sets_lst))
@@ -40,7 +45,7 @@ eval_losses <- function(test_sets_lst, xgb_model_name) {
   VEC_covg_PHat_Y = numeric(length(test_sets_lst))
 
   for (i in 1:length(test_sets_lst)) {
-    print(paste0("Evaluating ",xgb_model_name," on i=",i,"/",length(test_sets_lst),"th test set."))
+    print(paste0("Evaluating ",model_name," on i=",i,"/",length(test_sets_lst),"th test set."))
     # print(paste0("Evaluating i=",i,"/",length(test_sets_lst),"th test set."))
     
     ### test set outcomes
@@ -50,33 +55,58 @@ eval_losses <- function(test_sets_lst, xgb_model_name) {
     y_i_str = (tibble(outcome_drive = y_i) %>% left_join(map_drive_outcome_to_value, by="outcome_drive"))$outcome_drive_str
     
     if (!xgb_is_randomlyDrawOnePlayPerGroup) {
-      ### EP_hat
-      EP_hat_ij = predict_ep_xgb(xgb, test_set_i, xgb_features, xgb_model_name, 
-                                 epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP)$pred
-      ### p_hat
-      p_hat_mat_ij = predict_probs_xgb(xgb, test_set_i, xgb_features, 
-                                       epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP)
+      if (model_type == "XGB") {
+        ### EP_hat
+        EP_hat_ij = predict_ep_xgb(fit, test_set_i, xgb_features, model_name, 
+                                   epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP, 
+                                   Regression=xgb_is_regression, BoundedRegression=xgb_is_boundedRegression)$pred
+        if (!xgb_is_regression) {
+          ### p_hat
+          p_hat_mat_ij = predict_probs_xgb(fit, test_set_i, xgb_features, 
+                                           epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP)
+        }
+      } else if (model_type == "MLR") {
+        ### EP_hat
+        EP_hat_ij = predict_mlr_ep(fit, test_set_i, model=model_name, 
+                                   epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP)$pred
+        if (!xgb_is_regression) {
+          ### p_hat
+          p_hat_mat_ij = get_mlr_probs(fit, test_set_i, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP)
+        }
+      } else {
+        stop()
+      }
     } else {
-      ### EP_hat
-      EP_hat_ij = predict_xgb_randomlyDrawnPlayPerGroup(
-        xgb, test_set_i, xgb_features, xgb_model_name, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP, EP=TRUE
-      ) 
-      ### p_hat
-      p_hat_mat_ij = predict_xgb_randomlyDrawnPlayPerGroup(
-        xgb, test_set_i, xgb_features, xgb_model_name, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP, EP=FALSE
-      ) 
+      if (model_type == "XGB") {
+        ### EP_hat
+        EP_hat_ij = predict_xgb_randomlyDrawnPlayPerGroup(
+          fit, test_set_i, xgb_features, model_name, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP, EP=TRUE
+        ) 
+        if (!xgb_is_regression) {
+          ### p_hat
+          p_hat_mat_ij = predict_xgb_randomlyDrawnPlayPerGroup(
+            fit, test_set_i, xgb_features, model_name, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP, EP=FALSE
+          ) 
+        }
+      } else if (model_type == "MLR") {
+        stop()
+      } else {
+        stop()
+      }
     }
     
     # RMSE(EP_hat, value(y))
     VEC_rmse_EPHat_ValueY[i] = RMSE(EP_hat_ij, value_y_i)
-    # LOGLOSS(p_hat, y)
-    p_hat_times_y_ij = p_hat_mat_ij[cbind(1:nrow(p_hat_mat_ij), y_i+1)]
-    VEC_logloss_PHat_Y[i] = -mean(log(p_hat_times_y_ij))
-    ### pred_set(p_hat)
-    pred_sets_95_ij = get_pred_sets(p_hat_mat_ij, q_=0.95)
-    # COVG(pred_set(p_hat), y)
-    covered_ij = sapply(1:length(y_i_str), function(l) y_i_str[l] %in% pred_sets_95_ij[[l]])
-    VEC_covg_PHat_Y[i] = mean(covered_ij)
+    if (!xgb_is_regression) {
+      # LOGLOSS(p_hat, y)
+      p_hat_times_y_ij = p_hat_mat_ij[cbind(1:nrow(p_hat_mat_ij), y_i+1)]
+      VEC_logloss_PHat_Y[i] = -mean(log(p_hat_times_y_ij))
+      ### pred_set(p_hat)
+      pred_sets_95_ij = get_pred_sets(p_hat_mat_ij, q_=0.95)
+      # COVG(pred_set(p_hat), y)
+      covered_ij = sapply(1:length(y_i_str), function(l) y_i_str[l] %in% pred_sets_95_ij[[l]])
+      VEC_covg_PHat_Y[i] = mean(covered_ij) 
+    }
   }
   
   ### results
@@ -96,15 +126,15 @@ eval_losses <- function(test_sets_lst, xgb_model_name) {
       value_U = value_Med + 2*se_value,
     ) %>%
     relocate(value_Med, .after=value_L)
-  df_results = df_results %>% mutate(xgb_model_name = xgb_model_name) %>% relocate(xgb_model_name, .before=metric)
+  df_results = df_results %>% mutate(model_name = model_name) %>% relocate(model_name, .before=metric)
   df_results
 }
 
-eval_boot_covg <- function(test_sets_lst, xgb_model_name) {
+eval_boot_covg <- function(test_sets_lst, model_name) {
   
   ### load xgb model variables
-  xgb_features <- get(paste0(xgb_model_name, "_features"))
-  xgb_is_randomlyDrawOnePlayPerGroup = str_detect(xgb_model_name, "randomlyDrawOnePlayPerGroup")
+  xgb_features <- get(paste0(model_name, "_features"))
+  xgb_is_randomlyDrawOnePlayPerGroup = str_detect(model_name, "randomlyDrawOnePlayPerGroup")
   
   ### vectors of boot covgs across the N_test test sets
   VEC_boot_covg_PHat_Y = numeric(length(test_sets_lst))
@@ -123,10 +153,10 @@ eval_boot_covg <- function(test_sets_lst, xgb_model_name) {
     colnames(MAT_yhat_ij) = paste0("b",1:B)
     
     for (b in 1:B) {
-      print(paste0("Evaluating ",xgb_model_name," on i=",i,"/",length(test_sets_lst),"th test set for b=",b,"/",B,"th bootstrap."))
+      print(paste0("Evaluating ",model_name," on i=",i,"/",length(test_sets_lst),"th test set for b=",b,"/",B,"th bootstrap."))
       
       ### load b^th trained bootstrapped model
-      xgb_b <- readRDS(paste0("fitted_models/trainedModel_",xgb_model_name,"_b",b,".rds"))
+      xgb_b <- readRDS(paste0("fitted_models/trainedModel_",model_name,"_b",b,".rds"))
       
       ### b^th predictions
       if (!xgb_is_randomlyDrawOnePlayPerGroup) {
@@ -137,7 +167,7 @@ eval_boot_covg <- function(test_sets_lst, xgb_model_name) {
       } else {
         ### p_hat
         p_hat_mat_ijb = predict_xgb_randomlyDrawnPlayPerGroup(
-          xgb_b, test_set_i, xgb_features, xgb_model_name, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP, EP=FALSE
+          xgb_b, test_set_i, xgb_features, model_name, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP, EP=FALSE
         ) 
       }
       
@@ -179,24 +209,28 @@ eval_boot_covg <- function(test_sets_lst, xgb_model_name) {
       value_U = value_Med + 2*se_value,
     ) %>%
     relocate(value_Med, .after=value_L)
-  df_results = df_results %>% mutate(xgb_model_name = xgb_model_name) %>% relocate(xgb_model_name, .before=metric)
+  df_results = df_results %>% mutate(model_name = model_name) %>% relocate(model_name, .before=metric)
   df_results
 }
 
 results = tibble()
 for (j in 1:length(xgb_model_names_list)) {
   print(paste0("eval model j=",j,"/",length(xgb_model_names_list)))
-  xgb_model_name <- xgb_model_names_list[[j]]
-  results_losses_j = eval_losses(test_sets_lst, xgb_model_name)
-  results_boot_covg_j = eval_boot_covg(test_sets_lst, xgb_model_name)
+  model_name <- xgb_model_names_list[[j]]
+  results_losses_j = eval_losses(test_sets_lst, model_name)
+  if (!accuracy_only) {
+    results_boot_covg_j = eval_boot_covg(test_sets_lst, model_name)
+  } else {
+    results_boot_covg_j = tibble()
+  }
   results = results %>% bind_rows(results_losses_j) %>% bind_rows(results_boot_covg_j)
 }
-results = results %>% arrange(metric, xgb_model_name)
+results = results %>% arrange(metric, model_name)
 
 print(data.frame(results))
 write_csv(
   results, 
-  paste0("results_",if (drive_based_EP) "driveEP" else if (epoch_based_EP) "epochEP",".csv")
+  paste0("results_evallosses_",if (drive_based_EP) "driveEP" else if (epoch_based_EP) "epochEP",".csv")
 )
 
 # gt::gtsave(

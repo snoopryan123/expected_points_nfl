@@ -1,5 +1,5 @@
 #!/bin/bash
-#$ -N run_eval_driveEP_EvalLosses
+#$ -N run_eval_driveEP_EvalLosses_accuracyOnly
 #$ -j y
 #$ -m e -M ryguy123@sas.upenn.edu 
 
@@ -7,4 +7,4 @@
 ## MORE RAM
 #$ -l m_mem_free=15G
 
-Rscript --vanilla eval_EP_EvalLosses.R FALSE TRUE 100000 101
+Rscript --vanilla eval_EP_EvalLosses.R FALSE TRUE 0 0
