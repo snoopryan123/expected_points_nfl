@@ -14,21 +14,13 @@ source("models_catalytic.R")
 setwd(filewd)
 ########################
 
-### catalytic model params
-# phi_delta = 0.1
-# # phi_delta = 0.05
-# phis = seq(phi_delta, 1, by=phi_delta)
-# phis = c(2,5,10)
-phis = 0.5 #1
-# M = 1e5
-M = 5e5
-
 ### models
 # model_names_list <- list(
 #   # xgb_C_driveEP_oq2xdq2x_1_weightByDrive_model_name,
 #   xgb_C_driveEP_s_1_weightByDrive_model_name,
 #   xgb_R_driveEP_s_1_weightByDrive_model_name
 # )
+phis = 0.5; M = 5e5;
 model_names_list <- 
   make_catalytic_model_name(
     target_model_name = xgb_C_driveEP_s_1_weightByDrive_model_name, 
