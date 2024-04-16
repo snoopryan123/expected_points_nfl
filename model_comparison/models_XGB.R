@@ -27,28 +27,30 @@ map_01_to_n77 <- function(y) {
   14*y - 7
 }
 
-get_xgb_train_DMatrix <- function(xgb_features, train_set, params, 
-                                  epoch_based_EP=FALSE, drive_based_EP=FALSE, wp=FALSE,
-                                  weight_by_epoch=FALSE, weight_by_drive=FALSE,
-                                  Regression=FALSE, BoundedRegression=FALSE, 
-                                  catalytic=FALSE, catalytic_model_name="") {
+get_xgb_train_DMatrix <- function(
+    xgb_features, train_set, params, 
+    epoch_based_EP=FALSE, drive_based_EP=FALSE, wp=FALSE,
+    weight_by_epoch=FALSE, weight_by_drive=FALSE,
+    Regression=FALSE, BoundedRegression=FALSE, 
+    catalytic=FALSE, M=NULL, phi=NULL, catalytic_prior_model_name=NULL
+) {
   
-  # ### add fake catalytic data to xgboost
-  # if (catalytic) {
-  #   ### get catalytic train set.  Catalytic params (M,tau) are included in `params`
-  #   if (catalytic_model_name == "") { stop("FIXME:", "should specify the catalytic model in train_xgb") }
-  #   catalytic_model_type = case_when(
-  #     str_detect(catalytic_model_name, "mlr") ~ "MLR",
-  #     str_detect(catalytic_model_name, "gam") ~ "GAM",
-  #     str_detect(catalytic_model_name, "lm") ~ "OLS",
-  #   )
-  #   catalytic_outcome = if (BoundedRegression | Regression | wp) "numeric" else "categorical"
-  #   train_set = get_catalytic_set(params$M, params$tau, train_set, catalytic_model_type, 
-  #                                 catalytic_model_name, catalytic_outcome, params$U, params$MU)
-  #   params = within(params, rm(M))
-  #   params = within(params, rm(tau))
-  #   w = TRUE ### catalytic xgboost must be weighted
-  # }
+  ### add synthetic catalytic data to xgboost
+  do_catalytic_modeling = catalytic & !is.null(M) & !is.null(phi) & !is.null(catalytic_prior_model_name)
+  if (do_catalytic_modeling) {
+    print("*********CATALYTIC MODELING MATRIX*********")
+    catalytic_prior_model_type = case_when(
+      str_detect(catalytic_prior_model_name, "mlr") ~ "MLR",
+      str_detect(catalytic_prior_model_name, "gam") ~ "GAM",
+      str_detect(catalytic_prior_model_name, "lm") ~ "OLS",
+    )
+    # catalytic_outcome = if (BoundedRegression | Regression | wp) "numeric" else "categorical"
+    train_set = get_catalytic_set(
+        train_set, M, phi,
+        catalytic_prior_model_name, catalytic_prior_model_type,
+        epoch_based_EP, drive_based_EP, weight_by_drive, weight_by_epoch
+    )
+  }
   
   ### row-weights for xgboost
   if (weight_by_epoch) {
@@ -97,7 +99,7 @@ train_xgb <- function(xgb_features, train_set, params, nrounds, watchSet=FALSE,
                       epoch_based_EP=FALSE, drive_based_EP=FALSE, wp=FALSE,
                       weight_by_epoch=FALSE, weight_by_drive=FALSE,
                       Regression=FALSE, BoundedRegression=FALSE,
-                      catalytic=FALSE,   catalytic_model_name="",
+                      catalytic=FALSE, M=NULL, phi=NULL, catalytic_prior_model_name=NULL,
                       param_tuning=FALSE, print_every_n=50) {
   
   train_set_xgbDM =  get_xgb_train_DMatrix(
@@ -105,7 +107,7 @@ train_xgb <- function(xgb_features, train_set, params, nrounds, watchSet=FALSE,
     epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP, wp=wp,
     weight_by_epoch=weight_by_epoch, weight_by_drive=weight_by_drive,
     Regression=Regression, BoundedRegression=BoundedRegression,
-    catalytic=catalytic, catalytic_model_name=catalytic_model_name
+    catalytic=catalytic, M=M, phi=phi, catalytic_prior_model_name=catalytic_prior_model_name
   ) 
     
   if (is.data.frame(watchSet)) { ### validation set evaluation
@@ -114,7 +116,7 @@ train_xgb <- function(xgb_features, train_set, params, nrounds, watchSet=FALSE,
       epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP, wp=wp,
       weight_by_epoch=weight_by_epoch, weight_by_drive=weight_by_drive,
       Regression=Regression, BoundedRegression=BoundedRegression,
-      catalytic=catalytic, catalytic_model_name=catalytic_model_name
+      catalytic=catalytic, M=M, phi=phi, catalytic_prior_model_name=catalytic_prior_model_name
     ) 
     watchlist <- list(train=train_set_xgbDM, validation=val_set_xgbDM)
   } else { ### no validation set

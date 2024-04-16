@@ -39,6 +39,13 @@ PRE_LOADED_TrainTestSplitAndTeamQualities = TRUE
 source("A_train_test_main.R")
 source("models_XGB.R")
 source("models_MLR.R")
+source("models_catalytic.R")
+
+### catalytic model params
+phi_delta = 0.1
+phis = seq(phi_delta, 1, by=phi_delta)
+phis = c(phis)
+M = 5e5
 
 ######################
 ### EP MODEL NAMES ###
@@ -47,19 +54,16 @@ source("models_MLR.R")
 ### get list of names of models
 if (drive_based_EP) {
   if (accuracy_only) {
-    xgb_model_names_list <- list(
-      "mlr_driveEP_yurko_s3dE",
-      "mlr_driveEP_yurko_s3dE_weightByDrive",
-      xgb_R_driveEP_s_1_weightByDrive_model_name,
-      xgb_C_driveEP_s_1_weightByDrive_model_name
-    )
+    xgb_model_names_list <- 
+      make_catalytic_model_name(
+        target_model_name = xgb_C_driveEP_s_1_weightByDrive_model_name, 
+        prior_model_name = "mlr_driveEP_yurko_s3dE_weightByDrive",
+        M=M, phi=phis
+      )
     # xgb_model_names_list <- list(
-    #   "mlr_driveEP_yurko_s2dE",
-    #   "mlr_driveEP_yurko_s2dE_weightByDrive",
     #   "mlr_driveEP_yurko_s3dE",
     #   "mlr_driveEP_yurko_s3dE_weightByDrive",
     #   xgb_R_driveEP_s_1_weightByDrive_model_name,
-    #   xgb_R_driveEP_s_2_weightByDrive_model_name,
     #   xgb_C_driveEP_s_1_weightByDrive_model_name
     # )
   } else {

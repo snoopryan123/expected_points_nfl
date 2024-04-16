@@ -28,13 +28,28 @@ colnames(MAT_boot_covg_PHat_Y) = as.character(xgb_model_names_list)
 eval_losses <- function(test_sets_lst, model_name) {
   
   ### model's attributes
-  model_type <- if (str_detect(model_name, "xgb")) "XGB" else if (str_detect(model_name, "mlr")) "MLR" else stop()
+  model_is_catalytic <- str_detect(model_name, "catalytic")
+  if (model_is_catalytic) {
+    catalytic_sub_model_names = get_catalytic_sub_model_names(model_name)
+    target_model_name = catalytic_sub_model_names$target
+    prior_model_name = catalytic_sub_model_names$prior
+    M = catalytic_sub_model_names$M
+    phi = catalytic_sub_model_names$phi
+    model_type <- if (str_detect(target_model_name, "xgb")) "XGB" else stop()
+  } else {
+    target_model_name = model_name
+    prior_model_name = NULL
+    M = NULL
+    phi = NULL
+    model_type <- if (str_detect(model_name, "xgb")) "XGB" else if (str_detect(model_name, "mlr")) "MLR" else stop()
+  }
+  
   if (model_type == "XGB") {
-    xgb_features <- get(paste0(model_name, "_features"))
+    xgb_features <- get(paste0(target_model_name, "_features"))
   } 
-  xgb_is_randomlyDrawOnePlayPerGroup = str_detect(model_name, "randomlyDrawOnePlayPerGroup")
-  xgb_is_regression = str_detect(model_name, "_R_")
-  xgb_is_boundedRegression = str_detect(model_name, "_BR_")
+  xgb_is_randomlyDrawOnePlayPerGroup = str_detect(target_model_name, "randomlyDrawOnePlayPerGroup")
+  xgb_is_regression = str_detect(target_model_name, "_R_")
+  xgb_is_boundedRegression = str_detect(target_model_name, "_BR_")
   
   ### load trained xgb model
   fit <- readRDS(paste0("fitted_models/trainedModel_",model_name,"_b",0,".rds"))
@@ -238,5 +253,37 @@ write_csv(
 #   ,paste0("results_",if (drive_based_EP) "driveEP" else if (epoch_based_EP) "epochEP",".png")
 # )
 
-
+### view catalytic results
+if (all(str_detect(results$model_name, "catalytic"))) {
+  plot_df_cat_losses = 
+    results %>%
+    filter(!str_detect(metric, "covg")) %>%
+    rowwise() %>%
+    mutate(
+      M = get_catalytic_sub_model_names(model_name)$M,
+      phi = get_catalytic_sub_model_names(model_name)$phi,
+      metric_ = case_when(
+        # str_detect(metric, "logloss") ~ "\U0070\U0302p̂",
+        # str_detect(metric, "logloss") ~ "logloss(P, y)",
+        # str_detect(metric, "rmse") ~ "rmse(EP, pts(y))",
+        str_detect(metric, "logloss") ~ "logloss",
+        str_detect(metric, "rmse") ~ "rmse",
+        TRUE ~ NA_character_
+      )
+    )
+  for (M_ in unique(plot_df_cat_losses$M)) {
+    plot_cat_losses = 
+      plot_df_cat_losses %>% 
+      filter(M == M_) %>%
+      ggplot(aes(x = phi)) +
+      facet_wrap(~ metric_, scale="free_y") +
+      geom_ribbon(aes(ymin = value_L, ymax = value_U), fill="gray90") +
+      geom_point(aes(y = value_Med), size=3) +
+      geom_line(aes(y = value_Med), linewidth=1) +
+      scale_x_continuous(breaks=seq(0,1,by=0.2), name="\U03D5") +
+      ylab("") + labs(title=paste0("M = ", M_))
+    # plot_cat_losses
+    ggsave(paste0("results_plot_cat_losses_M",M_,".png"), plot_cat_losses, width=10, height=4)
+  }
+}
 

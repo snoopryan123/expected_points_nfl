@@ -25,22 +25,39 @@ setwd(filewd)
 # # model_name = "xgb_R_driveEP_s_1_weightByDrive"
 # # model_name = "xgb_C_oq2xdq2x_1_wbe"
 # model_fit = xgb.load(paste0("trainedFullModel_",model_name,".xgb"))
+# xgb_is_catalytic = str_detect(model_name, "catalytic")
 # xgb_features = get(paste0(model_name, "_features"))
 # xgb_is_regression = str_detect(model_name, "xgb_R_")
 # xgb_is_BoundedRegression = str_detect(model_name, "xgb_BR_")
 
-MODEL_TYPE = "MLR"
-model_name = "mlr_driveEP_yurko_s3dE_weightByDrive"
-dataset_to_fit = data_full
-mlr_model_name = str_remove_all(model_name, "_weightByDrive|_weightByEpoch")
-fit_mlr_func = get(paste0("fit_", mlr_model_name))
-if (str_detect(model_name, "_weightByDrive")) {
-  model_fit = fit_mlr_weightedByDrive(dataset_to_fit, fit_model_func=fit_mlr_func)
-} else if (str_detect(model_name, "_weightByEpoch")) {
-  model_fit = fit_mlr_weightedByEpoch(dataset_to_fit, fit_model_func=fit_mlr_func)
-} else {
-  model_fit = fit_mlr_func(dataset_to_fit)
-}
+### catalytic
+MODEL_TYPE = "XGB"
+M = 5e5
+phi = 1
+model_name = make_catalytic_model_name(
+    target_model_name = xgb_C_driveEP_s_1_weightByDrive_model_name, 
+    prior_model_name = "mlr_driveEP_yurko_s3dE_weightByDrive",
+    M=M, phi=phi
+  )
+model_fit = xgb.load(paste0("trainedFullModel_",model_name,".xgb"))
+xgb_is_catalytic = str_detect(model_name, "catalytic")
+target_model_name = get_catalytic_sub_model_names(model_name)$target
+xgb_features = get(paste0(target_model_name, "_features"))
+xgb_is_regression = str_detect(target_model_name, "xgb_R_")
+xgb_is_BoundedRegression = str_detect(target_model_name, "xgb_BR_")
+
+# MODEL_TYPE = "MLR"
+# model_name = "mlr_driveEP_yurko_s4dE_weightByDrive"
+# dataset_to_fit = data_full
+# mlr_model_name = str_remove_all(model_name, "_weightByDrive|_weightByEpoch")
+# fit_mlr_func = get(paste0("fit_", mlr_model_name))
+# if (str_detect(model_name, "_weightByDrive")) {
+#   model_fit = fit_mlr_weightedByDrive(dataset_to_fit, fit_model_func=fit_mlr_func)
+# } else if (str_detect(model_name, "_weightByEpoch")) {
+#   model_fit = fit_mlr_weightedByEpoch(dataset_to_fit, fit_model_func=fit_mlr_func)
+# } else {
+#   model_fit = fit_mlr_func(dataset_to_fit)
+# }
 
 # # MODEL_TYPE = "OLS"
 # # source("../model_comparison/models_OLS.R")
@@ -72,7 +89,10 @@ get_plot_title <- function() {
     MODEL_TYPE == "XGB" ~ "XGBoost",
   )
   if (MODEL_TYPE == "XGB") {
-    if (xgb_is_regression) {
+    if (xgb_is_catalytic) {
+      cat_subnames = get_catalytic_sub_model_names(model_name)
+      model_type_desc = paste0("Catalytic XGBoost (M = ",cat_subnames$M, ", \U03D5 = ", cat_subnames$phi, ")")
+    } else if (xgb_is_regression) {
       model_type_desc = paste0(model_type_desc, " (regression)")
     } else if (xgb_is_BoundedRegression) {
       model_type_desc = paste0(model_type_desc, " (bounded regression)")
@@ -415,7 +435,7 @@ plot_varyingDown <- function(model_fit, model_name) {
       plot_set,
       tibble(
         yardline_100 = 1:99,
-        ydstogo=c(1:9, rep(10,90)), 
+        ydstogo=c(1:9, rep(10,90)),
         posteam_spread = 0,
         posteam_spread_std = 0,
         qbq_ot_0_sum = 0,
@@ -669,8 +689,14 @@ make_plots_batch <- function(model_name, model_fit) {
 }
 
 plot_varyingTime(model_fit, model_name)
-plot_varyingTimeByDown(model_fit, model_name)
-plot_varyingScoreDiff(model_fit, model_name)
-plot_varyingDown(model_fit, model_name)
 make_plots_batch(model_name, model_fit)
+# {
+if (!xgb_is_catalytic) {
+  plot_varyingTimeByDown(model_fit, model_name)
+  plot_varyingDown(model_fit, model_name)
+}
+# plot_varyingScoreDiff(model_fit, model_name)
+
+
+
  

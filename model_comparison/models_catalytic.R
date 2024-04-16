@@ -9,10 +9,25 @@ fitted_catalytic_prior_models = list()
 ### Catalytic XGBoost Models ###
 ################################
 
+make_catalytic_model_name <- function(target_model_name, prior_model_name, M, phi) {
+  paste0("catalytic_", target_model_name, "_prior_", prior_model_name, "_M_", M, "_phi_", phi)
+}
+
+get_catalytic_sub_model_names <- function(catalytic_model_name) {
+  catalytic_model_names = str_split(catalytic_model_name, "_prior_|_M_|_phi_")[[1]]
+  list(
+    target = str_remove(catalytic_model_names[1], "catalytic_"),
+    prior = catalytic_model_names[2],
+    M = as.numeric(catalytic_model_names[3]),
+    phi = as.numeric(catalytic_model_names[4])
+  )
+}
+
 ####
-xgb_catalytic_weightByDrive_1_model_name = "xgb_catalytic_weightByDrive_1"
-xgb_catalytic_weightByDrive_1_model_name_target = xgb_C_driveEP_s_1_weightByDrive_model_name
-xgb_catalytic_weightByDrive_1_model_name_prior = "mlr_driveEP_yurko_s3dE_weightByDrive"
+catalytic_weightByDrive_1_model_name = make_catalytic_model_name(
+  xgb_C_driveEP_s_1_weightByDrive_model_name, "mlr_driveEP_yurko_s3dE_weightByDrive", M=1e5, phi=0.2
+)
+catalytic_weightByDrive_1_model_names = get_catalytic_sub_model_names(catalytic_weightByDrive_1_model_name)
 
 ####################################
 ### Fit the models and test them ###
@@ -38,7 +53,7 @@ get_catalytic_prior_model <- function(
 
 # ### check
 # catpriormodel = get_catalytic_prior_model(
-#   catalytic_prior_model_name = xgb_catalytic_weightByDrive_1_model_name_prior, 
+#   catalytic_prior_model_name = catalytic_weightByDrive_1_model_names$prior, 
 #   train_set = data_full, catalytic_prior_model_type = "MLR"
 # )
 
@@ -47,14 +62,22 @@ generate_synthetic_X <- function(train_set, M, phi, weight_by_drive=FALSE, weigh
   ### M is the number of synthetic X rows (plays) we will generate
   ### phi is the fraction of the observed dataset's total row weight allocated to the synthetic data
   
+  # ### re-sample observations (rows) from the X space with replacement(ignoring the drive/epoch clustering)
+  # row_idxs = 1:nrow(train_set)
+  # set.seed(2018) # Go Rams!
+  # resampled_idxs = sort(sample(row_idxs, size=M, replace=TRUE))
+  # df_synthetic_X = train_set[resampled_idxs,]
+  # df_synthetic_X = df_synthetic_X %>% select(-c(all_of(starts_with(
+  #   c("outcome_", "pts_", "drive_weight", "epoch_weight", "w")
+  # ))))
+  
   ### uniformly sample across the X space (ignoring the drive/epoch clustering)
-  row_idxs = 1:nrow(train_set)
-  set.seed(2018) # Go Rams!
-  resampled_idxs = sort(sample(row_idxs, size=M, replace=TRUE))
-  df_synthetic_X = train_set[resampled_idxs,]
-  df_synthetic_X = df_synthetic_X %>% select(-c(all_of(starts_with(
+  df_synthetic_X0 = train_set
+  df_synthetic_X0 = df_synthetic_X0 %>% select(-c(all_of(starts_with(
     c("outcome_", "pts_", "drive_weight", "epoch_weight", "w")
   ))))
+  set.seed(2018) # Go Rams!
+  df_synthetic_X = as_tibble(lapply(df_synthetic_X0, function(x) sample(x, replace = TRUE, size = M)))
   
   ### row weights
   if (weight_by_drive) {
@@ -162,7 +185,7 @@ get_catalytic_set <- function(
 # ### check
 # tempXY = get_catalytic_set(
 #     train_set=data_full, M=1e5, phi=0.2, 
-#     catalytic_prior_model_name=xgb_catalytic_weightByDrive_1_model_name_prior, 
+#     catalytic_prior_model_name=catalytic_weightByDrive_1_model_names$prior, 
 #     catalytic_prior_model_type="MLR",
 #     epoch_based_EP=F, drive_based_EP=T, weight_by_drive=T, weight_by_epoch=F
 # )
