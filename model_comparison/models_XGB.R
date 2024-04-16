@@ -145,9 +145,6 @@ train_xgb <- function(xgb_features, train_set, params, nrounds, watchSet=FALSE,
   return(xgb)
 }
 
-epoch_EP_outcomes = c("Touchdown","Opp_Touchdown","Field_Goal","Opp_Field_Goal","Safety","Opp_Safety","No_Score")
-drive_EP_outcomes = c("Touchdown","Field_Goal","No_Score","Opp_Safety","Opp_Touchdown")
-
 predict_probs_xgb <-  function(xgb, test_set, xgb_features, 
                                epoch_based_EP=FALSE, drive_based_EP=FALSE, wp=FALSE) {
   
@@ -253,9 +250,9 @@ get_iid_bootstrap_dataset <- function(dataset) {
   dataset_boot
 }
 
-###########################################################
-### XGBoost epoch-EP Classification Models (unweighted) ###
-###########################################################
+########################################################
+### Multinomial XGBoost epoch-EP Models (unweighted) ###
+########################################################
 
 ####
 xgb_C_epochEP_nflFastR_1_model_name = "xgb_C_epochEP_nflFastR_1"
@@ -295,9 +292,9 @@ xgb_C_epochEP_oq2xdq2x_1_params = load_params(xgb_C_epochEP_oq2xdq2x_1_model_nam
 xgb_C_epochEP_oq2xdq2x_1_nrounds = load_params(xgb_C_epochEP_oq2xdq2x_1_model_name)[[2]]
 xgb_C_epochEP_oq2xdq2x_1_catalytic = load_params(xgb_C_epochEP_oq2xdq2x_1_model_name)[[3]]
 
-#########################################################################
-### XGBoost epoch-EP Classification Models that are weighted by epoch ###
-#########################################################################
+######################################################################
+### Multinomial XGBoost epoch-EP Models that are weighted by epoch ###
+######################################################################
 
 ####
 xgb_C_epochEP_s_1_weightByEpoch_model_name = "xgb_C_epochEP_s_1_weightByEpoch"
@@ -313,9 +310,9 @@ xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_params = load_params(xgb_C_epochEP_oq2xdq
 xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_nrounds = load_params(xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name)[[2]]
 xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_catalytic = load_params(xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name)[[3]]
 
-###########################################################
-### XGBoost drive-EP Classification Models (unweighted) ###
-###########################################################
+########################################################
+### Multinomial XGBoost drive-EP Models (unweighted) ###
+########################################################
 
 ####
 xgb_C_driveEP_s_1_model_name = "xgb_C_driveEP_s_1"
@@ -343,9 +340,9 @@ xgb_C_driveEP_oq2xdq2x_1_params = load_params(xgb_C_driveEP_oq2xdq2x_1_model_nam
 xgb_C_driveEP_oq2xdq2x_1_nrounds = load_params(xgb_C_driveEP_oq2xdq2x_1_model_name)[[2]]
 xgb_C_driveEP_oq2xdq2x_1_catalytic = load_params(xgb_C_driveEP_oq2xdq2x_1_model_name)[[3]]
 
-#########################################################################
-### XGBoost drive-EP Classification Models that are weighted by drive ###
-#########################################################################
+######################################################################
+### Multinomial XGBoost drive-EP Models that are weighted by drive ###
+######################################################################
 
 ####
 xgb_C_driveEP_s_1_weightByDrive_model_name = "xgb_C_driveEP_s_1_weightByDrive"
@@ -363,9 +360,9 @@ xgb_C_driveEP_oq2xdq2x_1_weightByDrive_catalytic = load_params(xgb_C_driveEP_oq2
 
 
 
-###############################################################################################
-### XGBoost drive-EP Classification Models trained from randomly drawing one play per drive ###
-###############################################################################################
+############################################################################################
+### Multinomial XGBoost drive-EP Models trained from randomly drawing one play per drive ###
+############################################################################################
 
 ####
 xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_model_name = "xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup"

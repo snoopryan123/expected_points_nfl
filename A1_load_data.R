@@ -46,4 +46,15 @@ keep_just_recent_data <- function(data_full_0, verbose=TRUE) {
 ### final dataset: keep just recent data
 data_full = keep_just_recent_data(data_full_0)
 
+################################################################################
+
+epoch_EP_outcomes = c("Touchdown","Opp_Touchdown","Field_Goal","Opp_Field_Goal","Safety","Opp_Safety","No_Score")
+drive_EP_outcomes = c("Touchdown","Field_Goal","No_Score","Opp_Safety","Opp_Touchdown")
+
+map_drive_outcome_to_value = data_full %>% distinct(outcome_drive, pts_end_of_drive) %>% arrange(outcome_drive)
+map_drive_outcome_to_value$outcome_drive_str = drive_EP_outcomes
+map_epoch_outcome_to_value = data_full %>% distinct(outcome_epoch, pts_next_score) %>% arrange(outcome_epoch)
+map_epoch_outcome_to_value$outcome_epoch_str = epoch_EP_outcomes
+
+
 

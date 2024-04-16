@@ -40,12 +40,6 @@ source("A_train_test_main.R")
 source("models_XGB.R")
 source("models_MLR.R")
 
-###
-map_drive_outcome_to_value = data_full %>% distinct(outcome_drive, pts_end_of_drive) %>% arrange(outcome_drive)
-map_drive_outcome_to_value$outcome_drive_str = drive_EP_outcomes
-map_epoch_outcome_to_value = data_full %>% distinct(outcome_epoch, pts_next_score) %>% arrange(outcome_epoch)
-map_epoch_outcome_to_value$outcome_epoch_str = epoch_EP_outcomes
-
 ######################
 ### EP MODEL NAMES ###
 ######################
