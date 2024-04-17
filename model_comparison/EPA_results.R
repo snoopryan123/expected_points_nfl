@@ -305,8 +305,10 @@ plot_QB_epa_1 =
     # axis.text.x = element_text(size=15),
     # plot.title = element_text(size=25),
   ) +
-  labs(title=paste0("Cumulative EPA in ", SZN), 
-       subtitle=paste0("(QB's with at least ",MIN_PLAYS," plays)"))
+  labs(
+    title=paste0("Cumulative EPA in ", SZN), 
+    # subtitle=paste0("(QB's with at least ",MIN_PLAYS," plays)")
+  )
 # plot_QB_epa_1
 ggsave("plot_QB_epa.png", plot_QB_epa_1, width=8, height=10)
 
@@ -322,8 +324,10 @@ plot_QB_epa_per_play_1 =
     # axis.text.x = element_text(size=15),
     # plot.title = element_text(size=25),
   ) +
-  labs(title=paste0("EPA/Play in ", SZN), 
-       subtitle=paste0("(QB's with at least ",MIN_PLAYS," plays)"))
+  labs(
+    title=paste0("EPA/Play in ", SZN), 
+    # subtitle=paste0("(QB's with at least ",MIN_PLAYS," plays)")
+  )
 # plot_QB_epa_per_play_1
 ggsave("plot_QB_epa_per_play.png", plot_QB_epa_per_play_1, width=8, height=10)
 
@@ -374,8 +378,10 @@ plot_QB_epa_nflfastR =
     # axis.text.x = element_text(size=15),
     # plot.title = element_text(size=25),
   ) +
-  labs(title=paste0("Cumulative nflfastR EPA in ", SZN), 
-       subtitle=paste0("(QB's with at least ",MIN_PLAYS," plays)"))
+  labs(
+    title=paste0("Cumulative nflfastR EPA in ", SZN), 
+    #subtitle=paste0("(QB's with at least ",MIN_PLAYS," plays)")
+  )
 # plot_QB_epa_nflfastR
 ggsave("plot_QB_epa_nflfastR.png", plot_QB_epa_nflfastR, width=8, height=10)
 
@@ -390,8 +396,10 @@ plot_QB_epa_per_play_nflfastR =
     # axis.text.x = element_text(size=15),
     # plot.title = element_text(size=25),
   ) +
-  labs(title=paste0("nflfastR EPA/Play in ", SZN), 
-       subtitle=paste0("(QB's with at least ",MIN_PLAYS," plays)"))
+  labs(
+    title=paste0("nflfastR EPA/Play in ", SZN), 
+    # subtitle=paste0("(QB's with at least ",MIN_PLAYS," plays)")
+  )
 # plot_QB_epa_per_play_nflfastR
 ggsave("plot_QB_epa_per_play_nflfastR.png", plot_QB_epa_per_play_nflfastR, width=8, height=10)
 
