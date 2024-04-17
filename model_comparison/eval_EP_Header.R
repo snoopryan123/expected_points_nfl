@@ -12,7 +12,8 @@ if (length(args) > 0) {
   ### local machine
   N_train = 3 #FIXME # num. train sets in which we randomly draw 1 play per epoch
   N_test = 5 #FIXME # num. test sets in which we randomly draw 1 play per epoch
-  train_test = TRUE #FIXME
+  # train_test = TRUE #FIXME
+  train_test = FALSE #FIXME
   drive_based_EP = TRUE #FIXME
   
   accuracy_only = TRUE #FIXME

@@ -156,8 +156,7 @@ for (b in 0:B) {
   print(paste0("b=",b,"/",B))
   
   ### read b^th EP model
-  filename = paste0("fitted_models/","trainedModel_",model_name,"_b",b,".rds") #FIXME
-  # filename = paste0("fitted_models/","trainedFullModel_",model_name,"_b",b,".rds")
+  filename = paste0("fitted_models/","trainedFullModel_",model_name,"_b",b,".rds")
   fit = readRDS(filename)
   
   ###  get b^th EP and EPA predictions
@@ -300,13 +299,14 @@ plot_QB_epa_1 =
   geom_point(aes(x=epa_Med)) +
   geom_errorbar(aes(xmin=epa_L, xmax=epa_U)) +
   ylab("QB") + xlab("EPA") +
+  # scale_x_continuous(limits = c(-125, 225)) +
   theme(
     axis.text.y = element_text(size=12), 
     # axis.text.x = element_text(size=15),
     # plot.title = element_text(size=25),
   ) +
   labs(
-    title=paste0("Cumulative EPA in ", SZN), 
+    title=paste0("QB Total EPA in ", SZN), 
     # subtitle=paste0("(QB's with at least ",MIN_PLAYS," plays)")
   )
 # plot_QB_epa_1
@@ -325,7 +325,7 @@ plot_QB_epa_per_play_1 =
     # plot.title = element_text(size=25),
   ) +
   labs(
-    title=paste0("EPA/Play in ", SZN), 
+    title=paste0("QB EPA/Play in ", SZN), 
     # subtitle=paste0("(QB's with at least ",MIN_PLAYS," plays)")
   )
 # plot_QB_epa_per_play_1
@@ -338,15 +338,15 @@ plot_TM_epa_1 =
   geom_point(aes(x=epa_Med)) +
   geom_errorbar(aes(xmin=epa_L, xmax=epa_U)) +
   ylab("Team") + xlab("EPA") +
-  # scale_x_continuous(name="EPA", breaks=seq(-1000,1000,by=50)) +
+  # scale_x_continuous(limits = c(-125, 225)) +
   theme(
     axis.text.y = element_text(size=12),
     # axis.text.x = element_text(size=15),
     # plot.title = element_text(size=25),
   ) +
-  labs(title=paste0("Cumulative EPA in ", SZN))
+  labs(title=paste0("Offensive Team Total EPA in ", SZN))
 # plot_TM_epa_1
-ggsave("plot_TM_epa.png", plot_TM_epa_1, width=6, height=8)
+ggsave("plot_TM_epa.png", plot_TM_epa_1, width=8, height=10)
 
 plot_TM_epa_per_play_1 = 
   plot_df_TM1 %>%
@@ -355,15 +355,15 @@ plot_TM_epa_per_play_1 =
   geom_point(aes(x=epa_per_play_Med)) +
   geom_errorbar(aes(xmin=epa_per_play_L, xmax=epa_per_play_U)) +
   ylab("Team") + xlab("EPA/Play") +
-  # scale_x_continuous(name="EPA/Play",  breaks=seq(-10,10,by=0.1)) +
+  # scale_x_continuous(breaks=seq(-10,10,by=0.1)) +
   theme(
     axis.text.y = element_text(size=12), 
     # axis.text.x = element_text(size=15),
     # plot.title = element_text(size=25),
   ) +
-  labs(title=paste0("EPA/Play in ", SZN))
+  labs(title=paste0("Offensive Team EPA/Play in ", SZN))
 # plot_TM_epa_per_play_1
-ggsave("plot_TM_epa_per_play.png", plot_TM_epa_per_play_1, width=6, height=8)
+ggsave("plot_TM_epa_per_play.png", plot_TM_epa_per_play_1, width=8, height=10)
 
 ################################################################################
 
@@ -373,13 +373,14 @@ plot_QB_epa_nflfastR =
   geom_vline(xintercept = 0, color="gray80", linewidth=0.5) +
   geom_point(aes(x=epa)) +
   ylab("QB") + xlab("EPA") +
+  # scale_x_continuous(limits = c(-125, 225)) +
   theme(
     axis.text.y = element_text(size=12), 
     # axis.text.x = element_text(size=15),
     # plot.title = element_text(size=25),
   ) +
   labs(
-    title=paste0("Cumulative nflfastR EPA in ", SZN), 
+    title=paste0("Traditional QB Total EPA in ", SZN), 
     #subtitle=paste0("(QB's with at least ",MIN_PLAYS," plays)")
   )
 # plot_QB_epa_nflfastR
@@ -397,7 +398,7 @@ plot_QB_epa_per_play_nflfastR =
     # plot.title = element_text(size=25),
   ) +
   labs(
-    title=paste0("nflfastR EPA/Play in ", SZN), 
+    title=paste0("Traditional QB EPA/Play in ", SZN), 
     # subtitle=paste0("(QB's with at least ",MIN_PLAYS," plays)")
   )
 # plot_QB_epa_per_play_nflfastR
@@ -409,29 +410,30 @@ plot_TM_epa_nflfastR =
   geom_vline(xintercept = 0, color="gray80", linewidth=0.5) +
   geom_point(aes(x=epa)) +
   ylab("Team") + xlab("EPA") +
+  # scale_x_continuous(limits = c(-125, 225)) +
   theme(
     axis.text.y = element_text(size=12), 
     # axis.text.x = element_text(size=15),
     # plot.title = element_text(size=25),
   ) +
-  labs(title=paste0("Cumulative nflfastR EPA in ", SZN))
+  labs(title=paste0("Traditional Offensive Team Total EPA in ", SZN))
 # plot_TM_epa_nflfastR
-ggsave("plot_TM_epa_nflfastR.png", plot_TM_epa_nflfastR, width=6, height=8)
+ggsave("plot_TM_epa_nflfastR.png", plot_TM_epa_nflfastR, width=8, height=10)
 
 plot_TM_epa_per_play_nflfastR = 
   plot_df_TM_nflfastR %>%
   ggplot(aes(y=fct_reorder(posteam, epa_per_play))) +
   geom_vline(xintercept = 0, color="gray80", linewidth=0.5) +
-  geom_point(aes(x=epa)) +
+  geom_point(aes(x=epa_per_play)) +
   ylab("Team") + xlab("EPA/Play") +
   theme(
     axis.text.y = element_text(size=12), 
     # axis.text.x = element_text(size=15),
     # plot.title = element_text(size=25),
   ) +
-  labs(title=paste0("nflfastR EPA/Play in ", SZN))
+  labs(title=paste0("Traditional Offensive Team EPA/Play in ", SZN))
 # plot_TM_epa_nflfastR
-ggsave("plot_TM_epa_per_play_nflfastR.png", plot_TM_epa_per_play_nflfastR, width=6, height=8)
+ggsave("plot_TM_epa_per_play_nflfastR.png", plot_TM_epa_per_play_nflfastR, width=8, height=10)
 
 
 
