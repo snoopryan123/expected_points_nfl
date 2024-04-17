@@ -1,5 +1,5 @@
 #!/bin/bash
-#$ -N run_eval_driveEP_TrainModels
+#$ -N run_eval_driveEP_TrainFullModels
 #$ -j y
 ####$ -m e -M ryguy123@sas.upenn.edu 
 
@@ -7,6 +7,6 @@
 #$ -t 1-101
 #$ -o job_output/$JOB_NAME-$JOB_ID-$TASK_ID.log
 ## MORE RAM
-#$ -l m_mem_free=15G
+#$ -l m_mem_free=10G
 
-Rscript --vanilla eval_EP_TrainModels.R TRUE TRUE FALSE ${SGE_TASK_ID} 101
+Rscript --vanilla eval_EP_TrainModels.R FALSE TRUE FALSE ${SGE_TASK_ID} 101

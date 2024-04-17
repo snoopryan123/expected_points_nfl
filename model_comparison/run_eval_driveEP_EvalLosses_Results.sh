@@ -7,4 +7,4 @@
 ## MORE RAM
 #$ -l m_mem_free=100G
 
-Rscript --vanilla eval_EP_EvalLosses_Results.R FALSE 100000 101
+Rscript --vanilla eval_EP_EvalLosses_Results.R TRUE TRUE FALSE 100000 101

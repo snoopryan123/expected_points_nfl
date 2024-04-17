@@ -42,17 +42,26 @@ for (j in 1:length(xgb_model_names_list)) {
   xgb_is_weightedByDrive = str_detect(target_model_name, "weightByDrive")
   xgb_is_randomlyDrawOnePlayPerGroup = str_detect(target_model_name, "randomlyDrawOnePlayPerGroup")
   
+  if (train_test) {
+    dataset = train_set
+    filename_prefix = "trainedModel_"
+  } else {
+    dataset = data_full
+    filename_prefix = "trainedFullModel_"
+  }
+  filename = paste0("fitted_models/",filename_prefix,model_name,"_b",b,".rds")
+  
   ### bootstrapped training dataset
   if (b == 0) { ### use original training dataset
-    train_set_b = train_set
+    train_set_b = dataset
   } else { ### bootstrapped training dataset
     set.seed(22+b*3788)
     if (xgb_is_weightedByDrive | xgb_is_weightedByEpoch | xgb_is_randomlyDrawOnePlayPerGroup) {
       ### re-sample drives or epochs with replacement, according to group_var
-      train_set_b = get_clustered_bootstrap_dataset(train_set, group_var)
+      train_set_b = get_clustered_bootstrap_dataset(dataset, group_var)
     } else {
       ### re-sample plays with replacement
-      train_set_b = get_iid_bootstrap_dataset(train_set)
+      train_set_b = get_iid_bootstrap_dataset(dataset)
     }
   }
   

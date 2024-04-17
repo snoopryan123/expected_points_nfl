@@ -9,4 +9,4 @@
 ## MORE RAM
 #$ -l m_mem_free=15G
 
-Rscript --vanilla eval_EP_EvalLosses_AJ.R FALSE FALSE ${SGE_TASK_ID} 101
+Rscript --vanilla eval_EP_EvalLosses_AJ.R TRUE TRUE FALSE ${SGE_TASK_ID} 101
