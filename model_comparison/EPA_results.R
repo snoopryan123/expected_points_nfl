@@ -141,6 +141,12 @@ dfE1 = left_join(dfE, pbpszn) %>% select(-ep, -epa) ### join full PBP data
 dim(dfE)
 dim(dfE1)
 
+### get nflFastR's EP and EPA
+dfE1$ep_nflfastR = get_nflfastR_ep(dfE1)
+dfE1 = create_epa(dfE1, "ep_nflfastR")
+dim(dfE1)
+names(dfE1)
+
 ### get our bootstrapped EP predictions
 model_name = xgb_model_names_list[[1]]
 print(model_name)
@@ -160,20 +166,16 @@ for (b in 0:B) {
   dfE1 = create_epa(dfE1, ep_str)
 }
 
-# ### get nflFastR's EP and EPA
-# dfE1$ep_nflfastR = get_nflfastR_ep(dfE1)
-# dfE1 = create_epa(dfE1, "ep_nflfastR")
-# dim(dfE1)
-
 ### check
 # names(dfE1)
+# names(dfE1)[endsWith(names(dfE1), "nflfastR")]
 names(dfE1)[startsWith(names(dfE1), "ep_b")]
 names(dfE1)[startsWith(names(dfE1), "epa_b")]
 dfE_C1 = dfE1 %>% 
   select(c(
     posteam, season, qb_name, game_id, Drive, pass_or_rush, yardline_100, down, ydstogo, yards_gained, 
     #interception, #fumble_lost, ep_nflfastR, 
-    any_of(c("ep_nflfastR", "ep_b0", "epa_b0")), 
+    any_of(c("ep_nflfastR", "epa_nflfastR", "ep_b0", "epa_b0")), 
     #all_of(starts_with("ep_b"))
   ))
 dfE_C1
@@ -195,6 +197,13 @@ plot_df_1 =
     b = as.numeric(str_remove(b, "epa_b"))
   )
 plot_df_1
+
+plot_df_nflfastR = 
+  dfEF %>% 
+  select(c(
+    posteam, season, qb_name, pass_or_rush, all_of(ends_with("_nflfastR"))
+  )) 
+plot_df_nflfastR
 
 MIN_PLAYS = 250
 
@@ -226,6 +235,21 @@ plot_df_QB1 =
   arrange(b, -epa_per_play_Med) 
 plot_df_QB1
 
+plot_df_QB_nflfastR = 
+  plot_df_nflfastR %>%
+  drop_na(pass_or_rush, qb_name, epa_nflfastR) %>%
+  select(-pass_or_rush, -posteam, -ep_nflfastR) %>%
+  group_by(qb_name,season) %>%
+  summarise(
+    epa = sum(epa_nflfastR),
+    num_plays = n(),
+    epa_per_play = epa/num_plays,
+    .groups = "drop"
+  ) %>%
+  filter(num_plays >= MIN_PLAYS) %>%
+  arrange(-epa_per_play) 
+plot_df_QB_nflfastR
+
 plot_df_TM1 = 
   plot_df_1 %>%
   drop_na(pass_or_rush, epa) %>%
@@ -252,6 +276,22 @@ plot_df_TM1 =
   ) %>%
   arrange(b, -epa_per_play_Med) 
 plot_df_TM1
+
+plot_df_TM_nflfastR = 
+  plot_df_nflfastR %>%
+  drop_na(pass_or_rush, epa_nflfastR) %>%
+  select(-pass_or_rush, -qb_name, -ep_nflfastR) %>%
+  group_by(posteam,season) %>%
+  summarise(
+    epa = sum(epa_nflfastR),
+    num_plays = n(),
+    epa_per_play = epa/num_plays,
+    .groups = "drop"
+  ) %>%
+  arrange(-epa_per_play) 
+plot_df_TM_nflfastR
+
+################################################################################
 
 plot_QB_epa_1 = 
   plot_df_QB1 %>%
@@ -320,4 +360,70 @@ plot_TM_epa_per_play_1 =
   labs(title=paste0("EPA/Play in ", SZN))
 # plot_TM_epa_per_play_1
 ggsave("plot_TM_epa_per_play.png", plot_TM_epa_per_play_1, width=6, height=8)
+
+################################################################################
+
+plot_QB_epa_nflfastR = 
+  plot_df_QB_nflfastR %>%
+  ggplot(aes(y=fct_reorder(qb_name, epa))) +
+  geom_vline(xintercept = 0, color="gray80", linewidth=0.5) +
+  geom_point(aes(x=epa)) +
+  ylab("QB") + xlab("EPA") +
+  theme(
+    axis.text.y = element_text(size=12), 
+    # axis.text.x = element_text(size=15),
+    # plot.title = element_text(size=25),
+  ) +
+  labs(title=paste0("Cumulative nflfastR EPA in ", SZN), 
+       subtitle=paste0("(QB's with at least ",MIN_PLAYS," plays)"))
+# plot_QB_epa_nflfastR
+ggsave("plot_QB_epa_nflfastR.png", plot_QB_epa_nflfastR, width=8, height=10)
+
+plot_QB_epa_per_play_nflfastR = 
+  plot_df_QB_nflfastR %>%
+  ggplot(aes(y=fct_reorder(qb_name, epa_per_play))) +
+  geom_vline(xintercept = 0, color="gray80", linewidth=0.5) +
+  geom_point(aes(x=epa_per_play)) +
+  ylab("QB") + xlab("EPA/Play") +
+  theme(
+    axis.text.y = element_text(size=12), 
+    # axis.text.x = element_text(size=15),
+    # plot.title = element_text(size=25),
+  ) +
+  labs(title=paste0("nflfastR EPA/Play in ", SZN), 
+       subtitle=paste0("(QB's with at least ",MIN_PLAYS," plays)"))
+# plot_QB_epa_per_play_nflfastR
+ggsave("plot_QB_epa_per_play_nflfastR.png", plot_QB_epa_per_play_nflfastR, width=8, height=10)
+
+plot_TM_epa_nflfastR = 
+  plot_df_TM_nflfastR %>%
+  ggplot(aes(y=fct_reorder(posteam, epa))) +
+  geom_vline(xintercept = 0, color="gray80", linewidth=0.5) +
+  geom_point(aes(x=epa)) +
+  ylab("Team") + xlab("EPA") +
+  theme(
+    axis.text.y = element_text(size=12), 
+    # axis.text.x = element_text(size=15),
+    # plot.title = element_text(size=25),
+  ) +
+  labs(title=paste0("Cumulative nflfastR EPA in ", SZN))
+# plot_TM_epa_nflfastR
+ggsave("plot_TM_epa_nflfastR.png", plot_TM_epa_nflfastR, width=6, height=8)
+
+plot_TM_epa_per_play_nflfastR = 
+  plot_df_TM_nflfastR %>%
+  ggplot(aes(y=fct_reorder(posteam, epa_per_play))) +
+  geom_vline(xintercept = 0, color="gray80", linewidth=0.5) +
+  geom_point(aes(x=epa)) +
+  ylab("Team") + xlab("EPA/Play") +
+  theme(
+    axis.text.y = element_text(size=12), 
+    # axis.text.x = element_text(size=15),
+    # plot.title = element_text(size=25),
+  ) +
+  labs(title=paste0("nflfastR EPA/Play in ", SZN))
+# plot_TM_epa_nflfastR
+ggsave("plot_TM_epa_per_play_nflfastR.png", plot_TM_epa_per_play_nflfastR, width=6, height=8)
+
+
 
