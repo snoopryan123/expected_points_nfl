@@ -26,10 +26,10 @@ if (length(args) > 0) {
 epoch_based_EP = !drive_based_EP
 group_var = if (drive_based_EP) "Drive" else if (epoch_based_EP) "epoch" 
 
+print(paste0("train_test = ", train_test))
 print(paste0("drive_based_EP = ", drive_based_EP))
 print(paste0("epoch_based_EP = ", epoch_based_EP))
 print(paste0("group_var = ", group_var))
-print(paste0("train_test = ", train_test))
 print(paste0("accuracy_only = ", accuracy_only))
 print(paste0("b = ", b))
 print(paste0("B = ", B))

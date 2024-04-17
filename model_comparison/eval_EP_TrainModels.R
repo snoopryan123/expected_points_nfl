@@ -49,7 +49,8 @@ for (j in 1:length(xgb_model_names_list)) {
     dataset = data_full
     filename_prefix = "trainedFullModel_"
   }
-  filename = paste0("fitted_models/",filename_prefix,model_name,"_b",b,".rds")
+  filename = paste0("fitted_models/", filename_prefix, model_name,"_b",b,".rds")
+  print(paste0("filename = ", filename))
   
   ### bootstrapped training dataset
   if (b == 0) { ### use original training dataset
@@ -100,7 +101,6 @@ for (j in 1:length(xgb_model_names_list)) {
   }
   
   ### save the model
-  filename = paste0("fitted_models/trainedModel_",model_name,"_b",b,".rds")
   saveRDS(fit, filename)
 }
 
