@@ -204,7 +204,8 @@ plot_df_nflfastR =
   )) 
 plot_df_nflfastR
 
-MIN_PLAYS = 250
+# MIN_PLAYS = 250
+MIN_PLAYS = 500
 
 plot_df_QB1 = 
   plot_df_1 %>%

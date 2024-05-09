@@ -101,9 +101,8 @@ get_plot_title <- function() {
     }
   }
   
-  # paste0(weighted_model_desc, " ", model_type_desc, " (",w_model_desc,MODEL_TYPE,")")
-  paste0(weighted_model_desc, " ", model_type_desc)
-  # model_name
+  # paste0(weighted_model_desc, " ", model_type_desc)
+  ""
 }
 
 plot_varyingTime <- function(model_fit, model_name, half_=1) {
@@ -690,12 +689,18 @@ make_plots_batch <- function(model_name, model_fit) {
 
 plot_varyingTime(model_fit, model_name)
 make_plots_batch(model_name, model_fit)
-# {
-if (!xgb_is_catalytic) {
-  plot_varyingTimeByDown(model_fit, model_name)
-  plot_varyingDown(model_fit, model_name)
-}
+
+plot_varyingTimeByDown(model_fit, model_name)
+plot_varyingDown(model_fit, model_name)
+
 # plot_varyingScoreDiff(model_fit, model_name)
+
+# # {
+# if (!xgb_is_catalytic) {
+#   plot_varyingTimeByDown(model_fit, model_name)
+#   plot_varyingDown(model_fit, model_name)
+# }
+
 
 
 

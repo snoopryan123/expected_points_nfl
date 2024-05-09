@@ -8,6 +8,25 @@ setwd(filewd)
 ########################
 
 ###########################################
+###  ###
+###########################################
+
+### drives per epoch
+df_drives_per_epoch = 
+  data_full %>%
+  group_by(epoch) %>%
+  summarise(
+    num_drives = length(unique(Drive))
+  )
+df_drives_per_epoch
+mean(df_drives_per_epoch$num_drives)
+quantile(df_drives_per_epoch$num_drives, .9)
+
+### num drives 
+length(unique(data_full$Drive))
+
+
+###########################################
 ### distribution in epoch size ###
 ###########################################
 

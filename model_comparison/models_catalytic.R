@@ -71,13 +71,36 @@ generate_synthetic_X <- function(train_set, M, phi, weight_by_drive=FALSE, weigh
   #   c("outcome_", "pts_", "drive_weight", "epoch_weight", "w")
   # ))))
   
-  ### uniformly sample across the X space (ignoring the drive/epoch clustering)
+  # ### uniformly sample across the X space (ignoring the drive/epoch clustering)
+  # df_synthetic_X0 = train_set
+  # df_synthetic_X0 = df_synthetic_X0 %>% select(-c(all_of(starts_with(
+  #   c("outcome_", "pts_", "drive_weight", "epoch_weight", "w")
+  # ))))
+  # set.seed(2018) # Go Rams!
+  # df_synthetic_X = as_tibble(lapply(df_synthetic_X0, function(x) sample(x, replace = TRUE, size = M)))
+  
+  ### re-sample drives with replacement until we hit M rows
   df_synthetic_X0 = train_set
   df_synthetic_X0 = df_synthetic_X0 %>% select(-c(all_of(starts_with(
-    c("outcome_", "pts_", "drive_weight", "epoch_weight", "w")
+    c("drive_weight", "epoch_weight", "w")
   ))))
   set.seed(2018) # Go Rams!
-  df_synthetic_X = as_tibble(lapply(df_synthetic_X0, function(x) sample(x, replace = TRUE, size = M)))
+  #########
+  df_synthetic_X1 = tibble()
+  while (nrow(df_synthetic_X1) < M) {
+    df_synthetic_X_new = get_clustered_bootstrap_dataset(df_synthetic_X0, group_var)
+    df_synthetic_X1 = bind_rows(df_synthetic_X1, df_synthetic_X_new)
+  } 
+  last_grp = df_synthetic_X1[[group_var]][M]
+  df_synthetic_X = df_synthetic_X1 %>% filter(row_number() <= M | .data[[group_var]] == last_grp)
+  df_synthetic_X = df_synthetic_X %>% select(-c(all_of(starts_with(
+    c("outcome_", "pts_", "ii")
+  ))))
+  ### check
+  nrow(df_synthetic_X)
+  sum(df_synthetic_X1[[group_var]] == last_grp)
+  sum(df_synthetic_X[[group_var]] == last_grp)
+  sum(df_synthetic_X1[[group_var]] == last_grp) == sum(df_synthetic_X[[group_var]] == last_grp) 
   
   ### row weights
   if (weight_by_drive) {
@@ -156,6 +179,7 @@ get_catalytic_set <- function(
     catpriormodel = fitted_catalytic_prior_models[[cat_model_hash]]
   }
   
+  # browser()
   ### generate synthetic dataset
   df_synthetic_X = generate_synthetic_X(train_set, M, phi, weight_by_drive, weight_by_epoch)
   df_synthetic_Y = generate_synthetic_Y_mlr(

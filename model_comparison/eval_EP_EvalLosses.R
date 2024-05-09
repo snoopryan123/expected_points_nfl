@@ -137,8 +137,8 @@ eval_losses <- function(test_sets_lst, model_name) {
       .groups = "drop"
     ) %>%
     mutate(
-      value_L = value_Med - 2*se_value,
-      value_U = value_Med + 2*se_value,
+      value_L = value_Med - se_value,
+      value_U = value_Med + se_value,
     ) %>%
     relocate(value_Med, .after=value_L)
   df_results = df_results %>% mutate(model_name = model_name) %>% relocate(model_name, .before=metric)

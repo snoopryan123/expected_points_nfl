@@ -92,8 +92,8 @@ eval_losses <- function(test_sets_lst, xgb_model_name) {
       .groups = "drop"
     ) %>%
     mutate(
-      value_L = value_Med - 2*se_value,
-      value_U = value_Med + 2*se_value,
+      value_L = value_Med - se_value,
+      value_U = value_Med + se_value,
     ) %>%
     relocate(value_Med, .after=value_L)
   df_results = df_results %>% mutate(xgb_model_name = xgb_model_name) %>% relocate(xgb_model_name, .before=metric)

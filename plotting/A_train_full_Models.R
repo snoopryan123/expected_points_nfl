@@ -20,11 +20,12 @@ setwd(filewd)
 #   xgb_C_driveEP_s_1_weightByDrive_model_name,
 #   xgb_R_driveEP_s_1_weightByDrive_model_name
 # )
-phis = 0.5; M = 5e5;
+# phis = 0.5; M = 5e5;
+phis = c(0.5,1); M = 5e5;
 model_names_list <- 
   make_catalytic_model_name(
     target_model_name = xgb_C_driveEP_s_1_weightByDrive_model_name, 
-    prior_model_name = "mlr_driveEP_yurko_s4dE_weightByDrive",
+    prior_model_name = "mlr_driveEP_yurko_s3dE_weightByDrive",
     M=M, phi=phis
   )
 model_names_list
