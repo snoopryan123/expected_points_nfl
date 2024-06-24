@@ -1,5 +1,5 @@
 
-# Codebase for `[working title: A statistical view of expected points models in American football]`
+# Codebase for `A statistical view of expected points models in American football`
 
 # Get play-by-play data
 * download `data4.csv` from https://upenn.box.com/s/kp43egvarlv6bsgbxuchnbc9fcj9iave and put in `data/` folder

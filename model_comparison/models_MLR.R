@@ -118,27 +118,13 @@ fit_mlr_driveEP_yurko_s2dE <- function(dataset, weight_me=FALSE) {
 fit_mlr_driveEP_yurko_s3dE <- function(dataset, weight_me=FALSE) {
   if (!weight_me) { dataset$w = 1 }
   fit = multinom(outcome_drive ~ 
-                   # #######
-                   # yardline_100 +
-                   # factor(down) + down:yardline_100 +
-                   # bs(half_seconds_remaining, knots=c(30)) +
-                   # # bs(half_seconds_remaining, degree=1, df=1) +
-                   # #######
-                   # #######
-                   # factor(down):(
-                   #   yardline_100 + half_seconds_remaining
-                   # ) +
-                   # #######
-                   #######
                    factor(down):(
                      bs(yardline_100, df=5) + bs(half_seconds_remaining, knots=c(30))
                    ) +
                    log(ydstogo) +
-                   #######
                    utm:as.numeric(posteam_timeouts_remaining==0) +
                    I((score_differential <= -11)) + ### need a TD
                    I((score_differential >= 11)) + ### comfortable, field goal is fine
-                   ### note:: fourth_quarter == game_seconds_remaining <= 900
                    I((score_differential <= -4)*(game_seconds_remaining <= 900)) + ### need a TD   
                    I((-3 <= score_differential & score_differential <= 0)*(game_seconds_remaining <= 900)) + ### ok with a field goal
                    I((1 <= score_differential & score_differential <= 3)*(game_seconds_remaining <= 900)) + ### prefer a TD but ok with a field goal
