@@ -60,7 +60,7 @@ if (drive_based_EP) {
     # phi_delta = 0.1
     # phis = seq(phi_delta, 1, by=phi_delta)
     # phis = c(phis)
-    phi_delta = c(0.05, 0.1, 0.15, 0.2, 0.25)
+    phis = c(0.05, 0.1, 0.15, 0.2, 0.25)
     M = 5e5
     xgb_model_names_list <- 
       make_catalytic_model_name(
