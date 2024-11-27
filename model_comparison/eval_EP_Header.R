@@ -10,10 +10,10 @@ if (length(args) > 0) {
   B = as.numeric(args[5])-1 ### num. bootstrapped datasets
 } else {
   ### local machine
-  N_train = 3 #FIXME # num. train sets in which we randomly draw 1 play per epoch
-  N_test = 5 #FIXME # num. test sets in which we randomly draw 1 play per epoch
-  # train_test = TRUE #FIXME
-  train_test = FALSE #FIXME
+  N_train = 5 #FIXME # num. train sets in which we randomly draw 1 play per epoch
+  N_test = 3 #FIXME # num. test sets in which we randomly draw 1 play per epoch
+  # train_test = FALSE #FIXME
+  train_test = TRUE #FIXME
   drive_based_EP = TRUE #FIXME
   
   accuracy_only = TRUE #FIXME
@@ -57,9 +57,10 @@ if (drive_based_EP) {
     )
   } else if (accuracy_only) {
     ### catalytic model params
-    phi_delta = 0.1
-    phis = seq(phi_delta, 1, by=phi_delta)
-    phis = c(phis)
+    # phi_delta = 0.1
+    # phis = seq(phi_delta, 1, by=phi_delta)
+    # phis = c(phis)
+    phi_delta = c(0.05, 0.1, 0.15, 0.2, 0.25)
     M = 5e5
     xgb_model_names_list <- 
       make_catalytic_model_name(

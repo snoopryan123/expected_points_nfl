@@ -7,6 +7,33 @@ source("A1_load_data.R")
 setwd(filewd)
 ########################
 
+#######################################
+### selection bias across all plays ###
+#######################################
+
+###
+data_full %>%
+  select(pts_next_score, pts_end_of_drive, yardline_100, posteam_spread) %>%
+  mutate(
+    point_spread_bin = cut(posteam_spread, breaks=c(-30,-3.5,3.5,30))
+  ) %>%
+  group_by(point_spread_bin) %>%
+  summarise(
+    # avg_next_pts = mean(pts_next_score)
+    avg_next_pts = mean(pts_end_of_drive)
+  ) 
+
+data_full %>%
+  select(yardline_100, posteam_spread) %>%
+  mutate(
+    point_spread_bin = cut(posteam_spread, breaks=c(-30,-3.5,3.5,30))
+  ) %>%
+  group_by(point_spread_bin) %>%
+  summarise(
+    count = n()
+  ) %>% 
+  mutate(freq = count/sum(count)) 
+
 ###########################################
 ### plot selection bias in team quality ###
 ###########################################
