@@ -17,9 +17,7 @@ source("d0_data2h_add_ep_wp.R") # source("https://raw.githubusercontent.com/mrca
 # pbp_data_A <- readRDS(url("https://github.com/guga31bb/nflfastR-data/blob/master/models/cal_data.rds?raw=true"))
 # write_csv(pbp_data_A, "data_nflFastR_pbp.csv")
 # from local
-pbp_data_1 <- read_csv('data_nflFastR_pbp_1999_2022.csv')  
-
-pbp_data_A = pbp_data_1
+pbp_data_A <- read_csv('data1.csv')  
 
 ########################################################
 

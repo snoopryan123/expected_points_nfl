@@ -7,6 +7,7 @@ library(matrixcalc)
 library(lme4)
 # library(nflfastR) 
 library(nflreadr) 
+library(nflplotR)
 library(grid)
 library(nnet)
 library(gridExtra)
@@ -436,6 +437,121 @@ round_df <- function(df, digits) {
 sample_one_play_per_epoch <- function(dataset, seed=NA) {
   if (!is.na(seed)) set.seed(seed)
   dataset %>% group_by(epoch) %>% slice_sample(n=1)
+}
+
+#############################################
+### plot team/player quality trajectories ###
+#############################################
+
+plot_qbq_trajectories <- function(df_qbq_ot, qb_names) {
+  df_qbq_ot %>%
+    rename(qb = offensive_player_name) %>%
+    mutate(
+      t = (season-min(season))*max(week)+week,
+    ) %>%
+    group_by(qb,t) %>%
+    slice_head() %>%
+    arrange(qb,t) %>%
+    group_by(qb, season) %>%
+    filter(qb %in% qb_names) %>%
+    ggplot(aes(y = qbqot, x=t, color = qb)) +
+    geom_vline(xintercept = seq(1,450,18*1), color="gray80", linetype="dashed") +
+    geom_hline(yintercept=0, color="gray60") + 
+    geom_line(linewidth=1) +
+    scale_x_continuous(
+      breaks = seq(1,450+1,18*2),
+      labels = function(x) 1999 + (x - 1) %/% 18 ,
+      name = "Time"
+    ) +
+    # scale_y_continuous(breaks=seq(-5,5,by=1)) +
+    labs(color = "Quarterback", y="Quarterback Quality") +
+    # scale_color_discrete(name = "quarterback")
+    theme(axis.text.x = element_text(size=15, angle=45, 
+                                     hjust=1, vjust=1.15)) 
+}
+
+plot_oqot_trajectories <- function(df_oq_ot, team_names, min_year=1999) {
+  df_oq_ot %>%
+    mutate(
+      t = (season-min(season))*max(week)+week,
+    ) %>%
+    group_by(posteam,t) %>%
+    slice_head() %>%
+    arrange(posteam,t) %>%
+    group_by(posteam, season) %>%
+    filter(posteam %in% team_names) %>%
+    filter(season >= min_year) %>%
+    ggplot(aes(y = oqot, x=t, color = posteam)) +
+    geom_vline(xintercept = seq((min_year-1999)*18+1,450,18*1), color="gray80", linetype="dashed") +
+    geom_hline(yintercept=0, color="gray60") + 
+    geom_line(linewidth=1) +
+    scale_x_continuous(
+      breaks = seq((min_year-1999)*18+1,450+1,18*2),
+      labels = function(x) 1999 + (x - 1) %/% 18 ,
+      name = "Time"
+    ) +
+    # scale_color_nfl() +
+    scale_y_continuous(breaks=seq(-5,5,by=1), name = "Non-QB Offensive Quality") +
+    labs(color = "Team") +
+    # scale_color_discrete(name = "quarterback")
+    theme(axis.text.x = element_text(size=15, angle=45, 
+                                     hjust=1, vjust=1.15)) 
+}
+
+plot_dqdt_againstRun_trajectories <- function(df_dq_dt, team_names, min_year=1999) {
+  df_dq_dt %>%
+    mutate(
+      t = (season-min(season))*max(week)+week,
+    ) %>%
+    group_by(defteam,t) %>%
+    slice_head() %>%
+    arrange(defteam,t) %>%
+    group_by(defteam, season) %>%
+    filter(defteam %in% team_names) %>%
+    filter(season >= min_year) %>%
+    ggplot(aes(y = dqdt_againstRun, x=t, color = defteam)) +
+    geom_vline(xintercept = seq((min_year-1999)*18+1,450,18*1), color="gray80", linetype="dashed") +
+    geom_hline(yintercept=0, color="gray60") + 
+    geom_line(linewidth=1) +
+    scale_x_continuous(
+      breaks = seq((min_year-1999)*18+1,450+1,18*2),
+      labels = function(x) 1999 + (x - 1) %/% 18 ,
+      name = "Time"
+    ) +
+    # scale_color_nfl() +
+    scale_y_continuous(breaks=seq(-5,5,by=1), name = "Defensive Quality\nAgainst The Run") +
+    labs(color = "Team") +
+    # scale_color_discrete(name = "quarterback")
+    theme(axis.text.x = element_text(size=15, angle=45, 
+                                     hjust=1, vjust=1.15)) 
+}
+
+plot_dqdt_againstPass_trajectories <- function(df_dq_dt, team_names, min_year=1999) {
+  df_dq_dt %>%
+    mutate(
+      t = (season-min(season))*max(week)+week,
+    ) %>%
+    group_by(defteam,t) %>%
+    slice_head() %>%
+    arrange(defteam,t) %>%
+    group_by(defteam, season) %>%
+    filter(defteam %in% team_names) %>%
+    filter(season >= min_year) %>%
+    ggplot(aes(y = dqdt_againstPass, x=t, color = defteam)) +
+    geom_vline(xintercept = seq((min_year-1999)*18+1,450,18*1), color="gray80", linetype="dashed") +
+    geom_hline(yintercept=0, color="gray60") + 
+    geom_line(linewidth=1) +
+    scale_x_continuous(
+      breaks = seq((min_year-1999)*18+1,450+1,18*2),
+      labels = function(x) 1999 + (x - 1) %/% 18 ,
+      name = "Time"
+    ) +
+    # scale_color_nfl() +
+    scale_y_continuous(breaks=seq(-5,5,by=1), name = "Defensive Quality\nAgainst The Pass") +
+    labs(color = "Team") +
+    # scale_color_discrete(name = "quarterback")
+    theme(axis.text.x = element_text(size=15, angle=45, 
+                                     hjust=1, vjust=1.15)) 
 }
 
 

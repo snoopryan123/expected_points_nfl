@@ -252,5 +252,5 @@ pbp_data_1 <- pbp_data %>%
   )
 
 #save pbp data
-write_csv(pbp_data_1, 'data_nflFastR_pbp_1999_2022.csv')
+write_csv(pbp_data_1, 'data1.csv')
 

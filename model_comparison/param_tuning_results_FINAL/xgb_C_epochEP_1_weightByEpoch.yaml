@@ -1,4 +1,4 @@
-model_name: xgb_C_epochEP_s_1_weightByEpoch
+model_name: xgb_C_epochEP_1_weightByEpoch
 CATALYTIC: no
 booster: gbtree
 objective: multi:softprob

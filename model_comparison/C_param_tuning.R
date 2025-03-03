@@ -9,9 +9,8 @@ CATALYTIC = as.logical(args[2])
 TUNE_ALL_6_PARAMS_AT_ONCE = TRUE
 
 ### load data
-PRE_LOADED_TrainTestSplitAndTeamQualities = TRUE
 source("A_train_test_main.R")
-source("models_XGB.R")
+source("B_models_XGB.R")
 
 ##################
 ### file setup ###
@@ -24,7 +23,7 @@ print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 if (!CATALYTIC) {
   print_every_n = 50 
   nrounds = 15000
-  nrow_grid_full = 100 #250
+  nrow_grid_full = 250 #100 #250
 } else { ### Catalytic
   # print_every_n = 25 
   # nrounds = 15000 
@@ -39,23 +38,12 @@ if (!CATALYTIC) {
 
 if (!CATALYTIC) { 
   model_names_list <- list(
-    xgb_C_driveEP_s_1_model_name,
-    xgb_C_driveEP_oq2xdq2x_1_model_name,
-    xgb_C_driveEP_s_1_weightByDrive_model_name,
-    xgb_C_driveEP_oq2xdq2x_1_weightByDrive_model_name,
-    xgb_R_driveEP_s_1_weightByDrive_model_name,
-    xgb_R_driveEP_s_2_weightByDrive_model_name
+    xgb_C_epochEP_nflFastR_1_model_name,
+    xgb_C_epochEP_1_model_name,
+    xgb_C_epochEP_oq2xdq2x_1_model_name,
+    xgb_C_epochEP_1_weightByEpoch_model_name,
+    xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name
   )
-  # model_names_list <- list(
-  #   xgb_C_epochEP_nflFastR_1_model_name,
-  #   xgb_C_epochEP_s_1_model_name,
-  #   xgb_C_epochEP_oq2xdq2x_1_model_name,
-  #   xgb_C_epochEP_s_1_weightByEpoch_model_name,
-  #   xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name,
-  #   xgb_C_driveEP_s_1_model_name,
-  #   xgb_C_driveEP_oq2xdq2x_1_model_name,
-  #   xgb_C_driveEP_s_1_weightByDrive_model_name,
-  #   xgb_C_driveEP_oq2xdq2x_1_weightByDrive_model_name
   # )
 } else { ### Catalytic
   # model_names_list <- list(
@@ -84,7 +72,6 @@ xgb_is_Regression = str_detect(model_name, "xgb_R_")
 xgb_is_BoundedRegression = str_detect(model_name, "xgb_BR_")
 xgb_is_weightedByEpoch = str_detect(model_name, "weightByEpoch")
 xgb_is_weightedByDrive = str_detect(model_name, "weightByDrive")
-# xgb_is_weightedByGame = str_detect(model_name, "weightByGame")
 xgb_monotonicities <- if (xgb_is_Regression | xgb_is_BoundedRegression) get(paste0(model_name, "_monotonicities"))  
 xgb_fit_on_110_data = str_detect(model_name, "110")
 num_features = length(xgb_features)
@@ -99,7 +86,7 @@ if (xgb_is_BoundedRegression | xgb_is_Regression) {
     num_features <= 4 ~ round(num_features*1),
     4 < num_features & num_features <= 8 ~ round(num_features*0.75),
     8 < num_features & num_features <= 15 ~ round(num_features*0.6),
-    num_features >= 16 ~ round(num_features*0.45),
+    num_features >= 16 ~ round(num_features*0.6),
   )
   mtry_range = c( ifelse(round(num_features*0.55) < 1, 1, round(num_features*0.55)),   num_features )
 }
@@ -330,7 +317,7 @@ evaluate_param_combo <- function(params) {
                    epoch_based_EP=xgb_is_epoch_based_EP, drive_based_EP=xgb_is_drive_based_EP, wp=FALSE,
                    weight_by_epoch=xgb_is_weightedByEpoch, weight_by_drive=xgb_is_weightedByDrive,
                    Regression=xgb_is_Regression, BoundedRegression=xgb_is_BoundedRegression,
-                   catalytic=CATALYTIC,   catalytic_model_name=catalytic_model_name,
+                   catalytic=CATALYTIC,   catalytic_prior_model_name=catalytic_model_name,
                    param_tuning=TRUE, print_every_n=print_every_n)
   
   # bundle up the results together for returning
@@ -453,9 +440,5 @@ tuning_results = c(list(
   ),best_params
 )
 list.save(tuning_results, paste0("param_tuning_results/", paste0(model_name, if (CATALYTIC) "_catalytic" else ""  ), ".yaml"))
-
-
-
-
 
 

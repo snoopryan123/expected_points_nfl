@@ -269,26 +269,22 @@ xgb_C_epochEP_nflFastR_1_nrounds = load_params(xgb_C_epochEP_nflFastR_1_model_na
 xgb_C_epochEP_nflFastR_1_catalytic = load_params(xgb_C_epochEP_nflFastR_1_model_name)[[3]]
 
 ####
-xgb_C_epochEP_s_1_model_name = "xgb_C_epochEP_s_1"
-xgb_C_epochEP_s_1_features = 
+xgb_C_epochEP_1_model_name = "xgb_C_epochEP_1"
+xgb_C_epochEP_1_features = 
    c("yardline_100", "down1", "down2", "down3", "down4", "ydstogo", "half_seconds_remaining", 
-     "era_A", "posteam_timeouts_remaining",  "defteam_timeouts_remaining", 
-     "score_differential", "posteam_spread"
+     "era_A", "posteam_timeouts_remaining",  "defteam_timeouts_remaining", "score_differential"
    )
-xgb_C_epochEP_s_1_params = load_params(xgb_C_epochEP_s_1_model_name)[[1]]
-xgb_C_epochEP_s_1_nrounds = load_params(xgb_C_epochEP_s_1_model_name)[[2]]
-xgb_C_epochEP_s_1_catalytic = load_params(xgb_C_epochEP_s_1_model_name)[[3]]
+xgb_C_epochEP_1_params = load_params(xgb_C_epochEP_1_model_name)[[1]]
+xgb_C_epochEP_1_nrounds = load_params(xgb_C_epochEP_1_model_name)[[2]]
+xgb_C_epochEP_1_catalytic = load_params(xgb_C_epochEP_1_model_name)[[3]]
 
 ####
 xgb_C_epochEP_oq2xdq2x_1_model_name = "xgb_C_epochEP_oq2xdq2x_1"
 xgb_C_epochEP_oq2xdq2x_1_features =
    c("yardline_100", "down1", "down2", "down3", "down4", "ydstogo", "half_seconds_remaining",
-     "era_A", "posteam_timeouts_remaining",  "defteam_timeouts_remaining",
-     "score_differential",
-     "qbq_ot_0_sum", "oq_rot_0_total_sum",
-     "qbq_dt_0_sum", "oq_rdt_0_sum",
-     "dq_dt_0_againstPass_sum", "dq_ot_0_againstPass_sum",
-     "dq_dt_0_againstRun_sum", "dq_ot_0_againstRun_sum"
+     "era_A", "posteam_timeouts_remaining",  "defteam_timeouts_remaining", "score_differential",
+     "qbqot", "oqot", "dqdt_againstPass", "dqdt_againstRun", 
+     "qbqdt", "oqdt", "dqot_againstPass", "dqot_againstRun"
    )
 xgb_C_epochEP_oq2xdq2x_1_params = load_params(xgb_C_epochEP_oq2xdq2x_1_model_name)[[1]]
 xgb_C_epochEP_oq2xdq2x_1_nrounds = load_params(xgb_C_epochEP_oq2xdq2x_1_model_name)[[2]]
@@ -299,11 +295,11 @@ xgb_C_epochEP_oq2xdq2x_1_catalytic = load_params(xgb_C_epochEP_oq2xdq2x_1_model_
 ######################################################################
 
 ####
-xgb_C_epochEP_s_1_weightByEpoch_model_name = "xgb_C_epochEP_s_1_weightByEpoch"
-xgb_C_epochEP_s_1_weightByEpoch_features = xgb_C_epochEP_s_1_features
-xgb_C_epochEP_s_1_weightByEpoch_params = load_params(xgb_C_epochEP_s_1_weightByEpoch_model_name)[[1]]
-xgb_C_epochEP_s_1_weightByEpoch_nrounds = load_params(xgb_C_epochEP_s_1_weightByEpoch_model_name)[[2]]
-xgb_C_epochEP_s_1_weightByEpoch_catalytic = load_params(xgb_C_epochEP_s_1_weightByEpoch_model_name)[[3]]
+xgb_C_epochEP_1_weightByEpoch_model_name = "xgb_C_epochEP_1_weightByEpoch"
+xgb_C_epochEP_1_weightByEpoch_features = xgb_C_epochEP_1_features
+xgb_C_epochEP_1_weightByEpoch_params = load_params(xgb_C_epochEP_1_weightByEpoch_model_name)[[1]]
+xgb_C_epochEP_1_weightByEpoch_nrounds = load_params(xgb_C_epochEP_1_weightByEpoch_model_name)[[2]]
+xgb_C_epochEP_1_weightByEpoch_catalytic = load_params(xgb_C_epochEP_1_weightByEpoch_model_name)[[3]]
 
 ####
 xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name = "xgb_C_epochEP_oq2xdq2x_1_weightByEpoch"
@@ -312,75 +308,25 @@ xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_params = load_params(xgb_C_epochEP_oq2xdq
 xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_nrounds = load_params(xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name)[[2]]
 xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_catalytic = load_params(xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name)[[3]]
 
-########################################################
-### Multinomial XGBoost drive-EP Models (unweighted) ###
-########################################################
-
-####
-xgb_C_driveEP_s_1_model_name = "xgb_C_driveEP_s_1"
-xgb_C_driveEP_s_1_features = 
-  c("yardline_100", "down1", "down2", "down3", "down4", "ydstogo", "half_seconds_remaining", 
-    "era_A", "posteam_timeouts_remaining",  "defteam_timeouts_remaining", 
-    "score_differential", "posteam_spread"
-  )
-xgb_C_driveEP_s_1_params = load_params(xgb_C_driveEP_s_1_model_name)[[1]]
-xgb_C_driveEP_s_1_nrounds = load_params(xgb_C_driveEP_s_1_model_name)[[2]]
-xgb_C_driveEP_s_1_catalytic = load_params(xgb_C_driveEP_s_1_model_name)[[3]]
-
-####
-xgb_C_driveEP_oq2xdq2x_1_model_name = "xgb_C_driveEP_oq2xdq2x_1"
-xgb_C_driveEP_oq2xdq2x_1_features =
-  c("yardline_100", "down1", "down2", "down3", "down4", "ydstogo", "half_seconds_remaining",
-    "era_A", "posteam_timeouts_remaining",  "defteam_timeouts_remaining",
-    "score_differential",
-    "qbq_ot_0_sum", "oq_rot_0_total_sum",
-    "qbq_dt_0_sum", "oq_rdt_0_sum",
-    "dq_dt_0_againstPass_sum", "dq_ot_0_againstPass_sum",
-    "dq_dt_0_againstRun_sum", "dq_ot_0_againstRun_sum"
-  )
-xgb_C_driveEP_oq2xdq2x_1_params = load_params(xgb_C_driveEP_oq2xdq2x_1_model_name)[[1]]
-xgb_C_driveEP_oq2xdq2x_1_nrounds = load_params(xgb_C_driveEP_oq2xdq2x_1_model_name)[[2]]
-xgb_C_driveEP_oq2xdq2x_1_catalytic = load_params(xgb_C_driveEP_oq2xdq2x_1_model_name)[[3]]
-
-######################################################################
-### Multinomial XGBoost drive-EP Models that are weighted by drive ###
-######################################################################
-
-####
-xgb_C_driveEP_s_1_weightByDrive_model_name = "xgb_C_driveEP_s_1_weightByDrive"
-xgb_C_driveEP_s_1_weightByDrive_features = xgb_C_driveEP_s_1_features
-xgb_C_driveEP_s_1_weightByDrive_params = load_params(xgb_C_driveEP_s_1_weightByDrive_model_name)[[1]]
-xgb_C_driveEP_s_1_weightByDrive_nrounds = load_params(xgb_C_driveEP_s_1_weightByDrive_model_name)[[2]]
-xgb_C_driveEP_s_1_weightByDrive_catalytic = load_params(xgb_C_driveEP_s_1_weightByDrive_model_name)[[3]]
-
-####
-xgb_C_driveEP_oq2xdq2x_1_weightByDrive_model_name = "xgb_C_driveEP_oq2xdq2x_1_weightByDrive"
-xgb_C_driveEP_oq2xdq2x_1_weightByDrive_features = xgb_C_driveEP_oq2xdq2x_1_features
-xgb_C_driveEP_oq2xdq2x_1_weightByDrive_params = load_params(xgb_C_driveEP_oq2xdq2x_1_weightByDrive_model_name)[[1]]
-xgb_C_driveEP_oq2xdq2x_1_weightByDrive_nrounds = load_params(xgb_C_driveEP_oq2xdq2x_1_weightByDrive_model_name)[[2]]
-xgb_C_driveEP_oq2xdq2x_1_weightByDrive_catalytic = load_params(xgb_C_driveEP_oq2xdq2x_1_weightByDrive_model_name)[[3]]
-
-
-
 ############################################################################################
-### Multinomial XGBoost drive-EP Models trained from randomly drawing one play per drive ###
+### Multinomial XGBoost epoch-EP Models trained from randomly drawing one play per epoch ###
 ############################################################################################
 
 ####
-xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_model_name = "xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup"
-xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_model_name_RAW = str_remove(xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_model_name, "_randomlyDrawOnePlayPerGroup")
-xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_features = get(paste0(xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_model_name_RAW, "_features"))
-xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_params = load_params(xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_model_name_RAW)[[1]]
-xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_nrounds = load_params(xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_model_name_RAW)[[2]]
-xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_catalytic = load_params(xgb_C_driveEP_s_1_randomlyDrawOnePlayPerGroup_model_name_RAW)[[3]]
+xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch_model_name = "xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch"
+xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch_model_name_RAW = str_remove(xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch_model_name, "_randomlyDrawOnePlayPerEpoch")
+xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch_features = get(paste0(xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch_model_name_RAW, "_features"))
+xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch_params = load_params(xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch_model_name_RAW)[[1]]
+xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch_nrounds = load_params(xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch_model_name_RAW)[[2]]
+xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch_catalytic = load_params(xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch_model_name_RAW)[[3]]
 
 ####
-xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name = "xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup"
-xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name_RAW = str_remove(xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name, "_randomlyDrawOnePlayPerGroup")
-xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_features = get(paste0(xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name_RAW, "_features"))
-xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_params = load_params(xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name_RAW)[[1]]
-xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_nrounds = load_params(xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name_RAW)[[2]]
-xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_catalytic = load_params(xgb_C_driveEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name_RAW)[[3]]
+xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch_model_name = "xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch"
+xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch_model_name_RAW = str_remove(xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch_model_name, "_randomlyDrawOnePlayPerEpoch")
+xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch_features = get(paste0(xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch_model_name_RAW, "_features"))
+xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch_params = load_params(xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch_model_name_RAW)[[1]]
+xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch_nrounds = load_params(xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch_model_name_RAW)[[2]]
+xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch_catalytic = load_params(xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch_model_name_RAW)[[3]]
 
 #################################################################
 ### Randomly draw one play per drive or epoch, train N models ###
@@ -448,58 +394,4 @@ predict_xgb_randomlyDrawnPlayPerGroup <- function(
   preds
 }
 
-#################################################################################
-### XGBoost drive-EP (Monotonic) Regression Models that are weighted by drive ###
-#################################################################################
-
-####
-xgb_R_driveEP_s_1_weightByDrive_model_name = "xgb_R_driveEP_s_1_weightByDrive"
-xgb_R_driveEP_s_1_weightByDrive_features = 
-  c("yardline_100", "down1", "down2", "down3", "down4", 
-    "ydstogo", "half_seconds_remaining", "era_A", 
-    "posteam_timeouts_remaining",  "defteam_timeouts_remaining", 
-    "score_differential", "posteam_spread"
-  )
-xgb_R_driveEP_s_1_weightByDrive_monotonicities =  c(-1,0,0,0,0, -1,0,1, 1,-1, 0,-1)
-xgb_R_driveEP_s_1_weightByDrive_params = load_params(xgb_R_driveEP_s_1_weightByDrive_model_name)[[1]]
-xgb_R_driveEP_s_1_weightByDrive_nrounds = load_params(xgb_R_driveEP_s_1_weightByDrive_model_name)[[2]]
-xgb_R_driveEP_s_1_weightByDrive_catalytic = load_params(xgb_R_driveEP_s_1_weightByDrive_model_name)[[3]]
-
-####
-xgb_R_driveEP_s_2_weightByDrive_model_name = "xgb_R_driveEP_s_2_weightByDrive"
-xgb_R_driveEP_s_2_weightByDrive_features = 
-  c("yardline_100", "down",
-    "ydstogo", "half_seconds_remaining", "era_A", 
-    "posteam_timeouts_remaining",  "defteam_timeouts_remaining", 
-    "score_differential", "posteam_spread"
-  )
-xgb_R_driveEP_s_2_weightByDrive_monotonicities =  c(-1,-1, -1,0,1, 1,-1, 0,-1)
-xgb_R_driveEP_s_2_weightByDrive_params = load_params(xgb_R_driveEP_s_2_weightByDrive_model_name)[[1]]
-xgb_R_driveEP_s_2_weightByDrive_nrounds = load_params(xgb_R_driveEP_s_2_weightByDrive_model_name)[[2]]
-xgb_R_driveEP_s_2_weightByDrive_catalytic = load_params(xgb_R_driveEP_s_2_weightByDrive_model_name)[[3]]
-
-#################################################################
-#################################################################
-# ##################################################################
-# ### OLS Models fit from All Downs with Random Effect for Epoch ###
-# library(lme4)
-# 
-# fit_lm_s2dE_R <- function(dataset, w=FALSE) {
-#   if (w) { w = dataset$w } else { w = rep(1, nrow(dataset)) }
-#   fit = lmer(pts_next_score ~
-#                bs(half_seconds_remaining, df=3, knots=c(30,120))*bs(yardline_100, df=5):factor(down) +
-#                log(ydstogo):factor(down) +
-#                utm:as.numeric(posteam_timeouts_remaining==0) +
-#                I((score_differential <= -11)) + ### need a TD
-#                I((score_differential <= -4)*(game_seconds_remaining <= 900)) + ### need a TD   ### note:: fourth_quarter == game_seconds_remaining <= 900
-#                I((-3 <= score_differential & score_differential <= 0)*(game_seconds_remaining <= 900)) + ### ok with a field goal
-#                I((1 <= score_differential & score_differential <= 3)*(game_seconds_remaining <= 900)) + ### prefer a TD but ok with a field goal
-#                I((4 <= score_differential & score_differential <= 10)*(game_seconds_remaining <= 900)) + ### ok with a field goal but game is still close
-#                I((score_differential >= 11)) + ### comfortable, field goal is fine
-#                factor(era_A) +
-#                posteam_spread + posteam_spread:yardline_100 +
-#                (1 | epoch),
-#              weights = w, data = dataset)
-#   # clean_lm(fit)
-#   fit
-# }
+#####
