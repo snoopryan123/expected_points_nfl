@@ -14,8 +14,7 @@ USE_PLAY_SUCCESS = TRUE
 ##### create EP0 and EPA0 columns #####
 #######################################
 
-data0 = data0 %>% mutate(down_3or4 = down3 + down4)
-
+# data0 = data0 %>% mutate(down_3or4 = down3 + down4)
 # fit_ep0_regression_model <- function(dataset) {
 #   r.ep0 = lm(
 #     pts_next_score ~ 
@@ -35,8 +34,9 @@ fit_ep0_regression_model <- function(dataset) {
                    log(ydstogo) +
                    half_seconds_remaining +
                    gtg + 
-                   utm, 
-                 data = dataset)
+                   utm +
+                   posteam_spread ### add this term to mitigate selection bias!
+                 ,data = dataset)
   clean_lm(r.ep0)
 }
 
@@ -67,7 +67,9 @@ print(r.ep0)
 # ep0 <- function(df) { 
 #   predict(r.ep0, df)
 # }
+
 ep0 <- function(df) {
+  df = df %>% mutate(posteam_spread = 0)
   pred_cg = predict(r.ep0, df, "probs")
   pred_ep = pred_cg[,1]*(7) + pred_cg[,2]*(-7) + pred_cg[,3]*(3) + pred_cg[,4]*(-3) + pred_cg[,5]*(2) + pred_cg[,6]*(-2) + pred_cg[,7]*(0)
   unname(pred_ep)

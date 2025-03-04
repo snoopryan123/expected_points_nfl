@@ -9,12 +9,16 @@
   * run `d2_data_acquisition.R` -> output `data2.csv`
   * run `d3_data_TeamQualityMetrics.R` -> output `data3.csv`, which generates the 8 hand-crafted team quality metrics 
 
-<!--
 # Model comparison
 * enter `model_comparison` folder
-* tune XGB (XGBoost) params: run `param_tuning.R` parallelized on a cluster via `run_param_tuning.sh`, then transfer the outputted `.yaml` files (which store the tuned params) from the folder `param_tuning_results` into the folder `param_tuning_results_FINAL`
+* tune XGBoost hyperparameters: run `C_param_tuning.R` parallelized on a cluster via `R_run_param_tuning.sh`, then transfer the outputted `.yaml` files (which store the tuned params) from the folder `param_tuning_results` into the folder `param_tuning_results_FINAL`
   * the saved `.yaml` files that store the tuned XGB hyperparameters should already be in `param_tuning_results_FINAL`
-* evaluate EP models (prediction accuracy): run `eval_EP_models.R` (on a cluster via `run_eval_driveEP_models.sh`) -> output `FIXME`
+* evaluate
+* visualize
+
+<!--
+* evaluate EP models (prediction accuracy): run `eval_EP_models.R` (on a cluster via `run_eval_driveEP_models.sh`) -> output
+ `FIXME`
 * train and save models on the full dataset: `FIXME`
 * for the catalytic modeling results on local machine: set params in `eval_EP_Header.R`, train in `eval_EP_TrainModels.R`, and eval in `eval_EP_EvalLosses.R` 
  
