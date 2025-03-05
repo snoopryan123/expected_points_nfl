@@ -1,0 +1,15 @@
+model_name: xgb_C_epochEP_1_weightByEpoch
+CATALYTIC: no
+booster: gbtree
+objective: multi:softprob
+eval_metric: mlogloss
+num_class: 7.0
+eta: 0.0338175
+gamma: 0.0090744
+subsample: 0.22
+colsample_bytree: 0.6363636
+max_depth: 4
+min_child_weight: 11
+nrounds: 651.0
+test_loss: 1.1422194
+
