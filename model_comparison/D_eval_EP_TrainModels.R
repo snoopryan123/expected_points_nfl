@@ -94,7 +94,7 @@ for (j in 1:length(model_names_list)) {
         Regression=xgb_is_Regression, BoundedRegression=xgb_is_BoundedRegression, drive_based_EP=drive_based_EP, N=N_train
       ) 
     } else if (model_type == "MLR") {
-      fit = train_mlr_randomlyDrawnPlayPerGroup(train_set_b, fit_mlr_func, epoch_based_EP=epoch_based_EP)
+      fit = train_mlr_randomlyDrawnPlayPerGroup(train_set_b, fit_mlr_func, epoch_based_EP=epoch_based_EP, N=N_train)
       stop()
     } else {
       stop()

@@ -10,7 +10,7 @@ if (length(args) > 0) {
   B = as.numeric(args[5])-1 ### num. bootstrapped datasets
 } else {
   ### local machine
-  N_train = 5 #FIXME # num. train sets in which we randomly draw 1 play per epoch
+  N_train = 2 #FIXME # num. train sets in which we randomly draw 1 play per epoch
   N_test = 100
   train_test = TRUE #FIXME
   drive_based_EP = FALSE #FIXME
@@ -45,12 +45,8 @@ source("B_models_MLR.R")
 if (epoch_based_EP) {
   if (!train_test) {
     model_names_list <- list(
-      xgb_C_epochEP_nflFastR_1_model_name,
-      xgb_C_epochEP_1_model_name,
-      xgb_C_epochEP_oq2xdq2x_1_model_name,
-      xgb_C_epochEP_1_weightByEpoch_model_name,
-      xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name,
-      "mlr_epochEP_yurko_plus_tq_weightByEpoch"
+      "mlr_epochEP_yurko_plus_tq_weightByEpoch",
+      xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name
     )
   } else if (accuracy_only) {
     ### catalytic model params
