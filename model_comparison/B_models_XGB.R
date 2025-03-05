@@ -197,7 +197,7 @@ predict_ep_xgb <- function(xgb, test_set, xgb_features, model_name,
   return(tibble(pred=pred_ep, model=model_name))
 }
 
-randomlyDrawOnePlayPerGroup <- function(dataset, seed, drive_based_EP=TRUE, N=100) {
+randomlyDrawOnePlayPerGroup <- function(dataset, seed, drive_based_EP=FALSE, N=100) {
   if (!drive_based_EP) {
     epoch_based_EP = TRUE
   }

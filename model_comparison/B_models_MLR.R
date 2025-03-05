@@ -65,6 +65,20 @@ fit_mlr_weightedByDrive <- function(dataset, fit_model_func) {
   clean_lm(fit)
 }
 
+train_mlr_randomlyDrawnPlayPerGroup <- function(dataset, fit_model_func, epoch_based_EP=TRUE, N=100) {
+  ### get N train sets; each is formed by randomly sampling one play per group (drive or epoch)
+  train_sets_lst = randomlyDrawOnePlayPerGroup(train_set, seed=273442, drive_based_EP=!epoch_based_EP, N=N)
+  ### train the model from each train set
+  model_lst = list()
+  for (i in 1:N) {
+    print(paste0("training mlr model on training set i=",i,"/",N))
+    train_set_i = train_sets_lst[[i]]
+    mlr_i <- fit_model_func(train_set_i)
+    model_lst[[i]] = mlr_i
+  }
+  model_lst
+}
+
 ###############################################################
 ### Multinomial Logistic Regression Models fit on All Downs ###
 ###############################################################
@@ -132,3 +146,4 @@ fit_mlr_epochEP_yurko_plus_tq <- function(dataset, weight_me=FALSE) {
                  weights = w, data = dataset)
   clean_lm(fit)
 }
+
