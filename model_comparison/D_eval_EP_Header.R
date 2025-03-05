@@ -78,8 +78,8 @@ if (epoch_based_EP) {
       # ###
       # # "mlr_epochEP_yurko_plus_randomlyDrawOnePlayPerGroup",
       # # "mlr_epochEP_yurko_plus_tq_randomlyDrawOnePlayPerGroup",
-      xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch_model_name,
-      xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch_model_name
+      xgb_C_epochEP_1_randomlyDrawOnePlayPerGroup_model_name,
+      xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name
     )
   }
 } else if (drive_based_EP) {

@@ -313,20 +313,20 @@ xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_catalytic = load_params(xgb_C_epochEP_oq2
 ############################################################################################
 
 ####
-xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch_model_name = "xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch"
-xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch_model_name_RAW = str_remove(xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch_model_name, "_randomlyDrawOnePlayPerEpoch")
-xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch_features = get(paste0(xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch_model_name_RAW, "_features"))
-xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch_params = load_params(xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch_model_name_RAW)[[1]]
-xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch_nrounds = load_params(xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch_model_name_RAW)[[2]]
-xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch_catalytic = load_params(xgb_C_epochEP_1_randomlyDrawOnePlayPerEpoch_model_name_RAW)[[3]]
+xgb_C_epochEP_1_randomlyDrawOnePlayPerGroup_model_name = "xgb_C_epochEP_1_randomlyDrawOnePlayPerGroup"
+xgb_C_epochEP_1_randomlyDrawOnePlayPerGroup_model_name_RAW = str_remove(xgb_C_epochEP_1_randomlyDrawOnePlayPerGroup_model_name, "_randomlyDrawOnePlayPerGroup")
+xgb_C_epochEP_1_randomlyDrawOnePlayPerGroup_features = get(paste0(xgb_C_epochEP_1_randomlyDrawOnePlayPerGroup_model_name_RAW, "_features"))
+xgb_C_epochEP_1_randomlyDrawOnePlayPerGroup_params = load_params(xgb_C_epochEP_1_randomlyDrawOnePlayPerGroup_model_name_RAW)[[1]]
+xgb_C_epochEP_1_randomlyDrawOnePlayPerGroup_nrounds = load_params(xgb_C_epochEP_1_randomlyDrawOnePlayPerGroup_model_name_RAW)[[2]]
+xgb_C_epochEP_1_randomlyDrawOnePlayPerGroup_catalytic = load_params(xgb_C_epochEP_1_randomlyDrawOnePlayPerGroup_model_name_RAW)[[3]]
 
 ####
-xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch_model_name = "xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch"
-xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch_model_name_RAW = str_remove(xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch_model_name, "_randomlyDrawOnePlayPerEpoch")
-xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch_features = get(paste0(xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch_model_name_RAW, "_features"))
-xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch_params = load_params(xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch_model_name_RAW)[[1]]
-xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch_nrounds = load_params(xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch_model_name_RAW)[[2]]
-xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch_catalytic = load_params(xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerEpoch_model_name_RAW)[[3]]
+xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name = "xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup"
+xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name_RAW = str_remove(xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name, "_randomlyDrawOnePlayPerGroup")
+xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_features = get(paste0(xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name_RAW, "_features"))
+xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_params = load_params(xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name_RAW)[[1]]
+xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_nrounds = load_params(xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name_RAW)[[2]]
+xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_catalytic = load_params(xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name_RAW)[[3]]
 
 #################################################################
 ### Randomly draw one play per drive or epoch, train N models ###

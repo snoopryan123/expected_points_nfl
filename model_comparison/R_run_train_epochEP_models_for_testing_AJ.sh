@@ -4,7 +4,7 @@
 ####$ -m e -M ryguy123@sas.upenn.edu 
 
 ## ARRAY JOB
-#$ -t 1-32 #1-101
+#$ -t 33-101 #1-101
 #$ -o job_output/$JOB_NAME-$JOB_ID-$TASK_ID.log
 ## MORE RAM
 #$ -l m_mem_free=20G
