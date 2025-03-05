@@ -64,20 +64,20 @@ if (epoch_based_EP) {
       )
   } else { ### train_test and !accuracy_only
     model_names_list <- list(
-      # "mlr_epochEP_yurko_paper",
-      # "mlr_epochEP_yurko_plus",
-      # "mlr_epochEP_yurko_plus_weightByEpoch",
-      # "mlr_epochEP_yurko_plus_tq",
-      # "mlr_epochEP_yurko_plus_tq_weightByEpoch",
-      # ###
-      # xgb_C_epochEP_nflFastR_1_model_name,
-      # xgb_C_epochEP_1_model_name,
-      # xgb_C_epochEP_1_weightByEpoch_model_name,
-      # xgb_C_epochEP_oq2xdq2x_1_model_name,
-      # xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name,
-      # ###
-      # # "mlr_epochEP_yurko_plus_randomlyDrawOnePlayPerGroup",
-      # # "mlr_epochEP_yurko_plus_tq_randomlyDrawOnePlayPerGroup",
+      "mlr_epochEP_yurko_paper",
+      "mlr_epochEP_yurko_plus",
+      "mlr_epochEP_yurko_plus_weightByEpoch",
+      "mlr_epochEP_yurko_plus_tq",
+      "mlr_epochEP_yurko_plus_tq_weightByEpoch",
+      ###
+      xgb_C_epochEP_nflFastR_1_model_name,
+      xgb_C_epochEP_1_model_name,
+      xgb_C_epochEP_1_weightByEpoch_model_name,
+      xgb_C_epochEP_oq2xdq2x_1_model_name,
+      xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name,
+      ###
+      ##"mlr_epochEP_yurko_plus_randomlyDrawOnePlayPerGroup",
+      ##"mlr_epochEP_yurko_plus_tq_randomlyDrawOnePlayPerGroup",
       xgb_C_epochEP_1_randomlyDrawOnePlayPerGroup_model_name,
       xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name
     )
