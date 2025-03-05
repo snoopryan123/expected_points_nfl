@@ -95,7 +95,6 @@ for (j in 1:length(model_names_list)) {
       ) 
     } else if (model_type == "MLR") {
       fit = train_mlr_randomlyDrawnPlayPerGroup(train_set_b, fit_mlr_func, epoch_based_EP=epoch_based_EP, N=N_train)
-      stop()
     } else {
       stop()
     }
