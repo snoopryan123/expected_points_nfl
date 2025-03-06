@@ -1,5 +1,5 @@
 
-source("eval_EP_Header.R")
+source("D_eval_EP_Header.R")
 
 #################################################
 ### EVALUATE the predictions of the EP MODELS ###
@@ -15,18 +15,17 @@ source("eval_EP_Header.R")
 test_sets_lst = randomlyDrawOnePlayPerGroup(test_set, seed=98296, drive_based_EP=drive_based_EP, N=N_test)
 
 ### evaluate the predictions
-MAT_rmse_EPHat_ValueY = matrix(nrow = length(test_sets_lst), ncol = length(xgb_model_names_list))
-MAT_logloss_PHat_Y = matrix(nrow = length(test_sets_lst), ncol = length(xgb_model_names_list))
-MAT_covg_PHat_Y = matrix(nrow = length(test_sets_lst), ncol = length(xgb_model_names_list))
-MAT_boot_covg_PHat_Y = matrix(nrow = length(test_sets_lst), ncol = length(xgb_model_names_list))
+MAT_rmse_EPHat_ValueY = matrix(nrow = length(test_sets_lst), ncol = length(model_names_list))
+MAT_logloss_PHat_Y = matrix(nrow = length(test_sets_lst), ncol = length(model_names_list))
+MAT_covg_PHat_Y = matrix(nrow = length(test_sets_lst), ncol = length(model_names_list))
+MAT_boot_covg_PHat_Y = matrix(nrow = length(test_sets_lst), ncol = length(model_names_list))
 
-colnames(MAT_rmse_EPHat_ValueY) = as.character(xgb_model_names_list)
-colnames(MAT_logloss_PHat_Y) = as.character(xgb_model_names_list)
-colnames(MAT_covg_PHat_Y) = as.character(xgb_model_names_list)
-colnames(MAT_boot_covg_PHat_Y) = as.character(xgb_model_names_list)
+colnames(MAT_rmse_EPHat_ValueY) = as.character(model_names_list)
+colnames(MAT_logloss_PHat_Y) = as.character(model_names_list)
+colnames(MAT_covg_PHat_Y) = as.character(model_names_list)
+colnames(MAT_boot_covg_PHat_Y) = as.character(model_names_list)
 
-eval_losses <- function(test_sets_lst, model_name) {
-  
+eval_losses <- function(test_sets_lst, model_name, j=NULL) {
   ### model's attributes
   model_is_catalytic <- str_detect(model_name, "catalytic")
   if (model_is_catalytic) {
@@ -52,7 +51,7 @@ eval_losses <- function(test_sets_lst, model_name) {
   xgb_is_boundedRegression = str_detect(target_model_name, "_BR_")
   
   ### load trained xgb model
-  fit <- readRDS(paste0("fitted_models/trainedModel_",model_name,"_b",0,".rds"))
+  fit <- readRDS(paste0("fitted_models/trainedModelForTesting_",model_name,"_b",0,".rds"))
   
   ### vectors of losses accross the N_test test sets
   VEC_rmse_EPHat_ValueY = numeric(length(test_sets_lst))
@@ -60,7 +59,7 @@ eval_losses <- function(test_sets_lst, model_name) {
   VEC_covg_PHat_Y = numeric(length(test_sets_lst))
 
   for (i in 1:length(test_sets_lst)) {
-    print(paste0("Evaluating ",model_name," on i=",i,"/",length(test_sets_lst),"th test set."))
+    print(paste0("Evaluating model j=",j," ",model_name," on i=",i,"/",length(test_sets_lst),"th test set."))
     # print(paste0("Evaluating i=",i,"/",length(test_sets_lst),"th test set."))
     
     ### test set outcomes
@@ -145,10 +144,12 @@ eval_losses <- function(test_sets_lst, model_name) {
   df_results
 }
 
-eval_boot_covg <- function(test_sets_lst, model_name) {
-  
+eval_boot_covg <- function(test_sets_lst, model_name, j=NULL) {
   ### load xgb model variables
-  xgb_features <- get(paste0(model_name, "_features"))
+  model_type <- if (str_detect(model_name, "xgb")) "XGB" else if (str_detect(model_name, "mlr")) "MLR" else stop()
+  if (model_type == "XGB") {
+    xgb_features <- get(paste0(target_model_name, "_features"))
+  } 
   xgb_is_randomlyDrawOnePlayPerGroup = str_detect(model_name, "randomlyDrawOnePlayPerGroup")
   
   ### vectors of boot covgs across the N_test test sets
@@ -168,22 +169,34 @@ eval_boot_covg <- function(test_sets_lst, model_name) {
     colnames(MAT_yhat_ij) = paste0("b",1:B)
     
     for (b in 1:B) {
-      print(paste0("Evaluating ",model_name," on i=",i,"/",length(test_sets_lst),"th test set for b=",b,"/",B,"th bootstrap."))
+      print(paste0("Evaluating model j=",j," ",model_name," on i=",i,"/",length(test_sets_lst),"th test set for b=",b,"/",B,"th bootstrap."))
       
       ### load b^th trained bootstrapped model
-      xgb_b <- readRDS(paste0("fitted_models/trainedModel_",model_name,"_b",b,".rds"))
+      xgb_b <- readRDS(paste0("fitted_models/trainedModelForTesting_",model_name,"_b",b,".rds"))
       
       ### b^th predictions
       if (!xgb_is_randomlyDrawOnePlayPerGroup) {
         ### p_hat
-        p_hat_mat_ijb = predict_probs_xgb(
-          xgb_b, test_set_i, xgb_features, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP
-        )
+        if (model_type == "MLR") {
+          p_hat_mat_ijb = get_mlr_probs(xgb_b, test_set_i, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP)
+        } else if (model_type == "XGB") {
+          p_hat_mat_ijb = predict_probs_xgb(
+            xgb_b, test_set_i, xgb_features, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP
+          )
+        } else {
+          stop()
+        }
       } else {
         ### p_hat
-        p_hat_mat_ijb = predict_xgb_randomlyDrawnPlayPerGroup(
-          xgb_b, test_set_i, xgb_features, model_name, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP, EP=FALSE
-        ) 
+        if (model_type == "MLR") {
+            stop()
+        } else if (model_type == "XGB") {
+          p_hat_mat_ijb = predict_xgb_randomlyDrawnPlayPerGroup(
+            xgb_b, test_set_i, xgb_features, model_name, epoch_based_EP=epoch_based_EP, drive_based_EP=drive_based_EP, EP=FALSE
+          ) 
+        } else {
+          stop()
+        }
       }
       
       ### sample ane outcome y for each row of p_hat
@@ -229,12 +242,12 @@ eval_boot_covg <- function(test_sets_lst, model_name) {
 }
 
 results = tibble()
-for (j in 1:length(xgb_model_names_list)) {
-  print(paste0("eval model j=",j,"/",length(xgb_model_names_list)))
-  model_name <- xgb_model_names_list[[j]]
-  results_losses_j = eval_losses(test_sets_lst, model_name)
+for (j in 1:length(model_names_list)) {
+  print(paste0("eval model j=",j,"/",length(model_names_list)))
+  model_name <- model_names_list[[j]]
+  results_losses_j = eval_losses(test_sets_lst, model_name, j)
   if (!accuracy_only) {
-    results_boot_covg_j = eval_boot_covg(test_sets_lst, model_name)
+    results_boot_covg_j = eval_boot_covg(test_sets_lst, model_name, j)
   } else {
     results_boot_covg_j = tibble()
   }

@@ -99,7 +99,7 @@ fit_mlr_epochEP_yurko_paper <- function(dataset, weight_me=FALSE) {
 
 fit_mlr_epochEP_yurko_plus <- function(dataset, weight_me=FALSE) {
   if (!weight_me) { dataset$w = 1 }
-  fit = multinom(outcome_drive ~ 
+  fit = multinom(outcome_epoch ~ 
                    yardline_100 +
                    factor(down) + down:yardline_100 +
                    log(ydstogo) +
@@ -120,7 +120,7 @@ fit_mlr_epochEP_yurko_plus <- function(dataset, weight_me=FALSE) {
 
 fit_mlr_epochEP_yurko_plus_tq <- function(dataset, weight_me=FALSE) {
   if (!weight_me) { dataset$w = 1 }
-  fit = multinom(outcome_drive ~ 
+  fit = multinom(outcome_epoch ~ 
                    yardline_100 +
                    factor(down) + down:yardline_100 +
                    log(ydstogo) +

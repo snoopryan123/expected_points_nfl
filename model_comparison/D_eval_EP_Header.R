@@ -10,7 +10,7 @@ if (length(args) > 0) {
   B = as.numeric(args[5])-1 ### num. bootstrapped datasets
 } else {
   ### local machine
-  N_train = 2 #FIXME # num. train sets in which we randomly draw 1 play per epoch
+  N_train = 100 #FIXME # num. train sets in which we randomly draw 1 play per epoch
   N_test = 100
   train_test = TRUE #FIXME
   drive_based_EP = FALSE #FIXME
@@ -19,7 +19,7 @@ if (length(args) > 0) {
   # B = 0 #FIXME
   accuracy_only = FALSE #FIXME
   b = 1 #FIXME
-  B = 3 #FIXME
+  B = 101 #FIXME
 }
 epoch_based_EP = !drive_based_EP
 group_var = if (drive_based_EP) "Drive" else if (epoch_based_EP) "epoch" 
@@ -64,22 +64,22 @@ if (epoch_based_EP) {
       )
   } else { ### train_test and !accuracy_only
     model_names_list <- list(
-      "mlr_epochEP_yurko_paper",
+      # "mlr_epochEP_yurko_paper",
       "mlr_epochEP_yurko_plus",
       "mlr_epochEP_yurko_plus_weightByEpoch",
       "mlr_epochEP_yurko_plus_tq",
-      "mlr_epochEP_yurko_plus_tq_weightByEpoch",
-      ###
-      xgb_C_epochEP_nflFastR_1_model_name,
-      xgb_C_epochEP_1_model_name,
-      xgb_C_epochEP_1_weightByEpoch_model_name,
-      xgb_C_epochEP_oq2xdq2x_1_model_name,
-      xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name,
-      ###
-      ##"mlr_epochEP_yurko_plus_randomlyDrawOnePlayPerGroup",
-      ##"mlr_epochEP_yurko_plus_tq_randomlyDrawOnePlayPerGroup",
-      xgb_C_epochEP_1_randomlyDrawOnePlayPerGroup_model_name,
-      xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name
+      "mlr_epochEP_yurko_plus_tq_weightByEpoch"#,
+      # ###
+      # xgb_C_epochEP_nflFastR_1_model_name,
+      # xgb_C_epochEP_1_model_name,
+      # xgb_C_epochEP_1_weightByEpoch_model_name,
+      # xgb_C_epochEP_oq2xdq2x_1_model_name,
+      # xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name,
+      # ###
+      # ##"mlr_epochEP_yurko_plus_randomlyDrawOnePlayPerGroup",
+      # ##"mlr_epochEP_yurko_plus_tq_randomlyDrawOnePlayPerGroup",
+      # xgb_C_epochEP_1_randomlyDrawOnePlayPerGroup_model_name,
+      # xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name
     )
   }
 } else if (drive_based_EP) {
