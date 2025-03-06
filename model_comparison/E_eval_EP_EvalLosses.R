@@ -66,7 +66,11 @@ eval_losses <- function(test_sets_lst, model_name, j=NULL) {
     test_set_i = test_sets_lst[[i]]
     value_y_i = if (drive_based_EP) test_set_i$pts_end_of_drive else if (epoch_based_EP) test_set_i$pts_next_score
     y_i = if (drive_based_EP) test_set_i$outcome_drive else if (epoch_based_EP) test_set_i$outcome_epoch
-    y_i_str = (tibble(outcome_drive = y_i) %>% left_join(map_drive_outcome_to_value, by="outcome_drive"))$outcome_drive_str
+    if (epoch_based_EP) {
+      y_i_str = (tibble(outcome_epoch = y_i) %>% left_join(map_epoch_outcome_to_value, by="outcome_epoch"))$outcome_epoch_str
+    } else if (drive_based_EP) {
+      y_i_str = (tibble(outcome_drive = y_i) %>% left_join(map_drive_outcome_to_value, by="outcome_drive"))$outcome_drive_str
+    }
     
     if (!xgb_is_randomlyDrawOnePlayPerGroup) {
       if (model_type == "XGB") {
@@ -148,7 +152,7 @@ eval_boot_covg <- function(test_sets_lst, model_name, j=NULL) {
   ### load xgb model variables
   model_type <- if (str_detect(model_name, "xgb")) "XGB" else if (str_detect(model_name, "mlr")) "MLR" else stop()
   if (model_type == "XGB") {
-    xgb_features <- get(paste0(target_model_name, "_features"))
+    xgb_features <- get(paste0(model_name, "_features"))
   } 
   xgb_is_randomlyDrawOnePlayPerGroup = str_detect(model_name, "randomlyDrawOnePlayPerGroup")
   
@@ -162,7 +166,11 @@ eval_boot_covg <- function(test_sets_lst, model_name, j=NULL) {
     test_set_i = test_sets_lst[[i]]
     value_y_i = if (drive_based_EP) test_set_i$pts_end_of_drive else if (epoch_based_EP) test_set_i$pts_next_score
     y_i = if (drive_based_EP) test_set_i$outcome_drive else if (epoch_based_EP) test_set_i$outcome_epoch
-    y_i_str = (tibble(outcome_drive = y_i) %>% left_join(map_drive_outcome_to_value, by="outcome_drive"))$outcome_drive_str
+    if (epoch_based_EP) {
+      y_i_str = (tibble(outcome_epoch = y_i) %>% left_join(map_epoch_outcome_to_value, by="outcome_epoch"))$outcome_epoch_str
+    } else if (drive_based_EP) {
+      y_i_str = (tibble(outcome_drive = y_i) %>% left_join(map_drive_outcome_to_value, by="outcome_drive"))$outcome_drive_str
+    }
     
     ### matrix of y_hat predictions across the B bootstrapped models
     MAT_yhat_ij = matrix(nrow = nrow(test_set_i), ncol=B)
@@ -258,8 +266,18 @@ results = results %>% arrange(metric, model_name)
 print(data.frame(results))
 write_csv(
   results, 
-  paste0("results_evallosses_",if (drive_based_EP) "driveEP" else if (epoch_based_EP) "epochEP",".csv")
+  paste0("results_",if (drive_based_EP) "driveEP" else if (epoch_based_EP) "epochEP","_losses.csv")
 )
+
+results_A = results %>% 
+  filter(str_detect(metric,"rmse|logloss")) %>%
+  mutate(metric = case_when(str_detect(metric,"rmse")~"rmse", str_detect(metric,"logloss")~"logloss", )) %>%
+  pivot_wider(names_from = "metric", names_vary="slowest", id_cols = model_name, values_from = c("se_value", "value_L", "value_Med", "value_U")) %>%
+  arrange(value_Med_rmse)
+  # arrange(value_Med_logloss)
+results_A
+results_A %>% select(-all_of(ends_with("logloss"))) %>% arrange(value_Med_rmse)
+results_A %>% select(-all_of(ends_with("rmse"))) %>% arrange(value_Med_logloss)
 
 # gt::gtsave(
 #   gt::gt(df_losses %>% group_by(loss_metric)) #%>% gt::fmt_number(n_sigfig = 3)

@@ -14,10 +14,13 @@ if (length(args) > 0) {
   N_test = 100
   train_test = TRUE #FIXME
   drive_based_EP = FALSE #FIXME
+  
   # accuracy_only = TRUE #FIXME
   # b = 0 #FIXME
   # B = 0 #FIXME
-  accuracy_only = FALSE #FIXME
+  
+  # accuracy_only = FALSE #FIXME
+  accuracy_only = TRUE #FIXME
   b = 1 #FIXME
   B = 101 #FIXME
 }
@@ -49,38 +52,40 @@ if (epoch_based_EP) {
       xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name
     )
   } else if (accuracy_only) {
-    ### catalytic model params
-    # phi_delta = 0.1
-    # phis = seq(phi_delta, 1, by=phi_delta)
-    # phis = c(phis)
-    # phis = c(0.05, 0.15, 0.25)
-    phis = c(0.05, 0.1, 0.15, 0.2, 0.25)
-    M = 5e5
-    model_names_list <- 
-      make_catalytic_model_name(
-        target_model_name = xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name, 
-        prior_model_name = "mlr_epochEP_yurko_plus_tq_weightByEpoch",
-        M=M, phi=phis
-      )
-  } else { ### train_test and !accuracy_only
     model_names_list <- list(
-      # "mlr_epochEP_yurko_paper",
+      "mlr_epochEP_yurko_paper",
       "mlr_epochEP_yurko_plus",
       "mlr_epochEP_yurko_plus_weightByEpoch",
       "mlr_epochEP_yurko_plus_tq",
-      "mlr_epochEP_yurko_plus_tq_weightByEpoch"#,
-      # ###
-      # xgb_C_epochEP_nflFastR_1_model_name,
-      # xgb_C_epochEP_1_model_name,
-      # xgb_C_epochEP_1_weightByEpoch_model_name,
-      # xgb_C_epochEP_oq2xdq2x_1_model_name,
-      # xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name,
-      # ###
-      # ##"mlr_epochEP_yurko_plus_randomlyDrawOnePlayPerGroup",
-      # ##"mlr_epochEP_yurko_plus_tq_randomlyDrawOnePlayPerGroup",
-      # xgb_C_epochEP_1_randomlyDrawOnePlayPerGroup_model_name,
-      # xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name
+      "mlr_epochEP_yurko_plus_tq_weightByEpoch",
+      ###
+      xgb_C_epochEP_nflFastR_1_model_name,
+      xgb_C_epochEP_1_model_name,
+      xgb_C_epochEP_1_weightByEpoch_model_name,
+      xgb_C_epochEP_oq2xdq2x_1_model_name,
+      xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name,
+      ###
+      ##"mlr_epochEP_yurko_plus_randomlyDrawOnePlayPerGroup",
+      ##"mlr_epochEP_yurko_plus_tq_randomlyDrawOnePlayPerGroup",
+      xgb_C_epochEP_1_randomlyDrawOnePlayPerGroup_model_name,
+      xgb_C_epochEP_oq2xdq2x_1_randomlyDrawOnePlayPerGroup_model_name
     )
+    
+    # ### catalytic model params
+    # # phi_delta = 0.1
+    # # phis = seq(phi_delta, 1, by=phi_delta)
+    # # phis = c(phis)
+    # # phis = c(0.05, 0.15, 0.25)
+    # phis = c(0.05, 0.1, 0.15, 0.2, 0.25)
+    # M = 5e5
+    # model_names_list <- 
+    #   make_catalytic_model_name(
+    #     target_model_name = xgb_C_epochEP_oq2xdq2x_1_weightByEpoch_model_name, 
+    #     prior_model_name = "mlr_epochEP_yurko_plus_tq_weightByEpoch",
+    #     M=M, phi=phis
+    #   )
+  } else { ### train_test and !accuracy_only
+    #FIXME
   }
 } else if (drive_based_EP) {
   #FIXME
