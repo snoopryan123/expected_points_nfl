@@ -26,6 +26,7 @@ colnames(MAT_covg_PHat_Y) = as.character(model_names_list)
 colnames(MAT_boot_covg_PHat_Y) = as.character(model_names_list)
 
 eval_losses <- function(test_sets_lst, model_name, j=NULL) {
+  
   ### model's attributes
   model_is_catalytic <- str_detect(model_name, "catalytic")
   if (model_is_catalytic) {
@@ -266,7 +267,8 @@ results = results %>% arrange(metric, model_name)
 print(data.frame(results))
 write_csv(
   results, 
-  paste0("results_",if (drive_based_EP) "driveEP" else if (epoch_based_EP) "epochEP","_losses.csv")
+  paste0("plotting/results_",if (drive_based_EP) "driveEP" else if (epoch_based_EP) "epochEP",
+         "_losses", if(run_catalytic)"_cat" ,".csv")
 )
 
 results_A = results %>% 
@@ -303,6 +305,20 @@ if (all(str_detect(results$model_name, "catalytic"))) {
       )
     )
   for (M_ in unique(plot_df_cat_losses$M)) {
+    plot_cat_rmse = 
+      plot_df_cat_losses %>% 
+      filter(str_detect(metric,"rmse")) %>%
+      filter(M == M_) %>%
+      ggplot(aes(x = phi)) +
+      facet_wrap(~ metric_, scale="free_y") +
+      geom_ribbon(aes(ymin = value_L, ymax = value_U), fill="gray90") +
+      geom_point(aes(y = value_Med), size=3) +
+      geom_line(aes(y = value_Med), linewidth=1) +
+      xlab("\U03D5") +
+      ylab("") + labs(title=paste0("M = ", M_))
+    plot_cat_rmse
+    ggsave(paste0("results_plot_cat_rmse_M",M_,"_phi",paste0(phis,collapse="_"),".png"), plot_cat_rmse, width=6, height=4)
+    
     plot_cat_losses = 
       plot_df_cat_losses %>% 
       filter(M == M_) %>%
@@ -315,7 +331,7 @@ if (all(str_detect(results$model_name, "catalytic"))) {
       xlab("\U03D5") +
       ylab("") + labs(title=paste0("M = ", M_))
     plot_cat_losses
-    ggsave(paste0("results_plot_cat_losses_M",M_,"_phi",paste0(phis,collapse="_"),".png"), plot_cat_losses, width=10, height=4)
+    ggsave(paste0("plotting/results_plot_cat_losses_M",M_,"_phi",paste0(phis,collapse="_"),".png"), plot_cat_losses, width=10, height=4)
   }
 }
 

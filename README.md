@@ -13,11 +13,12 @@
 * enter `model_comparison` folder
 * tune XGBoost hyperparameters: run `C_param_tuning.R` parallelized on a cluster via `R_run_param_tuning.sh`, then transfer the outputted `.yaml` files (which store the tuned params) from the folder `param_tuning_results` into the folder `param_tuning_results_FINAL`
   * the saved `.yaml` files that store the tuned XGB hyperparameters should already be in `param_tuning_results_FINAL`
-* train all the various bootstrapped models on the training set for testing: run `D_eval_EP_TrainModels.R` parallelized on a cluster via `R_run_train_epochEP_models_for_testing_AJ.sh` and store the fitted models in `fitted_models/`
+* train all the models on the training set for testing: run `D_eval_EP_TrainModels.R` (first pass) parallelized on a cluster via `R_run_train_epochEP_models_for_testing_AJ.sh`, and (second pass) locally, which stores the fitted models in `fitted_models/`
+* evaluate EP models (prediction accuracy): run `E_eval_EP_EvalLosses.R` 
+* train models from full dataset for plotting: run `D_eval_EP_TrainModels.R` (third pass)
+* visualize the models: 
 
 <!--
-* evaluate EP models (prediction accuracy): run `eval_EP_models.R` (on a cluster via `run_eval_driveEP_models.sh`) -> output
- `FIXME`
 * train and save models on the full dataset: `FIXME`
 * for the catalytic modeling results on local machine: set params in `eval_EP_Header.R`, train in `eval_EP_TrainModels.R`, and eval in `eval_EP_EvalLosses.R` 
  

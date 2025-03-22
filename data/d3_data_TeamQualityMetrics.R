@@ -248,7 +248,7 @@ plot_qbs = c(
 )
 plot_qbq_trajs = plot_qbq_trajectories(df_qbq_ot, plot_qbs)
 # plot_qbq_trajs
-ggsave("../plotting/plot_qbq_trajs.png",plot_qbq_trajs,width=10,height=4)
+ggsave("../model_comparison/plotting/plot_tq_qbq_trajs.png",plot_qbq_trajs,width=10,height=4)
 
 #########################################
 #### Offensive & Defensive Qualities ####
@@ -323,7 +323,7 @@ plot_teams = c(
 )
 plot_oqot_trajs = plot_oqot_trajectories(df_oq_ot, plot_teams, 2015)
 # plot_oqot_trajs
-ggsave("../plotting/plot_oqot_trajs.png",plot_oqot_trajs,
+ggsave("../model_comparison/plotting/plot_tq_oqot_trajs.png",plot_oqot_trajs,
        width=8,height=4
        # width=10,height=4
 )
@@ -331,7 +331,7 @@ plot_dqdt_againstRun_trajs = plot_dqdt_againstRun_trajectories(
   df_dq_dt_againstRun, c("BAL","DEN"), min_year=2010
 )
 # plot_dqdt_againstRun_trajs
-ggsave("../plotting/plot_dqdt_againstRun_trajs.png",plot_dqdt_againstRun_trajs,
+ggsave("../model_comparison/plotting/plot_tq_dqdt_againstRun_trajs.png",plot_dqdt_againstRun_trajs,
        width=8,height=4
        # width=10,height=4
 )
@@ -339,7 +339,7 @@ plot_dqdt_againstPass_trajs = plot_dqdt_againstPass_trajectories(
   df_dq_dt_againstPass, c("SF","DEN"), min_year=2010
 )
 # plot_dqdt_againstPass_trajs
-ggsave("../plotting/plot_dqdt_againstPass_trajs.png",plot_dqdt_againstPass_trajs,
+ggsave("../model_comparison/plotting/plot_tq_dqdt_againstPass_trajs.png",plot_dqdt_againstPass_trajs,
        width=8,height=4
        # width=10,height=4
 )
